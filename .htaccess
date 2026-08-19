@@ -16,25 +16,3 @@ RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
-
-# BEGIN IAH home cache bypass
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteCond %{REQUEST_URI} ^/?$
-RewriteCond %{QUERY_STRING} !_lc=
-RewriteRule ^$ /?_lc=2 [R=302,L]
-</IfModule>
-# END IAH home cache bypass
-
-# BEGIN IAH nocache home
-<IfModule mod_headers.c>
-  <Files "index.php">
-    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0, private"
-    Header set CDN-Cache-Control "no-store"
-    Header set X-LiteSpeed-Cache-Control "no-cache"
-  </Files>
-</IfModule>
-<IfModule LiteSpeed>
-  CacheDisable public /
-</IfModule>
-# END IAH nocache home
