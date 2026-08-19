@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Impact Runtime Compatibility
  * Description: Keeps the migrated Next.js homepage compatible with WordPress/Hostinger runtime behavior.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Impact
  *
  * @package ImpactRuntimeCompatibility
@@ -131,8 +131,29 @@ function impact_runtime_wordpress_site_icon_tags() {
 }
 
 /**
- * Small compatibility bootstrap for warnings that come from services removed
- * during the Vercel -> WordPress migration.
+ * Mark only the two compatibility scripts that mutate React-owned text/DOM so
+ * they are loaded after the Next.js document has finished browser hydration.
+ *
+ * The mirrored app uses async Next.js chunks. These classic WordPress bridge
+ * scripts are appended at the end of the body and can otherwise run first,
+ * which is the source of React hydration error #418 (text mismatch).
+ *
+ * @param string $html HTML document.
+ * @return string
+ */
+function impact_runtime_defer_home_dom_mutators( $html ) {
+	return preg_replace_callback(
+		'#<script\b([^>]*)\bsrc\s*=\s*(["\'])([^"\']*(?:homepage-i18n|home-chrome)\.js(?:\?[^"\']*)?)\2([^>]*)>\s*</script>#i',
+		static function ( $matches ) {
+			return '<script data-impact-hydration-src="' . esc_attr( html_entity_decode( $matches[3], ENT_QUOTES, 'UTF-8' ) ) . '"></script>';
+		},
+		$html
+	);
+}
+
+/**
+ * Small compatibility bootstrap for warnings and runtime races inherited from
+ * the exported Vercel/Next.js build.
  *
  * @return string
  */
@@ -142,13 +163,21 @@ function impact_runtime_home_compat_script() {
 (function () {
   'use strict';
 
-  // PostHog is intentionally disabled in the exported build. Suppress only its
-  // exact missing-build-key warning; do not touch other console warnings.
+  // Suppress only known non-actionable build/runtime warnings. Real console
+  // errors (including React hydration errors) remain fully visible.
   var originalWarn = console.warn;
   console.warn = function () {
     var first = arguments.length ? arguments[0] : '';
-    if (typeof first === 'string' && first.indexOf('[posthog] NEXT_PUBLIC_POSTHOG_KEY is not set') === 0) {
-      return;
+    if (typeof first === 'string') {
+      if (first.indexOf('[posthog] NEXT_PUBLIC_POSTHOG_KEY is not set') === 0) {
+        return;
+      }
+      if (first === 'THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.') {
+        return;
+      }
+      if (first.indexOf('THREE.TSL: Vertex attribute "normal" not found on geometry.') === 0) {
+        return;
+      }
     }
     return originalWarn.apply(console, arguments);
   };
@@ -165,6 +194,70 @@ function impact_runtime_home_compat_script() {
       window.clearInterval(gsapTimer);
     }
   }, 25);
+
+  // WordPress compatibility scripts can modify body/header text while async
+  // Next.js chunks are still hydrating. Load them in original order only after
+  // window.load, the React loader is gone, and a conservative quiet period has
+  // elapsed. This removes the actual #418 race instead of hiding the error.
+  function loadHydrationScripts() {
+    var pending = Array.prototype.slice.call(
+      document.querySelectorAll('script[data-impact-hydration-src]')
+    );
+    if (!pending.length) {
+      return;
+    }
+
+    var index = 0;
+    function next() {
+      if (index >= pending.length) {
+        return;
+      }
+      var placeholder = pending[index++];
+      var src = placeholder.getAttribute('data-impact-hydration-src');
+      if (!src) {
+        next();
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.onload = next;
+      script.onerror = next;
+      placeholder.parentNode.insertBefore(script, placeholder.nextSibling);
+      placeholder.parentNode.removeChild(placeholder);
+    }
+    next();
+  }
+
+  function scheduleHydrationScripts() {
+    var quietSince = 0;
+    var startedAt = Date.now();
+
+    function tick() {
+      var loader = document.querySelector('[data-loader-phase][role="status"]');
+      if (loader) {
+        quietSince = 0;
+      } else if (!quietSince) {
+        quietSince = Date.now();
+      }
+
+      // 2.5s with no loader after window.load is deliberately conservative;
+      // the fallback avoids ever blocking the compatibility layer permanently.
+      if ((quietSince && Date.now() - quietSince >= 2500) || Date.now() - startedAt >= 12000) {
+        loadHydrationScripts();
+        return;
+      }
+      window.setTimeout(tick, 100);
+    }
+
+    tick();
+  }
+
+  if (document.readyState === 'complete') {
+    scheduleHydrationScripts();
+  } else {
+    window.addEventListener('load', scheduleHydrationScripts, { once: true });
+  }
 })();
 </script>
 JS;
@@ -195,6 +288,8 @@ function impact_runtime_patch_home_document( $html ) {
 		'navigator.gpu.requestAdapter(' . $adapter_options . ')',
 		$html
 	);
+
+	$html = impact_runtime_defer_home_dom_mutators( $html );
 
 	$site_icon_tags = impact_runtime_wordpress_site_icon_tags();
 	if ( '' !== $site_icon_tags ) {
