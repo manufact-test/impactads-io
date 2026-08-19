@@ -79,12 +79,23 @@ jobs:
           echo '--- candidate web roots ---'
           for d in \
             "$HOME/public_html" \
-            "$HOME/domains/impactads.io/public_html" \
-            "$HOME/domains/impactads.io"; do
+            "$HOME/domains/impactads.io/public_html"; do
+            echo "CANDIDATE=$d"
+            printf 'REALPATH='; readlink -f "$d" 2>/dev/null || true
             if [ -d "$d" ]; then
-              printf 'FOUND_DIR=%s\n' "$d"
               ls -ld "$d"
+              [ -f "$d/wp-config.php" ] && echo 'WP_CONFIG=yes' || echo 'WP_CONFIG=no'
+              [ -f "$d/wp-load.php" ] && echo 'WP_LOAD=yes' || echo 'WP_LOAD=no'
+              [ -d "$d/wp-content" ] && echo 'WP_CONTENT=yes' || echo 'WP_CONTENT=no'
+              [ -d "$d/wp-admin" ] && echo 'WP_ADMIN=yes' || echo 'WP_ADMIN=no'
+              [ -f "$d/index.php" ] && echo 'INDEX=yes' || echo 'INDEX=no'
+              [ -f "$d/wp-config.php" ] && sha256sum "$d/wp-config.php" 2>/dev/null || true
+              echo 'TOP_LEVEL:'
+              find "$d" -maxdepth 1 -mindepth 1 -printf '%f\n' 2>/dev/null | sort | sed -n '1,60p'
+            else
+              echo 'EXISTS=no'
             fi
+            echo '---'
           done
           echo '--- tools ---'
           command -v git || true
@@ -93,8 +104,8 @@ jobs:
           rsync --version 2>/dev/null | head -n 1 || true
           command -v php || true
           php -v 2>/dev/null | head -n 2 || true
-          echo '--- home listing ---'
-          ls -la "$HOME" | sed -n '1,80p'
+          command -v wp || true
+          wp --info 2>/dev/null | sed -n '1,20p' || true
           REMOTE
             RC=$?
             if [ "$RC" -eq 0 ]; then
@@ -114,7 +125,7 @@ jobs:
             echo
             echo '## Remote output'
             echo '```text'
-            sed -n '1,120p' remote-output.txt
+            sed -n '1,240p' remote-output.txt
             echo '```'
             echo
             echo '## Key validation error'
