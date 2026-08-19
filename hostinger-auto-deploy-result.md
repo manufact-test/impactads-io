@@ -2,31 +2,29 @@
 
 - status: SUCCESS
 - final stage: committing deployed revision state
-- from: c5238143ffd1a93b7fd158071500bdf9e7bf0002
-- to: 6d385245240778551e4203a0ce247d5be833cc53
+- from: 6d385245240778551e4203a0ce247d5be833cc53
+- to: b5fc268bcc5c0dcdb5078a7c8a481ebf176ae0bb
 - document root: /home/u218517330/domains/impactads.io/public_html
-- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260819T182402Z
+- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260819T193035Z
 
 ## Output
 ```text
 Deploy impactads.io
-CURRENT_SHA=6d385245240778551e4203a0ce247d5be833cc53
+CURRENT_SHA=b5fc268bcc5c0dcdb5078a7c8a481ebf176ae0bb
 ROOT=/home/u218517330/domains/impactads.io/public_html
-DEPLOYED_SHA=c5238143ffd1a93b7fd158071500bdf9e7bf0002
-Files to upload/update: 1
-Files to delete: 0
-New files (rollback tracking): 1
-Upload/update sample:
+DEPLOYED_SHA=6d385245240778551e4203a0ce247d5be833cc53
+Files to upload/update: 0
+Files to delete: 1
+New files (rollback tracking): 0
+Delete sample:
 wp-content/mu-plugins/impact-runtime-compat.php
-No syntax errors detected in wp-content/mu-plugins/impact-runtime-compat.php
 Rollback file archive prepared.
-Changed files uploaded.
-Remote PHP syntax validation passed.
+Git deletions applied.
 WP-CLI core check passed.
 HTTP / => 200
 HTTP /about/ => 200
 HTTP /blog/ => 200
 HTTP /contact/ => 200
 HTTP /application/ => 200
-Server deployment SHA advanced to 6d385245240778551e4203a0ce247d5be833cc53
+Server deployment SHA advanced to b5fc268bcc5c0dcdb5078a7c8a481ebf176ae0bb
 ```
