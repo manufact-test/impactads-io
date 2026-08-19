@@ -16,13 +16,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAH_VERSION', '1.5.13' );
+define( 'IAH_VERSION', '1.5.14' );
 define( 'IAH_FILE', __FILE__ );
 define( 'IAH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAH_URL', plugin_dir_url( __FILE__ ) );
 define( 'IAH_PAGE_SLUG', 'impact-home' );
 define( 'IAH_TEMPLATE', 'page-impact-home.php' );
-define( 'IAH_FAVICON_URL', 'https://impactads.io/wp-content/uploads/2026/06/cropped-IA.png' );
+
+$iah_favicon_url = function_exists( 'get_site_icon_url' ) ? get_site_icon_url( 32 ) : '';
+if ( ! $iah_favicon_url ) {
+	$iah_favicon_url = 'https://impactads.io/wp-content/uploads/2026/06/cropped-IA.png';
+}
+define( 'IAH_FAVICON_URL', $iah_favicon_url );
 
 require_once IAH_DIR . 'includes/class-homepage.php';
 require_once IAH_DIR . 'includes/class-asset-proxy.php';
