@@ -1,0 +1,248 @@
+name: Hostinger First Cleanup Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/hostinger-first-cleanup-deploy.yml
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply audited cleanup to Hostinger
+        shell: bash
+        env:
+          HOSTINGER_SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+        run: |
+          set +e
+
+          BASE="ff67a10da71279c90dd2597ec4085856af69fa90"
+          TARGET="20978d6fc5c653f8b5442adc6d77824a33a6176a"
+          HOST="45.84.206.26"
+          PORT="65002"
+          USER="u218517330"
+          ROOT="/home/u218517330/domains/impactads.io/public_html"
+          KEY_FILE="$HOME/.ssh/impactads_hostinger"
+          KNOWN_HOSTS="$HOME/.ssh/known_hosts"
+          RESULT="hostinger-deploy-result.md"
+          LOG="deploy-output.txt"
+          RC=0
+          STAGE="initializing"
+
+          : > "$LOG"
+          log() { printf '%s\n' "$*" | tee -a "$LOG"; }
+          fail() { log "ERROR: $*"; RC=1; }
+
+          log "Hostinger first cleanup deploy"
+          log "BASE=$BASE"
+          log "TARGET=$TARGET"
+          log "ROOT=$ROOT"
+
+          STAGE="validating audited git diff"
+          if ! git cat-file -e "$BASE^{commit}" 2>/dev/null || ! git cat-file -e "$TARGET^{commit}" 2>/dev/null; then
+            fail "Cleanup boundary commits are not available in checkout."
+          fi
+
+          if [ "$RC" -eq 0 ]; then
+            git diff --name-only --diff-filter=AM "$BASE" "$TARGET" > changed-files.txt
+            git diff --name-only --diff-filter=D "$BASE" "$TARGET" > deleted-files.txt
+
+            log "Added/modified files in audited cleanup:"
+            sed -n '1,80p' changed-files.txt | tee -a "$LOG"
+            DELETE_COUNT=$(wc -l < deleted-files.txt | tr -d ' ')
+            log "Deleted file count: $DELETE_COUNT"
+
+            if [ "$(cat changed-files.txt)" != ".htaccess" ]; then
+              fail "Safety stop: audited cleanup contains unexpected added/modified files."
+            fi
+            if [ "$DELETE_COUNT" -lt 1 ]; then
+              fail "Safety stop: cleanup deletion manifest is empty."
+            fi
+
+            if grep -E '(^/|(^|/)\.\.(/|$))' deleted-files.txt >/dev/null; then
+              fail "Safety stop: unsafe deletion path detected."
+            fi
+
+            BAD_UPLOADS=$(grep '^wp-content/uploads/' deleted-files.txt | grep -Ev '^wp-content/uploads/(migrate-impactads\.sql|iacce-backups/)' || true)
+            if [ -n "$BAD_UPLOADS" ]; then
+              log "$BAD_UPLOADS"
+              fail "Safety stop: deletion manifest touches unexpected uploads."
+            fi
+
+            for p in database-from-package.sql ftp-probe.txt iac-pull-migrate.php _migrate_tmp _wp_core_tmp; do
+              if git cat-file -e "$TARGET:$p" 2>/dev/null; then
+                fail "Safety stop: technical artifact unexpectedly exists in target commit: $p"
+              fi
+            done
+          fi
+
+          STAGE="preparing SSH"
+          if [ "$RC" -eq 0 ]; then
+            if [ -z "$HOSTINGER_SSH_KEY" ]; then
+              fail "HOSTINGER_SSH_KEY secret is empty."
+            else
+              mkdir -p "$HOME/.ssh"
+              chmod 700 "$HOME/.ssh"
+              printf '%s\n' "$HOSTINGER_SSH_KEY" > "$KEY_FILE"
+              chmod 600 "$KEY_FILE"
+              if ! ssh-keygen -y -f "$KEY_FILE" >/dev/null 2>&1; then
+                fail "Private SSH key does not parse."
+              fi
+            fi
+          fi
+
+          if [ "$RC" -eq 0 ]; then
+            if ! ssh-keyscan -T 15 -p "$PORT" -H "$HOST" > "$KNOWN_HOSTS" 2>/dev/null; then
+              fail "Could not read Hostinger SSH host key."
+            else
+              chmod 600 "$KNOWN_HOSTS"
+            fi
+          fi
+
+          SSH=(ssh -i "$KEY_FILE" -p "$PORT" -o BatchMode=yes -o ConnectTimeout=15 "$USER@$HOST")
+          RSYNC_SSH="ssh -i $KEY_FILE -p $PORT -o BatchMode=yes -o ConnectTimeout=15"
+
+          STAGE="checking live WordPress root"
+          if [ "$RC" -eq 0 ]; then
+            if ! "${SSH[@]}" "test -f '$ROOT/wp-config.php' && test -f '$ROOT/wp-load.php' && test -d '$ROOT/wp-content' && test -d '$ROOT/wp-admin'"; then
+              fail "Safety stop: expected WordPress markers are missing from target root."
+            else
+              log "Live WordPress root verified."
+            fi
+          fi
+
+          STAGE="creating rollback metadata"
+          BACKUP_DIR=""
+          if [ "$RC" -eq 0 ]; then
+            TS=$(date -u +%Y%m%dT%H%M%SZ)
+            BACKUP_DIR="/home/$USER/deploy-backups/impactads-cleanup-$TS"
+            if ! "${SSH[@]}" "mkdir -p '$BACKUP_DIR' && if [ -f '$ROOT/.htaccess' ]; then cp -p '$ROOT/.htaccess' '$BACKUP_DIR/.htaccess.before'; fi"; then
+              fail "Could not create server rollback directory."
+            else
+              printf '%s\n' "BASE=$BASE" "TARGET=$TARGET" > deploy-metadata.txt
+              cp deleted-files.txt deploy-deleted-files.txt
+              rsync -a -e "$RSYNC_SSH" deploy-metadata.txt deploy-deleted-files.txt "$USER@$HOST:$BACKUP_DIR/" >>"$LOG" 2>&1
+              if [ "$?" -ne 0 ]; then
+                fail "Could not save rollback metadata on server."
+              else
+                log "Rollback metadata saved: $BACKUP_DIR"
+              fi
+            fi
+          fi
+
+          STAGE="deploying cleaned .htaccess"
+          if [ "$RC" -eq 0 ]; then
+            if ! git show "$TARGET:.htaccess" > audited.htaccess; then
+              fail "Could not materialize audited .htaccess."
+            else
+              rsync -a -e "$RSYNC_SSH" audited.htaccess "$USER@$HOST:$ROOT/.htaccess" >>"$LOG" 2>&1
+              if [ "$?" -ne 0 ]; then
+                fail "Failed to deploy .htaccess."
+              else
+                log ".htaccess deployed."
+              fi
+            fi
+          fi
+
+          STAGE="deleting git-audited cleanup files"
+          if [ "$RC" -eq 0 ]; then
+            cat deleted-files.txt | "${SSH[@]}" "ROOT='$ROOT'; set -e; while IFS= read -r rel; do case \"\$rel\" in ''|/*|*'..'*) echo \"unsafe deletion path: \$rel\" >&2; exit 31;; esac; target=\"\$ROOT/\$rel\"; if [ -f \"\$target\" ] || [ -L \"\$target\" ]; then rm -f -- \"\$target\"; fi; done"
+            if [ "$?" -ne 0 ]; then
+              fail "Failed while applying audited deletion manifest."
+            else
+              log "Audited deletion manifest applied."
+            fi
+          fi
+
+          STAGE="removing known migration leftovers"
+          if [ "$RC" -eq 0 ]; then
+            "${SSH[@]}" "set -e; ROOT='$ROOT'; rm -f -- \"\$ROOT/database-from-package.sql\" \"\$ROOT/ftp-probe.txt\" \"\$ROOT/iac-pull-migrate.php\"; rm -rf -- \"\$ROOT/_migrate_tmp\" \"\$ROOT/_wp_core_tmp\"; rmdir \"\$ROOT/wp-content/uploads/iacce-backups\" 2>/dev/null || true; rmdir \"\$ROOT/wp-content/plugins/impact-accs-homepage/assets/site/sequences/isometric-city-compressed\" 2>/dev/null || true"
+            if [ "$?" -ne 0 ]; then
+              fail "Failed to remove known migration leftovers."
+            else
+              log "Known migration leftovers removed."
+            fi
+          fi
+
+          STAGE="verifying deployment"
+          if [ "$RC" -eq 0 ]; then
+            LOCAL_HTACCESS=$(sha256sum audited.htaccess | awk '{print $1}')
+            REMOTE_HTACCESS=$("${SSH[@]}" "sha256sum '$ROOT/.htaccess' | awk '{print \$1}'" 2>/dev/null)
+            log "Local .htaccess SHA256=$LOCAL_HTACCESS"
+            log "Remote .htaccess SHA256=$REMOTE_HTACCESS"
+            if [ "$LOCAL_HTACCESS" != "$REMOTE_HTACCESS" ]; then
+              fail ".htaccess verification hash mismatch."
+            fi
+          fi
+
+          if [ "$RC" -eq 0 ]; then
+            if ! "${SSH[@]}" "cd '$ROOT' && wp core is-installed --quiet"; then
+              fail "WP-CLI does not recognize live WordPress after cleanup."
+            else
+              log "WP-CLI core check passed."
+            fi
+          fi
+
+          if [ "$RC" -eq 0 ]; then
+            HTTP_CODE=$(curl -L -sS -o /tmp/impactads-home.html -w '%{http_code}' --max-time 30 https://impactads.io/ || true)
+            log "Homepage HTTP status=$HTTP_CODE"
+            if [ "$HTTP_CODE" != "200" ]; then
+              fail "Homepage did not return HTTP 200 after cleanup."
+            fi
+          fi
+
+          if [ "$RC" -ne 0 ] && [ -n "$BACKUP_DIR" ]; then
+            log "Deployment failed during stage: $STAGE"
+            log "Attempting .htaccess rollback from $BACKUP_DIR"
+            "${SSH[@]}" "if [ -f '$BACKUP_DIR/.htaccess.before' ]; then cp -p '$BACKUP_DIR/.htaccess.before' '$ROOT/.htaccess'; fi" >>"$LOG" 2>&1
+          fi
+
+          {
+            echo '# Hostinger First Cleanup Deploy Result'
+            echo
+            if [ "$RC" -eq 0 ]; then
+              echo '- status: SUCCESS'
+            else
+              echo '- status: FAILED'
+            fi
+            echo "- final stage: $STAGE"
+            echo "- audited base: $BASE"
+            echo "- audited target: $TARGET"
+            echo "- document root: $ROOT"
+            echo "- rollback metadata: ${BACKUP_DIR:-not-created}"
+            echo
+            echo '## Output'
+            echo '```text'
+            sed -n '1,260p' "$LOG"
+            echo '```'
+          } > "$RESULT"
+
+          rm -f "$KEY_FILE" "$KNOWN_HOSTS" changed-files.txt deleted-files.txt deploy-metadata.txt deploy-deleted-files.txt audited.htaccess /tmp/impactads-home.html
+
+          exit 0
+
+      - name: Save deployment result
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hostinger-deploy-result.md
+          if git diff --cached --quiet; then
+            echo "No deployment result changes."
+            exit 0
+          fi
+          git commit -m "Record Hostinger cleanup deployment result"
+          git push
