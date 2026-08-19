@@ -9,44 +9,69 @@ on:
       - .github/workflows/hostinger-ssh-probe.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Prepare SSH key
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run safe SSH diagnostics
         shell: bash
         env:
           HOSTINGER_SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
         run: |
-          set -euo pipefail
-          test -n "$HOSTINGER_SSH_KEY"
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          printf '%s\n' "$HOSTINGER_SSH_KEY" > ~/.ssh/impactads_hostinger
-          chmod 600 ~/.ssh/impactads_hostinger
-          ssh-keygen -y -f ~/.ssh/impactads_hostinger >/dev/null
+          set +e
 
-      - name: Trust Hostinger SSH host key
-        shell: bash
-        run: |
-          set -euo pipefail
-          ssh-keyscan -p 65002 -H 45.84.206.26 >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+          RESULT="ssh-probe-result.md"
+          KEY_FILE="$HOME/.ssh/impactads_hostinger"
+          KNOWN_HOSTS="$HOME/.ssh/known_hosts"
+          HOST="45.84.206.26"
+          PORT="65002"
+          USER="u218517330"
 
-      - name: Probe Hostinger environment
-        shell: bash
-        run: |
-          set -euo pipefail
-          ssh \
-            -i ~/.ssh/impactads_hostinger \
-            -p 65002 \
-            -o BatchMode=yes \
-            -o ConnectTimeout=15 \
-            u218517330@45.84.206.26 'bash -s' <<'REMOTE'
-          set -eu
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+
+          KEY_PRESENT="no"
+          KEY_VALID="not-tested"
+          KEYSCAN_STATUS="not-tested"
+          SSH_STATUS="not-tested"
+
+          : > key-error.txt
+          : > keyscan-error.txt
+          : > remote-output.txt
+          : > remote-error.txt
+
+          if [ -n "$HOSTINGER_SSH_KEY" ]; then
+            KEY_PRESENT="yes"
+            printf '%s\n' "$HOSTINGER_SSH_KEY" > "$KEY_FILE"
+            chmod 600 "$KEY_FILE"
+            if ssh-keygen -y -f "$KEY_FILE" >/dev/null 2>key-error.txt; then
+              KEY_VALID="yes"
+            else
+              KEY_VALID="no"
+            fi
+          fi
+
+          if ssh-keyscan -T 15 -p "$PORT" -H "$HOST" > "$KNOWN_HOSTS" 2>keyscan-error.txt; then
+            KEYSCAN_STATUS="ok"
+            chmod 600 "$KNOWN_HOSTS"
+          else
+            KEYSCAN_STATUS="failed"
+          fi
+
+          if [ "$KEY_VALID" = "yes" ] && [ "$KEYSCAN_STATUS" = "ok" ]; then
+            ssh \
+              -i "$KEY_FILE" \
+              -p "$PORT" \
+              -o BatchMode=yes \
+              -o ConnectTimeout=15 \
+              "$USER@$HOST" 'bash -s' >remote-output.txt 2>remote-error.txt <<'REMOTE'
+          set -u
           echo 'SSH_OK'
           printf 'USER='; id -un
           printf 'PWD='; pwd
@@ -71,3 +96,55 @@ jobs:
           echo '--- home listing ---'
           ls -la "$HOME" | sed -n '1,80p'
           REMOTE
+            RC=$?
+            if [ "$RC" -eq 0 ]; then
+              SSH_STATUS="ok"
+            else
+              SSH_STATUS="failed ($RC)"
+            fi
+          fi
+
+          {
+            echo '# Hostinger SSH Probe Result'
+            echo
+            echo "- key present: $KEY_PRESENT"
+            echo "- private key parses: $KEY_VALID"
+            echo "- Hostinger host key reachable: $KEYSCAN_STATUS"
+            echo "- SSH authentication/session: $SSH_STATUS"
+            echo
+            echo '## Remote output'
+            echo '```text'
+            sed -n '1,120p' remote-output.txt
+            echo '```'
+            echo
+            echo '## Key validation error'
+            echo '```text'
+            sed -n '1,40p' key-error.txt
+            echo '```'
+            echo
+            echo '## Host-key scan error'
+            echo '```text'
+            sed -n '1,40p' keyscan-error.txt
+            echo '```'
+            echo
+            echo '## SSH error'
+            echo '```text'
+            sed -n '1,80p' remote-error.txt
+            echo '```'
+          } > "$RESULT"
+
+          rm -f "$KEY_FILE" "$KNOWN_HOSTS" key-error.txt keyscan-error.txt remote-output.txt remote-error.txt
+
+      - name: Save diagnostic result to repository
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ssh-probe-result.md
+          if git diff --cached --quiet; then
+            echo "No diagnostic changes to commit."
+            exit 0
+          fi
+          git commit -m "Record Hostinger SSH probe diagnostics"
+          git push
