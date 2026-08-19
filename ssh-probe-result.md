@@ -12,12 +12,55 @@ USER=u218517330
 PWD=/home/u218517330
 HOME=/home/u218517330
 --- candidate web roots ---
-FOUND_DIR=/home/u218517330/public_html
+CANDIDATE=/home/u218517330/public_html
+REALPATH=/home/u218517330/public_html
 drwxr-xr-x 4 u218517330 o1009466001 4096 Jul  6 18:55 /home/u218517330/public_html
-FOUND_DIR=/home/u218517330/domains/impactads.io/public_html
+WP_CONFIG=no
+WP_LOAD=no
+WP_CONTENT=no
+WP_ADMIN=no
+INDEX=no
+TOP_LEVEL:
+domains
+htdocs
+---
+CANDIDATE=/home/u218517330/domains/impactads.io/public_html
+REALPATH=/home/u218517330/domains/impactads.io/public_html
 drwxr-xr-x 7 u218517330 o1009466001 4096 Aug 12 16:04 /home/u218517330/domains/impactads.io/public_html
-FOUND_DIR=/home/u218517330/domains/impactads.io
-drwxr-xr-x 3 u218517330 o1009466001 4096 Jul  6 18:49 /home/u218517330/domains/impactads.io
+WP_CONFIG=yes
+WP_LOAD=yes
+WP_CONTENT=yes
+WP_ADMIN=yes
+INDEX=yes
+8cd4ca4a7c52833851e30f69b729d3f862a25666f1ae83e7ef4deaab3d9a7acf  /home/u218517330/domains/impactads.io/public_html/wp-config.php
+TOP_LEVEL:
+database-from-package.sql
+ftp-probe.txt
+.htaccess
+iac-pull-migrate.php
+index.php
+license.txt
+_migrate_tmp
+readme.html
+wp-activate.php
+wp-admin
+wp-blog-header.php
+wp-comments-post.php
+wp-config.php
+wp-config-sample.php
+wp-content
+_wp_core_tmp
+wp-cron.php
+wp-includes
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+---
 --- tools ---
 /usr/bin/git
 git version 2.47.3
@@ -26,20 +69,23 @@ rsync  version 3.2.5  protocol version 31
 /usr/bin/php
 PHP 8.3.30 (cli) (built: Mar  5 2026 00:00:00) (NTS)
 Copyright (c) The PHP Group
---- home listing ---
-total 56
-drwx--x--- 10 u218517330 apache      4096 Aug 19 13:55 .
-drwxr-xr-x  3 root       root        4096 Jun 29 15:36 ..
--rw-r--r--  1 u218517330 o1009466001   40 Jun 29 15:37 .api_token
-drwxrwx--x  5 u218517330 o1009466001 4096 Jun 29 15:36 .cagefs
-drwxr-xr-x  2 u218517330 o1009466001 4096 Aug 10 14:29 .cl.selector
-drwxr-xr-x  3 u218517330 o1009466001 4096 Jun 29 15:36 domains
-drwxr-xr-x  2 u218517330 o1009466001 4096 Aug 19 12:57 .filebrowser
-drwxr-xr-x  2 u218517330 o1009466001 4096 Jul  9 21:45 .logs
--rw-r--r--  1 u218517330 o1009466001  701 Jun 29 15:36 .profile
-drwxr-xr-x  4 u218517330 o1009466001 4096 Jul  6 18:55 public_html
-drwx------  2 u218517330 o1009466001 4096 Aug 19 13:55 .ssh
-drwxr-xr-x  3 u218517330 o1009466001 4096 Jun 29 15:37 .wp-cli
+/usr/local/bin/wp
+OS:	Linux 5.14.0-611.16.1.el9_7.x86_64 #1 SMP PREEMPT_DYNAMIC Mon Dec 22 03:40:39 EST 2025 x86_64
+Shell:	/bin/bash
+PHP binary:	/opt/alt/php83/usr/bin/php
+PHP version:	8.3.30
+php.ini used:	/opt/alt/php83/etc/php.ini
+MySQL binary:	/usr/bin/mariadb
+MySQL version:	mariadb from 11.8.8-MariaDB, client 15.2 for Linux (x86_64) using  EditLine wrapper
+SQL modes:	
+WP-CLI root dir:	phar://wp-cli.phar/vendor/wp-cli/wp-cli
+WP-CLI vendor dir:	phar://wp-cli.phar/vendor
+WP_CLI phar path:	phar:///usr/local/bin/wp-cli-2.12.0.phar
+WP-CLI packages dir:	
+WP-CLI cache dir:	/home/u218517330/.wp-cli/cache
+WP-CLI global config:	
+WP-CLI project config:	
+WP-CLI version:	2.12.0
 ```
 
 ## Key validation error
