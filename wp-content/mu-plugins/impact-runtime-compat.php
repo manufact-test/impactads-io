@@ -182,16 +182,17 @@ function impact_runtime_patch_home_document( $html ) {
 		return $html;
 	}
 
-	// Chrome on Windows currently ignores this WebGPU hint and logs a warning.
-	// Omitting the hint lets the browser select the appropriate adapter.
-	$html = str_replace(
+	// Chromium on Windows currently ignores powerPreference and logs a warning.
+	// Keep the original high-performance hint on other platforms.
+	$adapter_options = "(/Win/i.test((navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||navigator.userAgent||''))?{}:{powerPreference:'high-performance'}";
+	$html            = str_replace(
 		array(
 			"navigator.gpu.requestAdapter({ powerPreference: 'high-performance' })",
 			'navigator.gpu.requestAdapter({ powerPreference: "high-performance" })',
 			'navigator.gpu.requestAdapter({powerPreference:"high-performance"})',
 			"navigator.gpu.requestAdapter({powerPreference:'high-performance'})",
 		),
-		'navigator.gpu.requestAdapter()',
+		'navigator.gpu.requestAdapter(' . $adapter_options . ')',
 		$html
 	);
 
