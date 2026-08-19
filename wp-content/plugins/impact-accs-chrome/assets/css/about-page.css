@@ -1,0 +1,252 @@
+/**
+ * About page layout + static fallbacks for scroll-driven React sections.
+ */
+
+body.iac-chrome-about .iac-about-page main > section:first-child .h-\[200lvh\] {
+	background-color: #020706;
+	background-image: url("../site/assets/about-hero.png");
+	background-size: 100% auto;
+	background-position: center top;
+	background-repeat: no-repeat;
+}
+
+@media (max-width: 1023px) {
+	body.iac-chrome-about .iac-about-page main {
+		--hero-overlap: 0px !important;
+	}
+
+	body.iac-chrome-about .iac-about-page main > section:first-child {
+		height: 100svh !important;
+		min-height: 100svh;
+		max-height: 100svh;
+	}
+
+	body.iac-chrome-about .iac-about-page main > section:first-child .h-\[200lvh\] {
+		height: 100svh !important;
+		min-height: 100svh;
+		max-height: 100svh;
+		background-size: cover;
+		background-position: center center;
+	}
+
+	body.iac-chrome-about .iac-about-page main > section:first-child .container.sticky {
+		height: 100svh !important;
+		min-height: 100svh;
+	}
+
+	body.iac-chrome-about .iac-about-page .iac-about-values {
+		margin-top: 0 !important;
+	}
+
+	body.iac-chrome-about .iac-about-page .iac-about-values > svg.iac-values-arch {
+		height: 9.5rem !important;
+		min-height: 9.5rem;
+		max-height: 9.5rem;
+	}
+
+	body.iac-chrome-about .iac-about-page .iac-about-values > div.relative {
+		margin-top: -7.5rem !important;
+		min-height: 0 !important;
+		padding-top: 0 !important;
+		padding-bottom: 2rem !important;
+	}
+}
+
+@media (min-width: 1024px) {
+	body.iac-chrome-about .iac-about-page main > section:first-child .h-\[200lvh\] {
+		background-size: min(100%, 1600px) auto;
+		background-position: center top;
+	}
+}
+
+/* OUR VALUES — red arch fades into grid (no hard edge). */
+body.iac-chrome-about .iac-about-page .iac-about-values {
+	position: relative;
+	isolation: isolate;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-values > svg.iac-values-arch,
+body.iac-chrome-about .iac-about-page .iac-about-values > svg.w-full.pointer-events-none {
+	position: relative;
+	z-index: 2;
+	-webkit-mask-image: linear-gradient(
+		to bottom,
+		#000 0%,
+		#000 42%,
+		rgba(0, 0, 0, 0.75) 62%,
+		rgba(0, 0, 0, 0.25) 82%,
+		transparent 100%
+	);
+	mask-image: linear-gradient(
+		to bottom,
+		#000 0%,
+		#000 42%,
+		rgba(0, 0, 0, 0.75) 62%,
+		rgba(0, 0, 0, 0.25) 82%,
+		transparent 100%
+	);
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-values .iac-values-fade {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: min(72vh, 760px);
+	z-index: 3;
+	pointer-events: none;
+	background: linear-gradient(
+		to bottom,
+		transparent 0%,
+		transparent 38%,
+		rgba(2, 7, 6, 0.25) 58%,
+		rgba(2, 7, 6, 0.72) 78%,
+		#020706 100%
+	);
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-values > div.relative {
+	position: relative;
+	z-index: 4;
+}
+
+body.iac-chrome-about .iac-about-page .bg-card {
+	background-color: rgba(29, 32, 31, 0.92) !important;
+}
+
+body.iac-chrome-about .iac-about-page section[style*="visibility:hidden"],
+body.iac-chrome-about .iac-about-ready {
+	visibility: visible !important;
+}
+
+body.iac-chrome-about .iac-about-ready {
+	position: relative;
+	z-index: 1;
+	padding-top: 4rem;
+	padding-bottom: 2rem;
+}
+
+body.iac-chrome-about .iac-about-ready .text-center > .container-responsive:first-child {
+	margin-bottom: 0;
+}
+
+body.iac-chrome-about .iac-about-ready h2.text-h2 {
+	margin-top: 0;
+}
+
+body.iac-chrome-about .iac-about-ready p.text-d2 {
+	opacity: 1 !important;
+	visibility: visible !important;
+}
+
+/* Let grid show through content sections (like reference about page). */
+body.iac-chrome-about .iac-about-page section.py-section.bg-background,
+body.iac-chrome-about .iac-about-page [data-section="about-mission-vision"] {
+	background: transparent !important;
+}
+
+body.iac-chrome-about .iac-about-page [data-section="about-mission-vision"] {
+	position: relative;
+	z-index: 1;
+}
+
+/* Values — reveal kanji labels on hover. */
+body.iac-chrome-about .iac-about-page [data-value-card]:hover [data-slot="number"],
+body.iac-chrome-about .iac-about-page [data-value-card].iac-value-card-active [data-slot="number"] {
+	opacity: 0;
+}
+
+body.iac-chrome-about .iac-about-page [data-value-card]:hover .font-misc.opacity-0,
+body.iac-chrome-about .iac-about-page [data-value-card].iac-value-card-active .font-misc.opacity-0 {
+	opacity: 1 !important;
+}
+
+/* Mission / vision blocks — fade in on scroll. */
+body.iac-chrome-about .iac-about-page [data-text-block] {
+	opacity: 0;
+	transform: translateY(1.5rem);
+	transition:
+		opacity 700ms cubic-bezier(0.33, 1, 0.68, 1),
+		transform 700ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+body.iac-chrome-about .iac-about-page [data-text-block].iac-about-revealed {
+	opacity: 1;
+	transform: none;
+}
+
+/* Team credits — hover + active states. */
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-frame] {
+	transition: opacity 300ms ease, transform 300ms ease;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-frame] img {
+	filter: grayscale(1);
+	transition: filter 350ms ease, transform 350ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-frame][data-active="true"] > div,
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-frame]:hover > div {
+	color: var(--primary, #ff0027) !important;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-frame][data-active="true"] img,
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-frame]:hover img {
+	filter: grayscale(0) !important;
+	transform: scale(1.03);
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team[data-team-active-index] [data-team-frame]:not([data-active="true"]) {
+	opacity: 0.55;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item] {
+	cursor: pointer;
+	background: none;
+	border: 0;
+	transition: opacity 250ms ease, color 250ms ease;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item][data-active="true"] [data-slot="name"],
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item]:hover [data-slot="name"] {
+	color: var(--primary, #ff0027) !important;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item][data-active="true"] [data-slot="title"] {
+	color: var(--muted-foreground, #b8c6c2) !important;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item][data-any-active="true"]:not([data-active="true"]) {
+	opacity: 0.28;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item]:hover,
+body.iac-chrome-about .iac-about-page .iac-about-team [data-team-list-item][data-active="true"] {
+	opacity: 1 !important;
+}
+
+body.iac-chrome-about .iac-about-page .iac-about-team .pointer-events-none.absolute.opacity-0 svg {
+	opacity: 0.85;
+}
+
+body.iac-chrome-about .iac-about-page .flex.flex-col.items-center.lg\:hidden .iac-team-photo-active {
+	opacity: 1 !important;
+	transform: scale(1.12) !important;
+}
+
+body.iac-chrome-about .iac-about-page .flex.flex-col.items-center.lg\:hidden button.iac-team-roster-active,
+body.iac-chrome-about .iac-about-page .flex.flex-col.items-center.lg\:hidden button.iac-team-roster-active .text-title {
+	color: var(--primary, #ff0027) !important;
+}
+
+body.iac-chrome-about .iac-about-page section.py-section.bg-background,
+body.iac-chrome-about .iac-about-page .iac-about-team {
+	padding-top: 5rem;
+	padding-bottom: 5rem;
+}
+
+@media (min-width: 1024px) {
+	body.iac-chrome-about .iac-about-page .iac-about-team {
+		min-height: 85vh;
+	}
+}

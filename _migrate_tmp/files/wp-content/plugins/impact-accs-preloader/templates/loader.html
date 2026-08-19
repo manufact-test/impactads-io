@@ -1,0 +1,110 @@
+<div id="iap-loader" role="status" aria-label="Loading" data-loader-phase="entering" class="text-primary fixed inset-0 z-(--z-page-loader) grid place-items-center overflow-clip">
+	<div data-loader-bg="true" class="bg-background absolute inset-0"></div>
+	<div data-loader-content="true" class="relative flex h-[90svh] flex-col items-center gap-8">
+		<svg class="text-primary iap-pulse-line" width="36" height="162" viewBox="0 0 36 213" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<defs>
+				<linearGradient id="iap-pulse-base" x1="17.2998" y1="0" x2="17.2998" y2="162" gradientUnits="userSpaceOnUse">
+					<stop stop-color="currentColor" stop-opacity="0"></stop>
+					<stop offset="1" stop-color="currentColor" stop-opacity="0.6"></stop>
+				</linearGradient>
+				<linearGradient id="iap-pulse-band" x1="17.2998" y1="-40" x2="17.2998" y2="0" gradientUnits="userSpaceOnUse">
+					<stop stop-color="currentColor" stop-opacity="0"></stop>
+					<stop offset="0.5" stop-color="currentColor" stop-opacity="1"></stop>
+					<stop offset="1" stop-color="currentColor" stop-opacity="0"></stop>
+					<animate attributeName="y1" values="-40;162;-40" dur="2.4s" repeatCount="indefinite"></animate>
+					<animate attributeName="y2" values="0;202;0" dur="2.4s" repeatCount="indefinite"></animate>
+				</linearGradient>
+				<filter id="iap-pulse-glow" x="-200%" y="-10%" width="500%" height="120%">
+					<feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"></feGaussianBlur>
+					<feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+				</filter>
+			</defs>
+			<path d="M17.2998 157L14.9131 162L20.6866 162L18.2998 157L17.2998 157ZM17.7998 157.5L18.2998 157.5L18.2998 -2.18557e-08L17.7998 0L17.2998 2.18557e-08L17.2998 157.5L17.7998 157.5Z" fill="url(#iap-pulse-base)"></path>
+			<path d="M17.2998 157L14.9131 162L20.6866 162L18.2998 157L17.2998 157ZM17.7998 157.5L18.2998 157.5L18.2998 -2.18557e-08L17.7998 0L17.2998 2.18557e-08L17.2998 157.5L17.7998 157.5Z" fill="url(#iap-pulse-band)" filter="url(#iap-pulse-glow)"></path>
+			<g class="iap-pulse-icon">
+				<path d="M5.13934 198.871H16.0733L12.14 192.35C11.5343 191.341 12.2507 190.05 13.4229 190.05H30.4587C30.9862 190.05 31.4681 189.775 31.7417 189.323L35.3754 183.3C35.9811 182.291 35.2647 181 34.0926 181H16.6659C16.1385 181 15.6566 181.275 15.383 181.727L10.9417 189.087C10.6682 189.539 10.1798 189.814 9.65881 189.814H1.50554C0.333344 189.814 -0.389511 191.105 0.222636 192.114L3.85644 198.137C4.12995 198.589 4.61837 198.864 5.13934 198.864V198.871Z" fill="currentColor"></path>
+				<path d="M30.459 195.136H19.5249L23.4584 201.656C24.064 202.666 23.3477 203.957 22.1755 203.957H5.13952C4.61204 203.957 4.13013 204.232 3.85662 204.684L0.222819 210.7C-0.382815 211.709 0.333527 213 1.50572 213H18.9323C19.4598 213 19.9418 212.725 20.2153 212.273L24.6567 204.913C24.9301 204.461 25.4185 204.186 25.9395 204.186H34.0927C35.265 204.186 35.9878 202.895 35.3757 201.886L31.7419 195.863C31.4683 195.411 30.98 195.136 30.459 195.136Z" fill="currentColor"></path>
+			</g>
+		</svg>
+		<h2 class="font-display text-center text-[20vw] leading-[0.7] tracking-[-0.03em] uppercase text-shadow-[0_0_10px_rgba(255,0,39,0.68)] sm:text-[92px] lg:text-[98px]">
+			<span class="block">impact.accs</span>
+			<span class="block">Initializing</span>
+		</h2>
+		<div class="mt-6 flex flex-col items-center">
+			<div class="relative">
+				<svg width="21" height="13" viewBox="0 0 21 13" fill="none" class="text-current drop-shadow-[0_0_5px_rgba(255,0,39,0.68)] absolute -top-1 -left-0.5 -translate-full" aria-hidden="true">
+					<line x1="0" y1="0.9" x2="20.253" y2="0.9" stroke="currentColor" stroke-width="1.8"></line>
+					<line x1="10.127" y1="0" x2="10.127" y2="12.463" stroke="currentColor" stroke-width="1.8"></line>
+				</svg>
+				<svg width="21" height="13" viewBox="0 0 21 13" fill="none" class="text-current drop-shadow-[0_0_5px_rgba(255,0,39,0.68)] absolute -top-1 -right-0.5 translate-x-full -translate-y-full" aria-hidden="true">
+					<line x1="0" y1="0.9" x2="20.253" y2="0.9" stroke="currentColor" stroke-width="1.8"></line>
+					<line x1="10.127" y1="0" x2="10.127" y2="12.463" stroke="currentColor" stroke-width="1.8"></line>
+				</svg>
+				<svg width="21" height="13" viewBox="0 0 21 13" fill="none" class="text-current drop-shadow-[0_0_5px_rgba(255,0,39,0.68)] absolute -bottom-1 -left-0.5 -translate-x-full translate-y-full -scale-y-100" aria-hidden="true">
+					<line x1="0" y1="0.9" x2="20.253" y2="0.9" stroke="currentColor" stroke-width="1.8"></line>
+					<line x1="10.127" y1="0" x2="10.127" y2="12.463" stroke="currentColor" stroke-width="1.8"></line>
+				</svg>
+				<svg width="21" height="13" viewBox="0 0 21 13" fill="none" class="text-current drop-shadow-[0_0_5px_rgba(255,0,39,0.68)] absolute -right-0.5 -bottom-1 translate-full -scale-y-100" aria-hidden="true">
+					<line x1="0" y1="0.9" x2="20.253" y2="0.9" stroke="currentColor" stroke-width="1.8"></line>
+					<line x1="10.127" y1="0" x2="10.127" y2="12.463" stroke="currentColor" stroke-width="1.8"></line>
+				</svg>
+				<div class="flex gap-[2px]" data-iap-blocks>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+					<div class="size-6 bg-current shadow-[0_0_10px_rgba(255,0,39,0.68)] opacity-50" data-iap-block></div>
+				</div>
+			</div>
+			<div class="relative top-3 h-8 w-full">
+				<div class="w-full relative h-full">
+					<div class="absolute top-0 flex w-fit -translate-x-1/2 flex-col items-center" data-iap-marker style="left:0%">
+						<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" class="text-primary" aria-hidden="true">
+							<polygon points="4,0 8,8 0,8"></polygon>
+						</svg>
+						<span class="font-misc mt-0.5 text-sm uppercase text-shadow-[0_0_10px_rgba(255,0,39,0.68)]" data-iap-percent>0%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mt-auto flex flex-col items-center gap-5">
+			<div>
+				<span class="font-misc text-base tracking-[0.05em] uppercase">
+					<div class="touch:hidden flex items-center gap-2">
+						<span id="iap-sound-label">Click anywhere to enable sound</span>
+						<svg viewBox="0 0 16 16" fill="none" class="size-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M2 6.5V9.5H4.5L8 12.5V3.5L4.5 6.5H2Z" fill="currentColor"></path>
+							<path d="M10.5 5.5C11.3 6.3 11.3 9.7 10.5 10.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
+							<path d="M12 4C13.5 5.5 13.5 10.5 12 12" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
+						</svg>
+					</div>
+					<span class="mouse:hidden">Impact System</span>
+				</span>
+			</div>
+			<div class="flex items-center justify-between h-3 w-48" aria-hidden="true" data-iap-waves>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:0ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:100ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:200ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:300ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:400ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:500ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:600ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:700ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:800ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:900ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1000ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1100ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1200ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1300ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1400ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1500ms"></div>
+				<div class="h-full w-px bg-current" style="animation:wave-oscillate 1.8s ease-in-out infinite;animation-delay:1600ms"></div>
+			</div>
+		</div>
+	</div>
+</div>

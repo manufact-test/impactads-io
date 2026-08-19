@@ -1,0 +1,48 @@
+/* Application page — same visual language as waitlist modal */
+
+#iac-content .iac-application-page {
+	--tab-bar-h: 36px;
+	--form-radius: 0 0 8px 8px;
+	color: #fafafa;
+}
+
+#iac-content .iac-application-layout {
+	background: #1d201f;
+}
+
+#iac-content .iac-application-page .iac-modal-access-form input[data-slot='input'],
+#iac-content .iac-application-page .iac-modal-access-form textarea[data-slot='input'] {
+	background: #0d1110 !important;
+	border-color: rgba(255, 255, 255, 0.1) !important;
+	color: #b8c6c2 !important;
+}
+
+#iac-content .iac-application-page .iac-modal-access-form input[data-slot='input']:focus,
+#iac-content .iac-application-page .iac-modal-access-form textarea[data-slot='input']:focus {
+	border-color: #ff0027 !important;
+	color: #fafafa !important;
+}
+
+#iac-content .iac-application-page .iac-waitlist-success.iac-visible,
+#iac-content .iac-application-page .iac-waitlist-success.iac-visible [role='status'] {
+	opacity: 1 !important;
+	pointer-events: auto !important;
+}
+
+#iac-content .iac-application-page #iac-application-error:not(:empty) {
+	opacity: 1 !important;
+}
+
+#iac-content .iac-application-page a {
+	color: inherit;
+}
+
+#iac-content .iac-application-page .fill-card {
+	fill: #1d201f !important;
+}
+
+body.iac-chrome-inner:has(.iac-application-page) .entry-title,
+body.iac-chrome-inner:has(.iac-application-page) .page-header,
+body.iac-chrome-inner:has(.iac-application-page) .hello-elementor-page .page-header {
+	display: none !important;
+}

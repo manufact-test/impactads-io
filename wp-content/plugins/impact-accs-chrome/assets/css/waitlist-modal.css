@@ -1,0 +1,253 @@
+/* Request Access modal — homepage host (mirrored Next.js page, no full chrome) */
+
+#iac-waitlist-host {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	pointer-events: none;
+	color: #fafafa;
+	--background: #010401;
+	--foreground: #fafafa;
+	--card: #1d201f;
+	--card-foreground: #b8c6c2;
+	--primary: #ff0027;
+	--primary-foreground: #fafafa;
+	--muted: #808987;
+	--border: rgba(255, 255, 255, 0.1);
+	--input: #0d1110;
+	--destructive: #ff6568;
+	--frame-inset: 3px;
+}
+
+#iac-waitlist-host.iac-waitlist-open {
+	pointer-events: auto;
+}
+
+#iac-waitlist-host .iac-waitlist-modal {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1), visibility 0.4s;
+}
+
+#iac-waitlist-host .iac-waitlist-modal.iac-waitlist-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+#iac-waitlist-host .iac-waitlist-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 80 !important;
+	opacity: 0;
+	background-color: #010401 !important;
+	transition: opacity 0.4s ease;
+	pointer-events: none;
+}
+
+#iac-waitlist-host .iac-waitlist-modal.iac-waitlist-open .iac-waitlist-overlay {
+	opacity: 1 !important;
+	pointer-events: auto;
+}
+
+#iac-waitlist-host .iac-waitlist-dialog {
+	z-index: 125 !important;
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: stretch !important;
+	overflow: hidden !important;
+	opacity: 0;
+	transform: scale(0.98);
+	transition:
+		opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+		transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+	pointer-events: none;
+}
+
+#iac-waitlist-host .iac-waitlist-modal.iac-waitlist-open .iac-waitlist-dialog {
+	opacity: 1;
+	transform: scale(1);
+	pointer-events: auto;
+}
+
+#iac-waitlist-host .iac-waitlist-tabbar {
+	position: relative;
+	z-index: 2;
+	flex-shrink: 0;
+	width: 100%;
+	pointer-events: auto !important;
+}
+
+#iac-waitlist-host .iac-waitlist-tablist {
+	display: flex;
+	align-items: flex-end;
+	min-width: 0;
+	overflow: visible;
+}
+
+#iac-waitlist-host .iac-waitlist-side {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+}
+
+#iac-waitlist-host .iac-waitlist-form-shell {
+	display: flex;
+	flex: 1 1 auto;
+	min-height: 0;
+	background-color: #1d201f !important;
+}
+
+#iac-waitlist-host .iac-waitlist-tab {
+	position: relative;
+	min-width: 6.5rem;
+}
+
+#iac-waitlist-host .iac-waitlist-tab-contact:hover {
+	color: var(--foreground) !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal [data-iac-waitlist-close],
+#iac-waitlist-host .iac-waitlist-close-btn {
+	cursor: pointer !important;
+	pointer-events: auto !important;
+	color: #fafafa !important;
+}
+
+#iac-waitlist-host .iac-waitlist-close-btn:hover {
+	color: var(--primary) !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-success {
+	opacity: 0;
+	pointer-events: none;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-success.iac-visible,
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-success.iac-visible [role='status'] {
+	opacity: 1 !important;
+	pointer-events: auto !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal a,
+#iac-waitlist-host .iac-waitlist-modal a:visited,
+#iac-waitlist-host .iac-waitlist-modal a:hover {
+	color: inherit;
+	text-decoration: none;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-modal-access-form {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 1.75rem !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-modal-access-form .grid {
+	display: grid !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+	gap: 1rem !important;
+}
+
+@media (max-width: 639px) {
+	#iac-waitlist-host .iac-waitlist-modal .iac-modal-access-form .grid {
+		grid-template-columns: minmax(0, 1fr) !important;
+	}
+}
+
+#iac-waitlist-host .iac-waitlist-modal input[data-slot='input'] {
+	display: flex !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	box-sizing: border-box !important;
+	background-color: var(--input) !important;
+	border-color: var(--border) !important;
+	color: var(--muted) !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal input[data-slot='input']:focus {
+	color: var(--card-foreground) !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal textarea[data-slot='input'],
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-message {
+	display: flex !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	min-height: 6.5rem !important;
+	box-sizing: border-box !important;
+	background-color: var(--input) !important;
+	border-color: var(--border) !important;
+	color: var(--muted) !important;
+	resize: none !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal textarea[data-slot='input']:focus {
+	color: var(--card-foreground) !important;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-message::placeholder {
+	text-transform: uppercase;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-dialog.waitlist-modal-vars {
+	position: fixed !important;
+	--modal-inset: 10px;
+	--header-frame-height: calc(var(--frame-inset, 3px) + max(10vw, 200px) * 52 / 324);
+	--tab-bar-h: max(36px, calc(var(--header-frame-height) - var(--frame-inset, 3px)));
+	--tab-bar-pl: calc(max(10vw, 200px) / 2 + var(--modal-inset) - max(10vw, 200px) * 0.19 - var(--modal-inset) / 2);
+	--form-radius: calc(24px - var(--modal-inset));
+	top: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+	right: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+	bottom: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+	left: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+	height: auto !important;
+	gap: var(--modal-inset);
+}
+
+@media (max-width: 1023px) {
+	#iac-waitlist-host .iac-waitlist-dialog.waitlist-modal-vars {
+		flex-direction: column !important;
+		top: calc(var(--frame-inset, 3px) + var(--header-frame-height, 60px)) !important;
+		bottom: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+		left: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+		right: calc(var(--frame-inset, 3px) + var(--modal-inset)) !important;
+		gap: 0;
+	}
+
+	#iac-waitlist-host .iac-waitlist-tablist {
+		padding-left: var(--tab-bar-pl, calc(max(10vw, 200px) * 0.32)) !important;
+	}
+
+	#iac-waitlist-host .iac-waitlist-dialog .modal-image-notch {
+		display: none !important;
+	}
+
+	#iac-waitlist-host .iac-waitlist-side {
+		width: 100% !important;
+		flex: 1 1 auto !important;
+	}
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-dialog .bg-card {
+	background-color: #1d201f !important;
+	background: #1d201f !important;
+	isolation: isolate;
+}
+
+#iac-waitlist-host .iac-waitlist-modal .iac-waitlist-dialog .fill-card {
+	fill: #1d201f !important;
+}
+
+body.iac-waitlist-open {
+	overflow: hidden;
+}
+
+/* Hide client-rendered Next waitlist on mirrored homepage when WP modal is wired */
+body:has(#iac-waitlist-host) .waitlist-modal-vars:not(#iac-waitlist-host .waitlist-modal-vars) {
+	display: none !important;
+	pointer-events: none !important;
+}

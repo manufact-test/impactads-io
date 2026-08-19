@@ -1,0 +1,103 @@
+/* Contact modal — white neon, one size, clean hover */
+
+#iac-root .iac-contact-modal .iac-waitlist-panel {
+	overflow: hidden !important;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+#iac-root .iac-contact-modal .iac-waitlist-panel::-webkit-scrollbar {
+	display: none;
+	width: 0;
+	height: 0;
+}
+
+#iac-root .iac-contact-modal .iac-contact-details {
+	gap: 2.5rem !important;
+}
+
+#iac-root .iac-contact-modal .iac-contact-neon,
+#iac-root .iac-contact-modal a.iac-contact-neon,
+#iac-root .iac-contact-modal a.iac-contact-neon:visited {
+	display: block;
+	max-width: 100%;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0 !important;
+	outline: none !important;
+	box-shadow: none !important;
+	background: none !important;
+	background-color: transparent !important;
+	color: #fafafa !important;
+	-webkit-text-fill-color: #fafafa;
+	font-size: clamp(1.85rem, 2.65vw + 1rem, 2.85rem);
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: 0.04em;
+	text-transform: uppercase !important;
+	text-decoration: none !important;
+	word-break: break-word;
+	text-shadow:
+		0 0 1px rgba(255, 255, 255, 0.9),
+		0 0 12px rgba(255, 255, 255, 0.55),
+		0 0 28px rgba(255, 255, 255, 0.22);
+	transition: text-shadow 0.45s cubic-bezier(0.33, 1, 0.68, 1), color 0.45s ease;
+}
+
+#iac-root .iac-contact-modal a.iac-contact-neon {
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+#iac-root .iac-contact-modal .iac-contact-neon-office {
+	display: flex !important;
+	flex-direction: column;
+	gap: 0.2em;
+	max-width: none;
+	word-break: normal;
+	white-space: normal;
+}
+
+#iac-root .iac-contact-modal .iac-contact-office-line {
+	display: block;
+	line-height: 1.15;
+}
+
+#iac-root .iac-contact-modal a.iac-contact-neon:hover,
+#iac-root .iac-contact-modal a.iac-contact-neon:focus-visible,
+#iac-root .iac-contact-modal .iac-contact-neon-office:hover {
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff;
+	text-shadow:
+		0 0 2px #fff,
+		0 0 16px rgba(255, 255, 255, 0.85),
+		0 0 36px rgba(255, 255, 255, 0.45),
+		0 0 56px rgba(255, 255, 255, 0.2);
+}
+
+#iac-root .iac-contact-modal .iac-waitlist-tablist a.iac-waitlist-tab {
+	position: relative;
+	min-width: 6.5rem;
+	display: inline-flex;
+	align-items: flex-end;
+}
+
+#iac-root .iac-contact-modal .iac-waitlist-submit-row a:not(.iac-contact-neon) {
+	color: inherit;
+}
+
+@media (max-width: 1279px) {
+	#iac-root .iac-contact-modal .iac-contact-neon,
+	#iac-root .iac-contact-modal a.iac-contact-neon,
+	#iac-root .iac-contact-modal a.iac-contact-neon:visited {
+		font-size: clamp(1.55rem, 3.2vw, 2.1rem);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#iac-root .iac-contact-modal .iac-contact-neon,
+	#iac-root .iac-contact-modal a.iac-contact-neon {
+		transition: none;
+	}
+}

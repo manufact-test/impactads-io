@@ -1,0 +1,39 @@
+Observability platforms have accumulated hundreds of features over the past decade. None of it makes systems more reliable. If observability is about answering questions, the best interface is chat — not dashboards, not config files, not training manuals.
+---
+Logs are all you need
+---
+Unstructured logs used to be a weakness. Now they're a strength. AI can process natural language at scale — finding patterns in logs that structured metrics could never capture.
+---
+Monitoring is dead
+---
+Static monitors are broken. They're tedious to maintain, constantly misfire, and train teams to ignore real alerts. The future is autonomous alerts — AI that watches continuously and only escalates what actually matters.
+---
+Impact Inc., 2261 Market Street, STE 85391, San Francisco, California 94114 more than a tool — it's a philosophy. We're taking a radically different approach to observability.
+---
+From alert to root cause in seconds. Impact pinpoints the exact file, commit, or line of code responsible for any issue. No guessing, no git blame deep-dives.
+---
+Don’t get lost in dashboards. Impact generates charts, tables, diagrams, and code blocks on the fly. Exactly what you need to see, and nothing more.
+---
+Traditional observability tools make you work for answers. Impact works for you — anticipating needs, surfacing insights, and eliminating busywork.
+---
+Choose your storage region and data center. Meet data sovereignty requirements and ensure your observability data stays exactly where you need it.
+---
+Fine-grained access control for every team member. Set permissions, track access, maintain complete audit trails.
+---
+Enterprise-grade security built in, not bolted on. Impact's platform is compliant so your data stays protected at every layer.
+---
+Intake: Kinesis Publish Timeout
+---
+The intake service is experiencing high error rates while attempting to publish logs to Kinesis.
+---
+Kinesis shard throughput limit exceeded due to a spike in log volume from the intake service.
+---
+Scale up the Kinesis stream shard count and add retry backoff to the intake publisher.
+---
+log-in
+---
+cursor.com/agents/bc-8a1c07af
+---
+One platform, dozens of data sources. Send logs in any format from any cloud or technology. Instrumentation is effortless, not invasive.
+---
+Observability that works where you do. Impact connects to your tools so incident response happens in the flow of work, not outside it.

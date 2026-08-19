@@ -1,0 +1,13 @@
+Autonomous Alerts
+---
+Interrogate your app in plain language. Stop digging through mountains of telemetry. Ask questions, get answers.
+---
+Coding Agents Welcome
+---
+Claude Code, Codex, Cursor — whatever. Impact integrates tightly with all major coding agents.
+---
+impact.corp®
+---
+Blog
+---
+Stop Wondering

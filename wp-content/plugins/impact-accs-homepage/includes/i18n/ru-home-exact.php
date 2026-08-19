@@ -1,0 +1,107 @@
+<?php
+/**
+ * Homepage exact EN→RU (full text node match only — safe for short labels).
+ *
+ * @package ImpactAccsHomepage
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+return array(
+	// Header nav.
+	'About'           => 'О нас',
+	'ABOUT'           => 'О НАС',
+	'Blog'            => 'Блог',
+	'BLOG'            => 'БЛОГ',
+	'Contact'         => 'Контакты',
+	'CONTACT'         => 'КОНТАКТЫ',
+	'Accounts'        => 'Аккаунты',
+	'ACCOUNTS'        => 'АККАУНТЫ',
+	'SCROLL DOWN'     => 'ПРОКРУТИТЕ ВНИЗ',
+	'Scroll down'     => 'Прокрутите вниз',
+	'Clear Delivery'  => 'Чёткая поставка',
+	'CUSTOMER'        => 'КЛИЕНТЫ',
+	'REVIEWS'         => 'ОТЗЫВЫ',
+	'BACKED BY'       => 'ПРИ ПОДДЕРЖКЕ',
+	'SUPPLY'          => 'ПОСТАВКА',
+	'PLATFORM'        => 'ПЛАТФОРМА',
+	'AGENCY'          => 'АГЕНТСТВО',
+	'FEATURES'        => 'АККАУНТЫ',
+	'ACCOUNTS'        => 'АККАУНТЫ',
+	'Request access'  => 'Связаться',
+	'REQUEST ACCESS'  => 'СВЯЗАТЬСЯ',
+	'Get access'      => 'Связаться',
+	'GET ACCESS'      => 'СВЯЗАТЬСЯ',
+	'Menu'            => 'Меню',
+	'MENU'            => 'МЕНЮ',
+	'Close'           => 'Закрыть',
+	'CLOSE'           => 'ЗАКРЫТЬ',
+	'Back to list'    => 'Назад к списку',
+	'BACK TO LIST'    => 'НАЗАД К СПИСКУ',
+	'Sound: locked'   => 'Звук: выкл',
+	'SOUND: OFF'      => 'ЗВУК: ВЫКЛ',
+	'SOUND: ON'       => 'ЗВУК: ВКЛ',
+	'Sound: OFF'      => 'Звук: выкл',
+	'Sound: ON'       => 'Звук: вкл',
+	'Sound: on'       => 'Звук: вкл',
+	'Sound: off'      => 'Звук: выкл',
+	'Sound: '         => 'Звук: ',
+	'Enable sound'    => 'Включить звук',
+	'Unmute sound'    => 'Включить звук',
+	'Mute sound'      => 'Выключить звук',
+	'Send'            => 'Отправить',
+	'You'             => 'Вы',
+
+	// Section headings.
+	'READY FOR ACTION'       => 'ГОТОВЫ К ДЕЙСТВИЮ',
+	'ACCESS IN MINUTES'      => 'ДОСТУП ЗА МИНУТЫ',
+	'WORKS WITH YOUR TEAMS'  => 'РАБОТАЕТ С ВАШИМИ КОМАНДАМИ',
+	'MANIFESTO'              => 'МАНИФЕСТ',
+	'CLOSED INFRASTRUCTURE'  => 'ЗАКРЫТАЯ СИСТЕМА',
+	'Resource over noise'    => 'Ресурс вместо шума',
+	'Working resource'       => 'Рабочий ресурс',
+	'Chaos is optional'      => 'Хаос — опционален',
+	'BACKED BY'              => 'ПРИ ПОДДЕРЖКЕ',
+	'CUSTOMER'               => 'КЛИЕНТЫ',
+	'REVIEWS'                => 'ОТЗЫВЫ',
+	'INVESTORS'              => 'ИНВЕСТОРЫ',
+	'INTERFACES'             => 'ИНТЕРФЕЙСЫ',
+	'Clear Delivery'         => 'Чёткая поставка',
+	'Agency Accounts'        => 'Агентские аккаунты',
+	'Platform Access'        => 'Платформа Доступ',
+	'Media Buying Access'    => 'Доступ для медиабаинга',
+	'Team Supply'            => 'Командная поставка',
+	'Geo & vertical match'   => 'Соответствие geo и вертикали',
+	'Verified supply'        => 'Проверенная поставка',
+	'Volume terms'           => 'Объёмные условия',
+	'9:16 AM'                => '9:16',
+	'APP'                    => 'APP',
+	'Media buyer desk'       => 'Desk медиабаера',
+	'EU-agency-50'           => 'EU-agency-50',
+
+	// CTAs / credits.
+	'Read more'              => 'Читать',
+	'Read More'              => 'Читать',
+	'READ MORE'              => 'ПОДРОБНЕЕ',
+	'Read Blog'              => 'Читать блог',
+	'Read More →'            => 'Читать →',
+	'View'                   => 'Смотреть',
+	'LEARN MORE'             => 'ПОДРОБНЕЕ',
+
+	// Hero alert cards (exact match only — avoids morphText corruption).
+	'Launch blocked — access needed' => 'Запуск заблокирован — нужен доступ',
+	'Buyer desk needs agency accounts before traffic goes live.' => 'Buyer desk нужны агентские аккаунты до запуска трафика.',
+	'Supply stable' => 'Поставка стабильна',
+	'Repeat order channel active — terms unchanged.' => 'Канал повторных заказов активен — условия без изменений.',
+	'Volume request — EU' => 'Запрос по объёму — EU',
+	'50 accounts · GEO locked. Terms needed before 18:00.' => '50 аккаунтов · GEO зафиксировано. Условия нужны до 18:00.',
+	'Access confirmed' => 'Доступ подтверждён',
+	'Supply confirmed' => 'Поставка подтверждена',
+	'Supply matched' => 'Поставка подобрана',
+	'Accounts delivered on agreed terms. Launch window open.' => 'Аккаунты переданы на согласованных условиях. Окно запуска открыто.',
+	'Working accounts delivered on agreed terms.' => 'Рабочие аккаунты переданы на согласованных условиях.',
+	'Terms confirmed. Delivery in progress.' => 'Условия подтверждены. Поставка в процессе.',
+	'Working resource ready for the next launch.' => 'Рабочий ресурс готов к следующему запуску.',
+);

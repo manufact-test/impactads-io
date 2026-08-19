@@ -1,0 +1,109 @@
+html.iap-preloader-active,
+html.iap-preloader-active body {
+	overflow: hidden !important;
+	height: 100%;
+	background: #010401 !important;
+}
+
+html.iap-preloader-active body > *:not(#iap-loader):not(script):not(style) {
+	visibility: hidden;
+}
+
+html.iap-preloader-active {
+	--z-page-loader: 200;
+	--background: #010401;
+	--foreground: #fafafa;
+	--primary: #ff0027;
+	--primary-foreground: #fafafa;
+	--muted: #808987;
+}
+
+#iap-loader[data-loader-phase='idle'] {
+	display: none !important;
+}
+
+@keyframes iap-loader-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes iap-loader-fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes iap-icon-flicker {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	18% {
+		opacity: 0.25;
+	}
+	36% {
+		opacity: 1;
+	}
+	52% {
+		opacity: 0.45;
+	}
+	68% {
+		opacity: 1;
+	}
+}
+
+#iap-loader[data-loader-phase='entering'] [data-loader-bg] {
+	animation: iap-loader-fade-in 0.6s ease-out forwards;
+}
+
+#iap-loader[data-loader-phase='entering'] [data-loader-content] {
+	animation: iap-loader-fade-in 0.6s ease-out forwards;
+}
+
+#iap-loader[data-loader-phase='active'] [data-loader-bg],
+#iap-loader[data-loader-phase='active'] [data-loader-content] {
+	opacity: 1;
+}
+
+#iap-loader[data-loader-phase='entering'] .iap-pulse-icon {
+	opacity: 0;
+}
+
+#iap-loader[data-loader-phase='active'] .iap-pulse-icon {
+	opacity: 1;
+	animation: iap-icon-flicker 0.65s ease-out forwards;
+}
+
+#iap-loader[data-loader-phase='exiting'] [data-loader-bg] {
+	animation: iap-loader-fade-out 0.4s ease-out 0.4s forwards;
+}
+
+#iap-loader[data-loader-phase='exiting'] [data-loader-content] {
+	animation: iap-loader-fade-out 0.4s ease-out forwards;
+}
+
+#iap-loader [data-iap-marker] {
+	transition: left 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+	will-change: left;
+}
+
+#iap-loader [data-iap-block].iap-block-lit {
+	opacity: 1 !important;
+}
+
+body.admin-bar #iap-loader {
+	top: 0;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar #iap-loader {
+		top: 0;
+	}
+}

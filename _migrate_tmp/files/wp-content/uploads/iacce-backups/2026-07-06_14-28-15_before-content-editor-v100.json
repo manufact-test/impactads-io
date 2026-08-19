@@ -1,0 +1,26 @@
+{
+    "id": "2026-07-06_14-28-15_before-content-editor-v100",
+    "label": "before-content-editor-v1.0.0",
+    "created": "2026-07-06T14:28:15+00:00",
+    "version": "1.0.0",
+    "overrides": [],
+    "links": [],
+    "registry": [],
+    "plugins": {
+        "impact-accs-chrome": {
+            "main": "\/home\/c\/cu59725\/wordpress_9tad1\/public_html\/wp-content\/plugins\/impact-accs-chrome\/impact-accs-chrome.php",
+            "checksum": "217b6cee306a499fbf0e2155be116e34",
+            "size": "3483"
+        },
+        "impact-accs-homepage": {
+            "main": "\/home\/c\/cu59725\/wordpress_9tad1\/public_html\/wp-content\/plugins\/impact-accs-homepage\/impact-accs-homepage.php",
+            "checksum": "c30b17b4a26ac5d48d29c5a8eec377e1",
+            "size": "3207"
+        },
+        "impact-accs-preloader": {
+            "main": "\/home\/c\/cu59725\/wordpress_9tad1\/public_html\/wp-content\/plugins\/impact-accs-preloader\/impact-accs-preloader.php",
+            "checksum": "0f24b5466e92cba0633f93c14a88ea64",
+            "size": "918"
+        }
+    }
+}
