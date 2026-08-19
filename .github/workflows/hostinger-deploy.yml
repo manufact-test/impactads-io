@@ -1,0 +1,302 @@
+name: Deploy impactads.io to Hostinger
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - hostinger-auto-deploy-result.md
+      - hostinger-deploy-result.md
+      - ssh-probe-result.md
+
+permissions:
+  contents: write
+
+concurrency:
+  group: impactads-production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy changed site files safely
+        shell: bash
+        env:
+          HOSTINGER_SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+        run: |
+          set +e
+
+          INITIAL_SITE_SHA="20978d6fc5c653f8b5442adc6d77824a33a6176a"
+          CURRENT_SHA="$GITHUB_SHA"
+          HOST="45.84.206.26"
+          PORT="65002"
+          USER="u218517330"
+          ROOT="/home/u218517330/domains/impactads.io/public_html"
+          STATE_FILE="/home/u218517330/.impactads-deployed-sha"
+          KEY_FILE="$HOME/.ssh/impactads_hostinger"
+          KNOWN_HOSTS="$HOME/.ssh/known_hosts"
+          RESULT="hostinger-auto-deploy-result.md"
+          LOG="auto-deploy-output.txt"
+          RC=0
+          STAGE="initializing"
+          BACKUP_DIR=""
+          DEPLOYED_SHA=""
+
+          : > "$LOG"
+          log() { printf '%s\n' "$*" | tee -a "$LOG"; }
+          fail() { log "ERROR: $*"; RC=1; }
+
+          is_control_path() {
+            case "$1" in
+              .github/*|ssh-probe-result.md|hostinger-deploy-result.md|hostinger-auto-deploy-result.md|wp-config.php|wp-content/uploads/*|wp-content/cache/*|wp-content/upgrade/*|wp-content/ai1wm-backups/*|.git/*)
+                return 0 ;;
+              *)
+                return 1 ;;
+            esac
+          }
+
+          filter_manifest() {
+            : > "$2"
+            while IFS= read -r p; do
+              [ -z "$p" ] && continue
+              if ! is_control_path "$p"; then
+                printf '%s\n' "$p" >> "$2"
+              fi
+            done < "$1"
+          }
+
+          validate_manifest() {
+            while IFS= read -r p; do
+              [ -z "$p" ] && continue
+              case "$p" in
+                /*|*'../'*|*'/..'|..)
+                  return 1 ;;
+              esac
+            done < "$1"
+            return 0
+          }
+
+          log "Deploy impactads.io"
+          log "CURRENT_SHA=$CURRENT_SHA"
+          log "ROOT=$ROOT"
+
+          STAGE="preparing SSH"
+          if [ -z "$HOSTINGER_SSH_KEY" ]; then
+            fail "HOSTINGER_SSH_KEY secret is empty."
+          else
+            mkdir -p "$HOME/.ssh"
+            chmod 700 "$HOME/.ssh"
+            printf '%s\n' "$HOSTINGER_SSH_KEY" > "$KEY_FILE"
+            chmod 600 "$KEY_FILE"
+            if ! ssh-keygen -y -f "$KEY_FILE" >/dev/null 2>&1; then
+              fail "Private SSH key does not parse."
+            fi
+          fi
+
+          if [ "$RC" -eq 0 ]; then
+            if ! ssh-keyscan -T 15 -p "$PORT" -H "$HOST" > "$KNOWN_HOSTS" 2>/dev/null; then
+              fail "Could not read Hostinger SSH host key."
+            else
+              chmod 600 "$KNOWN_HOSTS"
+            fi
+          fi
+
+          SSH=(ssh -i "$KEY_FILE" -p "$PORT" -o BatchMode=yes -o ConnectTimeout=15 "$USER@$HOST")
+          RSYNC_SSH="ssh -i $KEY_FILE -p $PORT -o BatchMode=yes -o ConnectTimeout=15"
+
+          STAGE="checking live WordPress root"
+          if [ "$RC" -eq 0 ]; then
+            if ! "${SSH[@]}" "test -f '$ROOT/wp-config.php' && test -f '$ROOT/wp-load.php' && test -d '$ROOT/wp-content' && test -d '$ROOT/wp-admin'"; then
+              fail "Expected WordPress markers are missing from target root."
+            fi
+          fi
+
+          STAGE="reading deployed revision"
+          if [ "$RC" -eq 0 ]; then
+            DEPLOYED_SHA=$("${SSH[@]}" "if [ -s '$STATE_FILE' ]; then tr -d '\r\n ' < '$STATE_FILE'; else printf '%s' '$INITIAL_SITE_SHA'; fi" 2>/dev/null)
+            log "DEPLOYED_SHA=$DEPLOYED_SHA"
+            if ! git cat-file -e "$DEPLOYED_SHA^{commit}" 2>/dev/null; then
+              fail "Server deployment SHA is not present in repository history: $DEPLOYED_SHA"
+            fi
+          fi
+
+          STAGE="building deployment manifests"
+          if [ "$RC" -eq 0 ]; then
+            git diff --no-renames --name-only --diff-filter=ACMRTUXB "$DEPLOYED_SHA" "$CURRENT_SHA" > sync-all.txt
+            git diff --no-renames --name-only --diff-filter=D "$DEPLOYED_SHA" "$CURRENT_SHA" > delete-all.txt
+            git diff --no-renames --name-only --diff-filter=A "$DEPLOYED_SHA" "$CURRENT_SHA" > added-all.txt
+
+            filter_manifest sync-all.txt sync-files.txt
+            filter_manifest delete-all.txt delete-files.txt
+            filter_manifest added-all.txt added-files.txt
+
+            cat sync-files.txt delete-files.txt | awk 'NF && !seen[$0]++' > backup-files.txt
+
+            if ! validate_manifest sync-files.txt || ! validate_manifest delete-files.txt || ! validate_manifest added-files.txt; then
+              fail "Unsafe path detected in deployment manifest."
+            fi
+
+            SYNC_COUNT=$(wc -l < sync-files.txt | tr -d ' ')
+            DELETE_COUNT=$(wc -l < delete-files.txt | tr -d ' ')
+            ADDED_COUNT=$(wc -l < added-files.txt | tr -d ' ')
+            log "Files to upload/update: $SYNC_COUNT"
+            log "Files to delete: $DELETE_COUNT"
+            log "New files (rollback tracking): $ADDED_COUNT"
+            if [ "$SYNC_COUNT" -gt 0 ]; then
+              log "Upload/update sample:"
+              sed -n '1,80p' sync-files.txt | tee -a "$LOG"
+            fi
+            if [ "$DELETE_COUNT" -gt 0 ]; then
+              log "Delete sample:"
+              sed -n '1,80p' delete-files.txt | tee -a "$LOG"
+            fi
+          fi
+
+          STAGE="validating PHP syntax before upload"
+          if [ "$RC" -eq 0 ]; then
+            while IFS= read -r p; do
+              case "$p" in
+                *.php)
+                  if ! php -l "$p" >>"$LOG" 2>&1; then
+                    fail "Local PHP syntax check failed: $p"
+                    break
+                  fi ;;
+              esac
+            done < sync-files.txt
+          fi
+
+          STAGE="creating server rollback backup"
+          if [ "$RC" -eq 0 ]; then
+            TS=$(date -u +%Y%m%dT%H%M%SZ)
+            BACKUP_DIR="/home/$USER/deploy-backups/impactads-auto-$TS"
+            if ! "${SSH[@]}" "mkdir -p '$BACKUP_DIR'"; then
+              fail "Could not create rollback directory."
+            else
+              printf '%s\n' "FROM=$DEPLOYED_SHA" "TO=$CURRENT_SHA" > deploy-metadata.txt
+              rsync -a -e "$RSYNC_SSH" deploy-metadata.txt sync-files.txt delete-files.txt added-files.txt backup-files.txt "$USER@$HOST:$BACKUP_DIR/" >>"$LOG" 2>&1
+              if [ "$?" -ne 0 ]; then
+                fail "Could not save deployment metadata."
+              fi
+            fi
+          fi
+
+          if [ "$RC" -eq 0 ] && [ -s backup-files.txt ]; then
+            "${SSH[@]}" "cd '$ROOT' && tar -czf '$BACKUP_DIR/files-before.tar.gz' --ignore-failed-read -T '$BACKUP_DIR/backup-files.txt' >/dev/null 2>&1 || true"
+            log "Rollback file archive prepared."
+          fi
+
+          STAGE="uploading added and modified files"
+          if [ "$RC" -eq 0 ] && [ -s sync-files.txt ]; then
+            rsync -aR --files-from=sync-files.txt -e "$RSYNC_SSH" ./ "$USER@$HOST:$ROOT/" >>"$LOG" 2>&1
+            if [ "$?" -ne 0 ]; then
+              fail "rsync upload/update failed."
+            else
+              log "Changed files uploaded."
+            fi
+          fi
+
+          STAGE="deleting files removed in Git"
+          if [ "$RC" -eq 0 ] && [ -s delete-files.txt ]; then
+            cat delete-files.txt | "${SSH[@]}" "ROOT='$ROOT'; set -e; while IFS= read -r rel; do case \"\$rel\" in ''|/*|*'..'*) echo \"unsafe deletion path: \$rel\" >&2; exit 31;; esac; target=\"\$ROOT/\$rel\"; if [ -f \"\$target\" ] || [ -L \"\$target\" ]; then rm -f -- \"\$target\"; fi; done"
+            if [ "$?" -ne 0 ]; then
+              fail "Failed while applying Git deletion manifest."
+            else
+              log "Git deletions applied."
+            fi
+          fi
+
+          STAGE="validating deployed PHP syntax"
+          if [ "$RC" -eq 0 ] && [ -s sync-files.txt ]; then
+            grep '\.php$' sync-files.txt | "${SSH[@]}" "ROOT='$ROOT'; set -e; while IFS= read -r rel; do [ -f \"\$ROOT/\$rel\" ] || continue; php -l \"\$ROOT/\$rel\" >/dev/null || exit 41; done"
+            if [ "${PIPESTATUS[1]}" -ne 0 ]; then
+              fail "Remote PHP syntax validation failed."
+            else
+              log "Remote PHP syntax validation passed."
+            fi
+          fi
+
+          STAGE="verifying WordPress and HTTP"
+          if [ "$RC" -eq 0 ]; then
+            if ! "${SSH[@]}" "cd '$ROOT' && wp core is-installed --quiet"; then
+              fail "WP-CLI core check failed after deployment."
+            else
+              log "WP-CLI core check passed."
+            fi
+          fi
+
+          if [ "$RC" -eq 0 ]; then
+            for path in / /about/ /blog/ /contact/ /application/; do
+              code=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 30 "https://impactads.io$path" || true)
+              log "HTTP $path => $code"
+              if [ "$path" = "/" ] && [ "$code" != "200" ]; then
+                fail "Homepage did not return HTTP 200."
+                break
+              fi
+            done
+          fi
+
+          STAGE="committing deployed revision state"
+          if [ "$RC" -eq 0 ]; then
+            if ! "${SSH[@]}" "printf '%s\n' '$CURRENT_SHA' > '$STATE_FILE'"; then
+              fail "Could not update server deployment revision marker."
+            else
+              log "Server deployment SHA advanced to $CURRENT_SHA"
+            fi
+          fi
+
+          if [ "$RC" -ne 0 ] && [ -n "$BACKUP_DIR" ]; then
+            log "Deployment failed during stage: $STAGE"
+            log "Starting rollback from $BACKUP_DIR"
+
+            if [ -s added-files.txt ]; then
+              cat added-files.txt | "${SSH[@]}" "ROOT='$ROOT'; while IFS= read -r rel; do case \"\$rel\" in ''|/*|*'..'*) continue;; esac; rm -f -- \"\$ROOT/\$rel\"; done" >>"$LOG" 2>&1
+            fi
+
+            "${SSH[@]}" "if [ -f '$BACKUP_DIR/files-before.tar.gz' ]; then cd '$ROOT' && tar -xzf '$BACKUP_DIR/files-before.tar.gz'; fi" >>"$LOG" 2>&1
+            log "Rollback attempt completed; deployed SHA marker was not advanced."
+          fi
+
+          {
+            echo '# Hostinger Auto Deploy Result'
+            echo
+            if [ "$RC" -eq 0 ]; then
+              echo '- status: SUCCESS'
+            else
+              echo '- status: FAILED'
+            fi
+            echo "- final stage: $STAGE"
+            echo "- from: ${DEPLOYED_SHA:-unknown}"
+            echo "- to: $CURRENT_SHA"
+            echo "- document root: $ROOT"
+            echo "- rollback directory: ${BACKUP_DIR:-not-created}"
+            echo
+            echo '## Output'
+            echo '```text'
+            sed -n '1,320p' "$LOG"
+            echo '```'
+          } > "$RESULT"
+
+          rm -f "$KEY_FILE" "$KNOWN_HOSTS" sync-all.txt delete-all.txt added-all.txt sync-files.txt delete-files.txt added-files.txt backup-files.txt deploy-metadata.txt auto-deploy-output.txt
+          exit 0
+
+      - name: Save deployment report
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hostinger-auto-deploy-result.md
+          if git diff --cached --quiet; then
+            echo "No deployment report changes."
+            exit 0
+          fi
+          git commit -m "Record Hostinger auto-deploy result"
+          git push
