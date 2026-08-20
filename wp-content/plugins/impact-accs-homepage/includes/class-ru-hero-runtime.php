@@ -69,24 +69,35 @@ class IAH_RU_Hero_Runtime {
 	}
 
 	/**
-	 * Append the safe runtime after the mirrored React app.
+	 * Append safe RU runtimes after the mirrored React app.
 	 *
 	 * @param string $html Full response body.
 	 * @return string
 	 */
 	public static function inject_runtime( $html ) {
-		if ( ! is_string( $html ) || '' === $html || false !== strpos( $html, 'iah-ru-hero-runtime.js' ) ) {
+		if ( ! is_string( $html ) || '' === $html ) {
 			return $html;
 		}
 
-		$src = esc_url( IAH_URL . 'assets/js/iah-ru-hero-runtime.js?v=' . rawurlencode( IAH_VERSION ) );
-		$tag = '<script id="iah-ru-hero-runtime" src="' . $src . '"></script>';
-
-		if ( false !== stripos( $html, '</body>' ) ) {
-			return preg_replace( '/<\/body>/i', $tag . '</body>', $html, 1 );
+		$tags = '';
+		if ( false === strpos( $html, 'iah-ru-hero-runtime.js' ) ) {
+			$src   = esc_url( IAH_URL . 'assets/js/iah-ru-hero-runtime.js?v=' . rawurlencode( IAH_VERSION ) );
+			$tags .= '<script id="iah-ru-hero-runtime" src="' . $src . '"></script>';
+		}
+		if ( false === strpos( $html, 'iah-ru-hero-resolution.js' ) ) {
+			$src   = esc_url( IAH_URL . 'assets/js/iah-ru-hero-resolution.js?v=' . rawurlencode( IAH_VERSION ) );
+			$tags .= '<script id="iah-ru-hero-resolution" src="' . $src . '"></script>';
 		}
 
-		return $html . $tag;
+		if ( '' === $tags ) {
+			return $html;
+		}
+
+		if ( false !== stripos( $html, '</body>' ) ) {
+			return preg_replace( '/<\/body>/i', $tags . '</body>', $html, 1 );
+		}
+
+		return $html . $tags;
 	}
 }
 
