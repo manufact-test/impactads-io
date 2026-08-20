@@ -102,15 +102,24 @@ jobs:
           fi
 
           if [ "$RC" -eq 0 ]; then
-            if ! ssh-keyscan -T 15 -p "$PORT" -H "$HOST" > "$KNOWN_HOSTS" 2>/dev/null; then
-              fail "Could not read Hostinger SSH host key."
-            else
-              chmod 600 "$KNOWN_HOSTS"
+            : > "$KNOWN_HOSTS"
+            chmod 600 "$KNOWN_HOSTS"
+            HOST_KEY_OK=0
+            for attempt in 1 2 3; do
+              if ssh-keyscan -T 12 -p "$PORT" -H "$HOST" >> "$KNOWN_HOSTS" 2>/dev/null; then
+                HOST_KEY_OK=1
+                break
+              fi
+              log "Host key scan attempt $attempt failed; retrying."
+              sleep $((attempt * 2))
+            done
+            if [ "$HOST_KEY_OK" -eq 0 ]; then
+              log "Host key scan unavailable; SSH will use StrictHostKeyChecking=accept-new on the authenticated connection."
             fi
           fi
 
-          SSH=(ssh -i "$KEY_FILE" -p "$PORT" -o BatchMode=yes -o ConnectTimeout=15 "$USER@$HOST")
-          RSYNC_SSH="ssh -i $KEY_FILE -p $PORT -o BatchMode=yes -o ConnectTimeout=15"
+          SSH=(ssh -i "$KEY_FILE" -p "$PORT" -o BatchMode=yes -o ConnectTimeout=20 -o ConnectionAttempts=3 -o StrictHostKeyChecking=accept-new -o "UserKnownHostsFile=$KNOWN_HOSTS" "$USER@$HOST")
+          RSYNC_SSH="ssh -i $KEY_FILE -p $PORT -o BatchMode=yes -o ConnectTimeout=20 -o ConnectionAttempts=3 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$KNOWN_HOSTS"
 
           STAGE="checking live WordPress root"
           if [ "$RC" -eq 0 ]; then
