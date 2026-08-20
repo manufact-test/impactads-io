@@ -171,9 +171,9 @@
 		});
 
 		patchSlackContents(root, [
-			{ needles: ['Need EU accounts before launch.', 'Нужен аккаунт под залив?'], text: '@founderads Нужен аккаунт под залив? Подберём по спенду, гео и валюте. Проверите до оплаты.' },
-			{ needles: ['VolumeRequestPending', 'AgencyAccounts', 'Нужен Google Ads аккаунт:'], text: 'Нужен Google Ads аккаунт: спенд $2 000–3 000, USA, USD, под серую вертикаль.' },
-			{ needles: ['Matching supply for', 'Оплата получена'], text: 'Оплата получена\nАдмин-доступ передан. Замена действует, пока аккаунт не тронут.\nПоддержка 24/7, напрямую с владельцем.' }
+			{ needles: ['Matching supply for', 'Оплата получена'], text: 'Оплата получена\nАдмин-доступ передан. Замена действует, пока аккаунт не тронут.\nПоддержка 24/7, напрямую с владельцем.' },
+			{ needles: ['Need EU accounts before launch.', 'Нужен аккаунт под залив?'], text: 'Нужен аккаунт под залив? Подберём по спенду, гео и валюте. Проверите до оплаты.' },
+			{ needles: ['VolumeRequestPending', 'Нужен Google Ads аккаунт:'], text: 'Нужен Google Ads аккаунт: спенд $2 000–3 000, USA, USD, под серую вертикаль.' }
 		]);
 
 		patchThreeLineCard(root, ['Request status', 'ПАРАМЕТРЫ АККАУНТА'], [
@@ -182,7 +182,7 @@
 			'Оплата — после проверки. Замена — пока аккаунт не тронут.'
 		]);
 
-		patchComposer(root, ['Request @impact.accs terms', 'Проверил: спенд'], '@founderads Проверил: спенд, гео и валюта совпадают. Готов оплатить.', false);
+		patchComposer(root, ['Request @impact.accs terms', 'Проверил: спенд'], 'Проверил: спенд, гео и валюта совпадают. Готов оплатить.', true);
 	}
 
 	function patchGreenBranch(root) {
@@ -251,7 +251,7 @@
 			'Объём и график поставок согласуем индивидуально.'
 		]);
 
-		patchComposer(root, ['lock terms and confirm delivery', 'Условия подходят'], '@founderads Условия подходят. Зафиксируйте объём и график продаж.', false);
+		patchComposer(root, ['lock terms and confirm delivery', 'Условия подходят'], 'Условия подходят. Зафиксируйте объём и график продаж.', true);
 	}
 
 	function patchHero() {
