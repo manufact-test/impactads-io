@@ -59,6 +59,18 @@
 		}
 	}
 
+	var normalizedExactCache = null;
+	function normalizedExactReplacements() {
+		if (normalizedExactCache) return normalizedExactCache;
+		normalizedExactCache = {};
+		var source = window.iacData && window.iacData.exactReplacements ? window.iacData.exactReplacements : {};
+		Object.keys(source).forEach(function (key) {
+			var normalized = normalize(key);
+			if (normalized) normalizedExactCache[normalized] = source[key];
+		});
+		return normalizedExactCache;
+	}
+
 	function closestSectionWithText(text) {
 		var sections = document.querySelectorAll('main section, section');
 		for (var i = 0; i < sections.length; i += 1) {
@@ -80,6 +92,20 @@
 
 	function applicationUrl() {
 		return window.iacData && window.iacData.applicationUrl ? window.iacData.applicationUrl : '/application/';
+	}
+
+	function patchPreloader() {
+		var loader = document.querySelector('[data-loader-phase][role="status"]');
+		if (!loader) return;
+
+		loader.setAttribute('aria-label', 'Загрузка');
+		replaceTextNodes(loader, {
+			'Initializing': 'Инициализация',
+			'Click anywhere to enable sound': 'Нажмите, чтобы включить звук',
+			'Sound muted': 'Звук выключен',
+			'Sound enabled': 'Звук включён',
+			'Impact System': 'Система Impact'
+		});
 	}
 
 	function patchHeaderCta() {
@@ -105,6 +131,10 @@
 		var hero = document.querySelector('[data-section="home-hero"]');
 		if (!hero) return;
 
+		// React conversations are rendered after hydration. Apply the same exact
+		// TЗ dictionary to their live text nodes instead of rewriting the static
+		// hydration bundle (which previously caused React #418 / black 3D).
+		replaceTextNodes(hero, normalizedExactReplacements());
 		replaceTextNodes(hero, {
 			'@impact.accs': '@founderads',
 			'impact.accs': 'impact.',
@@ -275,6 +305,7 @@
 	function patchRussianHomepage() {
 		if (!isRu()) return;
 		patchQueued = false;
+		patchPreloader();
 		patchHeaderCta();
 		patchHeroDialogs();
 		patchTimelineCtas();
