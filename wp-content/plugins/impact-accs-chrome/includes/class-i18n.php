@@ -26,6 +26,9 @@ class IAC_I18n {
 	/**
 	 * Active language code.
 	 *
+	 * Russian is the primary/default language. An explicit EN cookie or saved
+	 * preference still wins for returning visitors.
+	 *
 	 * @return string 'en'|'ru'
 	 */
 	public static function lang() {
@@ -33,7 +36,7 @@ class IAC_I18n {
 			return self::$lang;
 		}
 
-		$cookie = 'en';
+		$cookie = 'ru';
 		if ( isset( $_COOKIE['iac_lang4'] ) ) {
 			$cookie = sanitize_key( wp_unslash( $_COOKIE['iac_lang4'] ) );
 		} elseif ( isset( $_COOKIE['iac_lang3'] ) ) {
@@ -41,7 +44,7 @@ class IAC_I18n {
 		} elseif ( isset( $_COOKIE['iac_lang'] ) ) {
 			$cookie = sanitize_key( wp_unslash( $_COOKIE['iac_lang'] ) );
 		}
-		self::$lang = in_array( $cookie, array( 'en', 'ru' ), true ) ? $cookie : 'en';
+		self::$lang = in_array( $cookie, array( 'en', 'ru' ), true ) ? $cookie : 'ru';
 		return self::$lang;
 	}
 
@@ -189,7 +192,7 @@ class IAC_I18n {
 	 * @return string Inline script.
 	 */
 	public static function bootstrap_script() {
-		return '<script>(function(){try{var lang="en",m4=document.cookie.match(/(?:^|;\\s*)iac_lang4=(en|ru)/),m3=document.cookie.match(/(?:^|;\\s*)iac_lang3=(en|ru)/),m=document.cookie.match(/(?:^|;\\s*)iac_lang=(en|ru)/);if(m4)lang=m4[1];else if(m3)lang=m3[1];else if(m)lang=m[1];else{var ls=localStorage.getItem("iac-lang");if(ls==="ru"||ls==="en")lang=ls}if(lang!=="en"&&lang!=="ru")lang="en";document.documentElement.lang=lang;document.documentElement.classList.toggle("iac-lang-ru",lang==="ru");document.cookie="iac_lang=;path=/;max-age=0";document.cookie="iac_lang3=;path=/;max-age=0";document.cookie="iac_lang4="+lang+";path=/;max-age="+(60*60*24*365);localStorage.setItem("iac-lang",lang);var h=location.hostname;document.cookie="googtrans=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";document.cookie="googtrans=;path=/;domain=."+h+";expires=Thu, 01 Jan 1970 00:00:00 GMT";var p=location.pathname||"/";if((p==="/"||p==="")&&location.search.indexOf("_lc=")===-1){location.replace("/?_lc=2")}}catch(e){}})();</script>';
+		return '<script>(function(){try{var lang="ru",m4=document.cookie.match(/(?:^|;\\s*)iac_lang4=(en|ru)/),m3=document.cookie.match(/(?:^|;\\s*)iac_lang3=(en|ru)/),m=document.cookie.match(/(?:^|;\\s*)iac_lang=(en|ru)/);if(m4)lang=m4[1];else if(m3)lang=m3[1];else if(m)lang=m[1];else{var ls=localStorage.getItem("iac-lang");if(ls==="ru"||ls==="en")lang=ls}if(lang!=="en"&&lang!=="ru")lang="ru";document.documentElement.lang=lang;document.documentElement.classList.toggle("iac-lang-ru",lang==="ru");document.cookie="iac_lang=;path=/;max-age=0";document.cookie="iac_lang3=;path=/;max-age=0";document.cookie="iac_lang4="+lang+";path=/;max-age="+(60*60*24*365);localStorage.setItem("iac-lang",lang);var h=location.hostname;document.cookie="googtrans=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";document.cookie="googtrans=;path=/;domain=."+h+";expires=Thu, 01 Jan 1970 00:00:00 GMT";var p=location.pathname||"/";if((p==="/"||p==="")&&location.search.indexOf("_lc=")===-1){location.replace("/?_lc=2")}}catch(e){}})();</script>';
 	}
 
 	/**
