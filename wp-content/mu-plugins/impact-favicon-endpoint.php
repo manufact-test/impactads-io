@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Impact Favicon Endpoint
  * Description: Makes WordPress Site Icon authoritative for legacy Next.js favicon URLs and page markup.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Impact
  *
  * @package ImpactFaviconEndpoint
