@@ -2,22 +2,25 @@
 
 - status: SUCCESS
 - final stage: committing deployed revision state
-- from: eaf25115efce4d16f1dc656e82376e606f30ad3b
-- to: c275bacd0f148a793d52beec7b79f631886e0d60
+- from: cd60625cb36e1e8fa7709b0a865471744f7d09d3
+- to: 4c91e32513af90b5612b1c23098dcd5a35e113bf
 - document root: /home/u218517330/domains/impactads.io/public_html
-- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260820T213945Z
+- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260820T214243Z
 
 ## Output
 ```text
 Deploy impactads.io
-CURRENT_SHA=c275bacd0f148a793d52beec7b79f631886e0d60
+CURRENT_SHA=4c91e32513af90b5612b1c23098dcd5a35e113bf
 ROOT=/home/u218517330/domains/impactads.io/public_html
-DEPLOYED_SHA=eaf25115efce4d16f1dc656e82376e606f30ad3b
-Files to upload/update: 1
+DEPLOYED_SHA=cd60625cb36e1e8fa7709b0a865471744f7d09d3
+Files to upload/update: 2
 Files to delete: 0
 New files (rollback tracking): 0
 Upload/update sample:
-wp-content/plugins/impact-accs-homepage/assets/js/iah-ru-hero-runtime.js
+wp-content/plugins/impact-accs-homepage/impact-accs-homepage.php
+wp-content/plugins/impact-accs-homepage/includes/class-ru-hero-runtime.php
+No syntax errors detected in wp-content/plugins/impact-accs-homepage/impact-accs-homepage.php
+No syntax errors detected in wp-content/plugins/impact-accs-homepage/includes/class-ru-hero-runtime.php
 Rollback file archive prepared.
 Changed files uploaded.
 Remote PHP syntax validation passed.
@@ -27,5 +30,5 @@ HTTP /about/ => 200
 HTTP /blog/ => 200
 HTTP /contact/ => 200
 HTTP /application/ => 200
-Server deployment SHA advanced to c275bacd0f148a793d52beec7b79f631886e0d60
+Server deployment SHA advanced to 4c91e32513af90b5612b1c23098dcd5a35e113bf
 ```
