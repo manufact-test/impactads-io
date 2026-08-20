@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAH_VERSION', '1.5.17' );
+define( 'IAH_VERSION', '1.5.18' );
 define( 'IAH_FILE', __FILE__ );
 define( 'IAH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAH_URL', plugin_dir_url( __FILE__ ) );
@@ -32,6 +32,7 @@ define( 'IAH_FAVICON_URL', $iah_favicon_url );
 require_once IAH_DIR . 'includes/class-homepage.php';
 require_once IAH_DIR . 'includes/class-asset-proxy.php';
 require_once IAH_DIR . 'includes/class-home-js-localizer.php';
+require_once IAH_DIR . 'includes/class-ru-hero-runtime.php';
 
 /**
  * Bootstrap.
