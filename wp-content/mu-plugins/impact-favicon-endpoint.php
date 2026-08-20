@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Impact Favicon Endpoint
  * Description: Makes WordPress Site Icon authoritative for legacy Next.js favicon URLs and page markup.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Impact
  *
  * @package ImpactFaviconEndpoint
@@ -30,8 +30,8 @@ function impact_favicon_endpoint_url() {
 	return add_query_arg( 'v', $id > 0 ? $id : 'impact', home_url( '/favicon.ico' ) );
 }
 
-function impact_favicon_file() {
-	$id = impact_favicon_attachment_id();
+function impact_favicon_file( $attachment_id = 0 ) {
+	$id = $attachment_id > 0 ? (int) $attachment_id : impact_favicon_attachment_id();
 	if ( $id <= 0 ) {
 		return '';
 	}
@@ -39,6 +39,149 @@ function impact_favicon_file() {
 	return is_string( $file ) && is_readable( $file ) ? $file : '';
 }
 
+/**
+ * Convert the selected Site Icon into a standards-compliant ICO containing
+ * a 256x256 PNG payload. This gives Hostinger a real physical /favicon.ico,
+ * so its static-file layer never has to route an .ico request through WP.
+ *
+ * @param string $source Source image path.
+ * @return string Binary ICO data, or an empty string on failure.
+ */
+function impact_favicon_build_ico( $source ) {
+	$data = @file_get_contents( $source ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	if ( ! is_string( $data ) || '' === $data ) {
+		return '';
+	}
+
+	$png    = '';
+	$width  = 256;
+	$height = 256;
+
+	if ( function_exists( 'imagecreatefromstring' ) && function_exists( 'imagecreatetruecolor' ) && function_exists( 'imagepng' ) ) {
+		$image = @imagecreatefromstring( $data ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		if ( $image ) {
+			$src_w = imagesx( $image );
+			$src_h = imagesy( $image );
+			$dst   = imagecreatetruecolor( $width, $height );
+			if ( $dst ) {
+				imagealphablending( $dst, false );
+				imagesavealpha( $dst, true );
+				$transparent = imagecolorallocatealpha( $dst, 0, 0, 0, 127 );
+				imagefill( $dst, 0, 0, $transparent );
+				imagecopyresampled( $dst, $image, 0, 0, 0, 0, $width, $height, $src_w, $src_h );
+				ob_start();
+				imagepng( $dst, null, 9 );
+				$png = (string) ob_get_clean();
+				imagedestroy( $dst );
+			}
+			imagedestroy( $image );
+		}
+	}
+
+	// Fallback for servers without GD when the WordPress Site Icon is already PNG.
+	if ( '' === $png && 0 === strncmp( $data, "\x89PNG\r\n\x1a\n", 8 ) ) {
+		$png = $data;
+		$info = @getimagesize( $source ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		if ( is_array( $info ) ) {
+			$width  = max( 1, (int) $info[0] );
+			$height = max( 1, (int) $info[1] );
+		}
+	}
+
+	if ( '' === $png ) {
+		return '';
+	}
+
+	$w_byte = $width >= 256 ? 0 : $width;
+	$h_byte = $height >= 256 ? 0 : $height;
+	$header = pack( 'vvv', 0, 1, 1 );
+	$entry  = pack( 'CCCCvvVV', $w_byte, $h_byte, 0, 0, 1, 32, strlen( $png ), 22 );
+
+	return $header . $entry . $png;
+}
+
+/**
+ * Atomically mirror the current WordPress Site Icon to physical root files.
+ * Hostinger serves .ico requests as static assets before WordPress, which is
+ * why a PHP template_redirect endpoint alone still returned 404.
+ *
+ * @param int $attachment_id Optional explicit Site Icon attachment ID.
+ * @return bool
+ */
+function impact_favicon_sync_root_files( $attachment_id = 0 ) {
+	$id     = $attachment_id > 0 ? (int) $attachment_id : impact_favicon_attachment_id();
+	$source = impact_favicon_file( $id );
+	if ( $id <= 0 || ! $source ) {
+		return false;
+	}
+
+	$ico = impact_favicon_build_ico( $source );
+	if ( '' === $ico ) {
+		return false;
+	}
+
+	$targets = array(
+		trailingslashit( ABSPATH ) . 'favicon.ico',
+		trailingslashit( ABSPATH ) . 'impact-icon.ico',
+	);
+
+	foreach ( $targets as $target ) {
+		$tmp = $target . '.tmp-' . wp_generate_password( 8, false, false );
+		$written = @file_put_contents( $tmp, $ico, LOCK_EX ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		if ( false === $written || $written !== strlen( $ico ) ) {
+			@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.unlink_unlink
+			return false;
+		}
+		if ( ! @rename( $tmp, $target ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.rename_rename
+			@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.unlink_unlink
+			return false;
+		}
+		@chmod( $target, 0644 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.chmod_chmod
+	}
+
+	update_option( 'impact_favicon_materialized_site_icon', $id, false );
+	return true;
+}
+
+/**
+ * Ensure physical favicon files exist on normal requests, but avoid rewriting
+ * them on every hit when the selected Site Icon has not changed.
+ */
+function impact_favicon_maybe_sync_root_files() {
+	$id = impact_favicon_attachment_id();
+	if ( $id <= 0 ) {
+		return;
+	}
+
+	$known       = (int) get_option( 'impact_favicon_materialized_site_icon', 0 );
+	$favicon     = trailingslashit( ABSPATH ) . 'favicon.ico';
+	$impact_icon = trailingslashit( ABSPATH ) . 'impact-icon.ico';
+
+	if ( $known === $id && is_readable( $favicon ) && filesize( $favicon ) > 22 && is_readable( $impact_icon ) && filesize( $impact_icon ) > 22 ) {
+		return;
+	}
+
+	impact_favicon_sync_root_files( $id );
+}
+add_action( 'init', 'impact_favicon_maybe_sync_root_files', 1 );
+
+/**
+ * Refresh physical files immediately whenever WordPress Site Icon changes.
+ *
+ * @param mixed $old_value Previous option value.
+ * @param mixed $new_value New option value.
+ */
+function impact_favicon_on_site_icon_update( $old_value, $new_value ) {
+	$new_id = (int) $new_value;
+	if ( $new_id > 0 && $new_id !== (int) $old_value ) {
+		impact_favicon_sync_root_files( $new_id );
+	}
+}
+add_action( 'update_option_site_icon', 'impact_favicon_on_site_icon_update', 10, 2 );
+
+/**
+ * PHP fallback if a web server does route a missing legacy icon through WP.
+ */
 function impact_favicon_serve_legacy_routes() {
 	$path = impact_favicon_request_path();
 	if ( '/favicon.ico' !== $path && '/impact-icon.ico' !== $path ) {
@@ -65,14 +208,6 @@ function impact_favicon_serve_legacy_routes() {
 		readfile( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		exit;
 	}
-
-	if ( $id > 0 ) {
-		$url = wp_get_attachment_url( $id );
-		if ( is_string( $url ) && '' !== $url && false === strpos( $url, '/favicon.ico' ) && false === strpos( $url, '/impact-icon.ico' ) ) {
-			wp_redirect( $url, 302, 'Impact Favicon Endpoint' ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
-			exit;
-		}
-	}
 }
 add_action( 'template_redirect', 'impact_favicon_serve_legacy_routes', -30000 );
 
@@ -81,9 +216,12 @@ function impact_favicon_render_wp_head() {
 	if ( ! $url ) {
 		return;
 	}
-	echo '<link rel="icon" href="' . $url . '" sizes="32x32" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo '<link rel="shortcut icon" href="' . $url . '" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo '<link rel="apple-touch-icon" href="' . $url . '" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo '<link rel="icon" href="' . $url . '" sizes="32x32" type="image/x-icon" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo '<link rel="shortcut icon" href="' . $url . '" type="image/x-icon" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	$touch = function_exists( 'get_site_icon_url' ) ? get_site_icon_url( 180 ) : '';
+	if ( $touch ) {
+		echo '<link rel="apple-touch-icon" href="' . esc_url( $touch ) . '" />' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
 }
 
 function impact_favicon_take_over_wp_head() {
@@ -111,10 +249,13 @@ function impact_favicon_patch_home_html( $html ) {
 		$html
 	);
 
-	$url  = esc_url( impact_favicon_endpoint_url() );
-	$tags = '<link rel="icon" href="' . $url . '" sizes="32x32" />'
-		. '<link rel="shortcut icon" href="' . $url . '" />'
-		. '<link rel="apple-touch-icon" href="' . $url . '" />';
+	$url   = esc_url( impact_favicon_endpoint_url() );
+	$touch = function_exists( 'get_site_icon_url' ) ? get_site_icon_url( 180 ) : '';
+	$tags  = '<link rel="icon" href="' . $url . '" sizes="32x32" type="image/x-icon" />'
+		. '<link rel="shortcut icon" href="' . $url . '" type="image/x-icon" />';
+	if ( $touch ) {
+		$tags .= '<link rel="apple-touch-icon" href="' . esc_url( $touch ) . '" />';
+	}
 
 	$html = preg_replace_callback(
 		'#<head\b[^>]*>#i',
