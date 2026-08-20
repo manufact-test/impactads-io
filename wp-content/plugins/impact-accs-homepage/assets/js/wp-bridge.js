@@ -229,7 +229,9 @@
 		var items = section.querySelectorAll('ul[role="list"] li');
 		if (items.length >= 3) {
 			var title = items[2].querySelector('h3');
-			if (title) title.textContent = 'ЧЕСТНАЯ ГРАНИЦА ГАРАНТИИ';
+			if (title && normalize(title.textContent) !== 'ЧЕСТНАЯ ГРАНИЦА ГАРАНТИИ') {
+				title.textContent = 'ЧЕСТНАЯ ГРАНИЦА ГАРАНТИИ';
+			}
 		}
 	}
 
