@@ -41,6 +41,13 @@ class IACCE_Applier {
 		if ( $this->buffering || is_admin() || wp_doing_ajax() ) {
 			return;
 		}
+		// The mirrored React/WebGPU homepage has a dedicated, versioned RU copy
+		// source. Database overrides must not rewrite its HTML or live React DOM.
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$path = is_string( $uri ) ? (string) wp_parse_url( $uri, PHP_URL_PATH ) : '';
+		if ( '/' === $path || '' === $path ) {
+			return;
+		}
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
 			return;
 		}

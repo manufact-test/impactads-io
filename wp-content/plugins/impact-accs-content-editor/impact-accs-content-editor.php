@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IACCE_VERSION', '1.5.5' );
+define( 'IACCE_VERSION', '1.5.6' );
 define( 'IACCE_FILE', __FILE__ );
 define( 'IACCE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IACCE_URL', plugin_dir_url( __FILE__ ) );
