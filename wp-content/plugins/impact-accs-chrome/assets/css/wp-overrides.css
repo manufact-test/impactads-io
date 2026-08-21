@@ -1228,10 +1228,10 @@ html.iah-home .bg-card.w-\[150px\] p.text-\[8px\] {
 	}
 
 	html.iah-home.iac-lang-ru [data-iac-final-cta] h3.text-h1 {
-		width: min(100%, 1080px);
-		max-width: 14ch;
-		font-size: clamp(54px, 5.4vw, 92px) !important;
-		line-height: 0.92 !important;
+		width: min(100%, 1040px);
+		max-width: 20ch;
+		font-size: clamp(46px, 4.1vw, 68px) !important;
+		line-height: 0.96 !important;
 		letter-spacing: -0.035em;
 		text-wrap: balance;
 	}
