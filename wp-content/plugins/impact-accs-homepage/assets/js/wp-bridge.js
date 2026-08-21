@@ -248,7 +248,6 @@
 	function patchRussianHomepage() {
 		if (!isRu()) return;
 		patchQueued = false;
-		document.documentElement.classList.add('iah-home', 'iac-lang-ru');
 		patchHeaderCta();
 		patchTimelineCtas();
 		patchPurchaseCards();
