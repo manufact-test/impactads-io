@@ -59,18 +59,6 @@
 		}
 	}
 
-	var normalizedExactCache = null;
-	function normalizedExactReplacements() {
-		if (normalizedExactCache) return normalizedExactCache;
-		normalizedExactCache = {};
-		var source = window.iacData && window.iacData.exactReplacements ? window.iacData.exactReplacements : {};
-		Object.keys(source).forEach(function (key) {
-			var normalized = normalize(key);
-			if (normalized) normalizedExactCache[normalized] = source[key];
-		});
-		return normalizedExactCache;
-	}
-
 	function closestSectionWithText(text) {
 		var sections = document.querySelectorAll('main section, section');
 		for (var i = 0; i < sections.length; i += 1) {
@@ -94,20 +82,6 @@
 		return window.iacData && window.iacData.applicationUrl ? window.iacData.applicationUrl : '/application/';
 	}
 
-	function patchPreloader() {
-		var loader = document.querySelector('[data-loader-phase][role="status"]');
-		if (!loader) return;
-
-		loader.setAttribute('aria-label', 'Загрузка');
-		replaceTextNodes(loader, {
-			'Initializing': 'Инициализация',
-			'Click anywhere to enable sound': 'Нажмите, чтобы включить звук',
-			'Sound muted': 'Звук выключен',
-			'Sound enabled': 'Звук включён',
-			'Impact System': 'Система Impact'
-		});
-	}
-
 	function patchHeaderCta() {
 		var roots = [];
 		var header = document.querySelector('header');
@@ -124,47 +98,6 @@
 				'Связаться': 'ПОДОБРАТЬ АККАУНТЫ',
 				'СВЯЗАТЬСЯ': 'ПОДОБРАТЬ АККАУНТЫ'
 			});
-		});
-	}
-
-	function patchHeroDialogs() {
-		var hero = document.querySelector('[data-section="home-hero"]');
-		if (!hero) return;
-
-		// React conversations are rendered after hydration. Apply the same exact
-		// TЗ dictionary to their live text nodes instead of rewriting the static
-		// hydration bundle (which previously caused React #418 / black 3D).
-		replaceTextNodes(hero, normalizedExactReplacements());
-		replaceTextNodes(hero, {
-			'@impact.accs': '@founderads',
-			'impact.accs': 'impact.',
-			'5XX': 'ПОД ЗАЛИВ',
-			'P99': 'ПОД ОБЪЁМ',
-			'Systems': 'МЕДИАБАИНГ'
-		});
-
-		hero.querySelectorAll('button').forEach(function (button) {
-			var label = normalize(button.textContent);
-			if (label === 'Отправить' || label === 'Send') {
-				if (nearbyContains(button, 'ПАРАМЕТРЫ АККАУНТА', 9)) {
-					replaceTextNodes(button, { 'Отправить': 'ПОДТВЕРДИТЬ', 'Send': 'ПОДТВЕРДИТЬ' });
-				} else if (nearbyContains(button, 'ПАРАМЕТРЫ ПОДБОРА', 9)) {
-					replaceTextNodes(button, { 'Отправить': 'ЗАРЕЗЕРВИРОВАТЬ', 'Send': 'ЗАРЕЗЕРВИРОВАТЬ' });
-				} else if (nearbyContains(button, 'ПОСТАВКА ДЛЯ КОМАНДЫ', 9) || nearbyContains(button, 'ПРЕДЛОЖЕНИЕ ДЛЯ КОМАНДЫ', 9)) {
-					replaceTextNodes(button, { 'Отправить': 'ЗАФИКСИРОВАТЬ', 'Send': 'ЗАФИКСИРОВАТЬ' });
-				}
-			}
-
-			if (label === 'Связаться' || label === 'СВЯЗАТЬСЯ' || label === 'Request access' || label === 'REQUEST ACCESS') {
-				if (nearbyContains(button, 'ПОСТАВКА ДЛЯ КОМАНДЫ', 8)) {
-					replaceTextNodes(button, {
-						'Связаться': 'ОБЪЁМНЫЕ УСЛОВИЯ',
-						'СВЯЗАТЬСЯ': 'ОБЪЁМНЫЕ УСЛОВИЯ',
-						'Request access': 'ОБЪЁМНЫЕ УСЛОВИЯ',
-						'REQUEST ACCESS': 'ОБЪЁМНЫЕ УСЛОВИЯ'
-					});
-				}
-			}
 		});
 	}
 
@@ -305,9 +238,7 @@
 	function patchRussianHomepage() {
 		if (!isRu()) return;
 		patchQueued = false;
-		patchPreloader();
 		patchHeaderCta();
-		patchHeroDialogs();
 		patchTimelineCtas();
 		patchPurchaseCards();
 		patchAssuranceSection();
@@ -319,17 +250,6 @@
 		if (patchQueued || !isRu()) return;
 		patchQueued = true;
 		window.requestAnimationFrame(patchRussianHomepage);
-	}
-
-	function installRussianCopyObserver() {
-		if (!isRu() || !document.body) return;
-		queueRussianPatch();
-		var observer = new MutationObserver(queueRussianPatch);
-		observer.observe(document.body, {
-			childList: true,
-			subtree: true,
-			characterData: true
-		});
 	}
 
 	document.addEventListener('click', function (event) {
@@ -345,35 +265,32 @@
 
 	function boot() {
 		cleanupPluginPreloader();
-		installRussianCopyObserver();
+		var loaderHandled = false;
 
 		function onLoaderDone() {
+			if (loaderHandled) return;
+			loaderHandled = true;
 			showChrome();
 			revealFooterLinks();
 			queueRussianPatch();
 		}
 
-		var loader = document.querySelector('[data-loader-phase][role="status"]');
-		if (!loader) {
+		if (!document.querySelector('[data-loader-phase][role="status"]')) {
 			onLoaderDone();
 			return;
 		}
 
-		var observer = new MutationObserver(function () {
+		var loaderCheck = window.setInterval(function () {
 			if (!document.querySelector('[data-loader-phase][role="status"]')) {
-				observer.disconnect();
+				window.clearInterval(loaderCheck);
 				onLoaderDone();
 			}
-		});
+		}, 250);
 
-		observer.observe(document.body, {
-			childList: true,
-			subtree: true,
-			attributes: true,
-			attributeFilter: ['data-loader-phase', 'style', 'class']
-		});
-
-		window.setTimeout(onLoaderDone, 15000);
+		window.setTimeout(function () {
+			window.clearInterval(loaderCheck);
+			onLoaderDone();
+		}, 15000);
 	}
 
 	if (document.readyState === 'loading') {
