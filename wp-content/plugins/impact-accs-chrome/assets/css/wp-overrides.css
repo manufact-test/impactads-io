@@ -1164,18 +1164,82 @@ html.iah-home section:has([data-credits-badge="true"]) {
 
 /* RU homepage: closed infrastructure 3D cards — longer Russian subtitles */
 html.iah-home .bg-card.w-\[150px\] h3.text-\[9px\] {
-	font-size: 7px;
+	font-size: 6.5px;
 	line-height: 1.2;
 	letter-spacing: 0.03em;
 	overflow-wrap: anywhere;
 }
 
 html.iah-home .bg-card.w-\[150px\] p.text-\[8px\] {
-	font-size: 6.5px;
+	font-size: 5.75px;
 	line-height: 1.25;
 	padding-inline: 2px;
 	overflow-wrap: anywhere;
 	hyphens: auto;
+}
+
+/* Desktop RU homepage polish. These hooks are added only after hydration. */
+@media (min-width: 1024px) {
+	html.iah-home.iac-lang-ru [data-iac-timeline-tabs] {
+		gap: 8px !important;
+		margin-bottom: 28px !important;
+		flex-wrap: nowrap !important;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-timeline-tab] > span {
+		min-width: 150px;
+		min-height: 34px;
+		padding: 6px 12px !important;
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: center;
+		white-space: nowrap !important;
+		font-size: 13px !important;
+		line-height: 1 !important;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-timeline-tab="2"] > span {
+		min-width: 190px;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-static-media-card] {
+		opacity: 1 !important;
+		visibility: visible !important;
+		transform: none !important;
+		filter: none !important;
+		animation: none !important;
+		transition: none !important;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-static-media-card] * {
+		opacity: 1 !important;
+		filter: none !important;
+		animation: none !important;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-assurance] .bg-card.w-\[150px\] {
+		min-height: 188px;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-assurance] .bg-card.w-\[150px\] :is(h3, p) {
+		text-align: center;
+		text-wrap: balance;
+		hyphens: none;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-final-cta] h3.text-h1 {
+		width: min(100%, 1080px);
+		max-width: 14ch;
+		font-size: clamp(54px, 5.4vw, 92px) !important;
+		line-height: 0.92 !important;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
+	}
+
+	html.iah-home.iac-lang-ru [data-iac-manifesto] h3 {
+		max-width: 18ch;
+		line-height: 0.95;
+	}
 }
 
 /* RU homepage copy: keep longer approved strings inside their original UI. */
