@@ -282,6 +282,8 @@
 			var target = document.getElementById('iac-final-cta');
 			if (target) {
 				event.preventDefault();
+				event.stopPropagation();
+				if (event.stopImmediatePropagation) event.stopImmediatePropagation();
 				target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			}
 			return;
@@ -295,7 +297,7 @@
 				}, delay);
 			});
 		}
-	}, false);
+	}, true);
 
 	function boot() {
 		cleanupPluginPreloader();
