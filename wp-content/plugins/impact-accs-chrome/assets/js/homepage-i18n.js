@@ -67,8 +67,8 @@
 		return;
 	}
 
-	var HOME_POST_LOADER_MS = onHome ? 3200 : 500;
-	var HOME_HEADER_MS = onHome ? 600 : 500;
+	var HOME_POST_LOADER_MS = onHome ? 5000 : 500;
+	var HOME_HEADER_MS = onHome ? 5000 : 500;
 	var pairsCache = null;
 	var mapSnapshot = null;
 	var exactSnapshot = null;
