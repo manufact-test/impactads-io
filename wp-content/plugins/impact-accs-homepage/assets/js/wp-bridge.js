@@ -189,6 +189,7 @@
 	function patchAssuranceSection() {
 		var section = closestSectionWithText('ВСЁ ПОНЯТНО ДО ОПЛАТЫ');
 		if (!section) return;
+		section.setAttribute('data-iac-assurance', '1');
 		var items = section.querySelectorAll('ul[role="list"] li');
 		if (items.length >= 3) {
 			var title = items[2].querySelector('h3');
@@ -201,10 +202,12 @@
 	function patchManifesto() {
 		var section = closestSectionWithText('ПОЧЕМУ МЫ');
 		if (!section) return;
+		section.setAttribute('data-iac-manifesto', '1');
 		var link = section.querySelector('a[href*="/blog/manifesto"]');
 		if (!link) return;
 
-		link.setAttribute('href', applicationUrl());
+		link.setAttribute('href', '#iac-final-cta');
+		link.setAttribute('data-iac-scroll-final', '1');
 		var currentTitle = '';
 		section.querySelectorAll('h3').forEach(function (heading) {
 			if (!currentTitle && normalize(heading.textContent)) currentTitle = normalize(heading.textContent);
@@ -223,14 +226,60 @@
 	}
 
 	function patchFinalFormCta() {
-		var section = closestSectionWithText('ПОЛУЧИТЕ АККАУНТ. ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.');
+		var section = closestSectionWithText('ПОЛУЧИТЕ АККАУНТ. ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.') || document.querySelector('footer');
 		if (!section) return;
+		section.id = 'iac-final-cta';
+		section.setAttribute('data-iac-final-cta', '1');
 		replaceTextNodes(section, {
 			'Apply': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
 			'Request access': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
 			'REQUEST ACCESS': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
 			'Связаться': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
 			'СВЯЗАТЬСЯ': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ'
+		});
+	}
+
+	function markTimelineControls() {
+		var labels = ['ПОД ЗАЛИВ', 'ДЛЯ МЕДИАБАИНГА', 'ПОД ОБЪЁМ'];
+		var buttons = [];
+		document.querySelectorAll('main button').forEach(function (button) {
+			var value = normalize(button.textContent);
+			for (var i = 0; i < labels.length; i += 1) {
+				if (value.indexOf(labels[i]) !== -1 && /^0[123]/.test(value)) {
+					button.setAttribute('data-iac-timeline-tab', String(i + 1));
+					buttons.push(button);
+					break;
+				}
+			}
+		});
+		if (buttons.length === 3 && buttons[0].parentElement === buttons[1].parentElement) {
+			buttons[0].parentElement.setAttribute('data-iac-timeline-tabs', '1');
+		}
+	}
+
+	function stabilizeMediaBuyingCard() {
+		var title = null;
+		document.querySelectorAll('[data-section="home-hero"] p').forEach(function (paragraph) {
+			if (normalize(paragraph.textContent).indexOf('Подбор трастовых аккаунтов для медиабаинга готов') !== -1) title = paragraph;
+		});
+		if (!title) return;
+		var card = title.closest('.shadow-card');
+		var shell = card && card.parentElement;
+		if (!shell) return;
+		shell.setAttribute('data-iac-static-media-card', '1');
+		if (shell.getAnimations) {
+			shell.getAnimations({ subtree: true }).forEach(function (animation) { animation.cancel(); });
+		}
+	}
+
+	var slowedAnimations = [];
+	function slowHeroMessages() {
+		var hero = document.querySelector('[data-section="home-hero"]');
+		if (!hero || !hero.getAnimations) return;
+		hero.getAnimations({ subtree: true }).forEach(function (animation) {
+			if (slowedAnimations.indexOf(animation) !== -1) return;
+			animation.playbackRate = 0.5;
+			slowedAnimations.push(animation);
 		});
 	}
 
@@ -244,6 +293,9 @@
 		patchAssuranceSection();
 		patchManifesto();
 		patchFinalFormCta();
+		markTimelineControls();
+		stabilizeMediaBuyingCard();
+		slowHeroMessages();
 	}
 
 	function queueRussianPatch() {
@@ -263,6 +315,28 @@
 		window.location.href = applicationUrl();
 	}, true);
 
+	document.addEventListener('click', function (event) {
+		if (!isRu()) return;
+		var control = event.target && event.target.closest ? event.target.closest('button, a') : null;
+		if (!control) return;
+		if (control.matches('[data-iac-scroll-final]') || normalize(control.textContent).indexOf('ПОДОБРАТЬ ПО СПЕНДУ') !== -1) {
+			var target = document.getElementById('iac-final-cta');
+			if (target) {
+				event.preventDefault();
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+			return;
+		}
+		if (nearbyContains(control, 'ПОЧЕМУ МЫ', 5)) {
+			[80, 250, 650].forEach(function (delay) {
+				window.setTimeout(function () {
+					if (window.iacHomeI18nApply) window.iacHomeI18nApply();
+					patchManifesto();
+				}, delay);
+			});
+		}
+	}, false);
+
 	function boot() {
 		cleanupPluginPreloader();
 		var loaderHandled = false;
@@ -275,6 +349,9 @@
 			// React hydrates the full mirrored document. Let its post-loader work
 			// settle before changing any React-owned text nodes.
 			window.setTimeout(queueRussianPatch, 5000);
+			[18000, 22000, 26000, 32000, 40000].forEach(function (delay) {
+				window.setTimeout(queueRussianPatch, delay);
+			});
 		}
 
 		if (!document.querySelector('[data-loader-phase][role="status"]')) {
