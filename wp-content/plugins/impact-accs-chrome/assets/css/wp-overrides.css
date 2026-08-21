@@ -451,6 +451,11 @@ body.iac-chrome-feature #iac-root header .px-sides.relative.hidden {
 }
 
 @media (min-width: 1024px) {
+	html.iah-home.iac-lang-ru [data-section="home-hero"] {
+		height: 800lvh !important;
+		contain-intrinsic-size: none 800lvh !important;
+	}
+
 #iac-root > footer .iac-footer-menu-row ,
 #iah-chrome-footer-root footer .iac-footer-menu-row  {
 		padding-bottom: calc(var(--spacing, 0.25rem) * 40 * var(--scale, 1)) !important;
