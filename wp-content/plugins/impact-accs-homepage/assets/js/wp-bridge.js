@@ -189,7 +189,6 @@
 	function patchAssuranceSection() {
 		var section = closestSectionWithText('ВСЁ ПОНЯТНО ДО ОПЛАТЫ');
 		if (!section) return;
-		section.setAttribute('data-iac-assurance', '1');
 		var items = section.querySelectorAll('ul[role="list"] li');
 		if (items.length >= 3) {
 			var title = items[2].querySelector('h3');
@@ -202,14 +201,13 @@
 	function patchManifesto() {
 		var section = closestSectionWithText('ПОЧЕМУ МЫ');
 		if (!section) return;
-		section.setAttribute('data-iac-manifesto', '1');
 		replaceTextNodes(section, {
 			'Resource over noise': 'ТОЛЬКО СПЕНД. БЕЗ ПУСТОГО ФАРМА.',
-			'Account sellers have accumulated noise over the years. None of it makes launches faster. If access is infrastructure, the best interface is direct contact — not screenshots, not emojis, not random chats.': 'Google Ads аккаунты с реальной историей открутки: накопленный траст, выше лимиты и меньше проверок при первом заливе.',
+			'Account sellers have accumulated noise over the years. None of it makes launches faster. If access is infrastructure, the best interface is direct contact — not screenshots, not emojis, not random chats.': 'Мы продаём Google Ads аккаунты с реальной историей открутки. Не автореги и не фарм без трат: у аккаунта уже есть спенд, а значит — накопленный траст, выше лимиты, мягче модерация и меньше проверок при первом заливе. Вы платите за готовый рабочий ресурс и экономите время на самостоятельном прогреве перед заливом.',
 			'Working resource': 'СНАЧАЛА ПРОВЕРЯЕТЕ. ПОТОМ ПЛАТИТЕ.',
-			'Random Telegram sellers used to be the norm. Structured supply is the strength — clear request, fast contact, working access under terms your team can trust.': 'Получаете аккаунт, сверяете спенд, гео и валюту — и оплачиваете только после проверки.',
+			'Random Telegram sellers used to be the norm. Structured supply is the strength — clear request, fast contact, working access under terms your team can trust.': 'Получаете аккаунт и самостоятельно сверяете заявленные параметры: спенд, гео и валюту. Всё совпадает и аккаунт работает — оплачиваете в USDT TRC20. Не хотите проводить крупную сделку напрямую — подключаем гаранта. Комиссию оплачивает покупатель.',
 			'Chaos is optional': 'ПОСТАВЩИК, КОТОРОГО НЕ НУЖНО МЕНЯТЬ',
-			'Random sellers are broken. Unstable supply and vague terms. The future is structured access — clear request, fast contact, working resource.': 'Если аккаунт не соответствует заявленным параметрам, заменяем его, пока вы не внесли изменения. Владелец на связи 24/7.'
+			'Random sellers are broken. Unstable supply and vague terms. The future is structured access — clear request, fast contact, working resource.': 'Аккаунт не заходит или не соответствует заявленному спенду, гео или валюте — заменяем, пока вы не внесли в него изменения. Без тикетов, мелкого шрифта и споров. По каждой покупке на связи лично владелец, поддержка работает 24/7. За impact. — 7 лет на рынке, 15 000 выданных аккаунтов и 100+ активных команд.'
 		});
 		var link = section.querySelector('a[href*="/blog/manifesto"], a[data-iac-scroll-final]');
 		if (!link) return;
@@ -237,7 +235,6 @@
 		var section = closestSectionWithText('ПОЛУЧИТЕ АККАУНТ. ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.') || document.querySelector('footer');
 		if (!section) return;
 		section.id = 'iac-final-cta';
-		section.setAttribute('data-iac-final-cta', '1');
 		replaceTextNodes(section, {
 			'Apply': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
 			'Request access': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
@@ -247,68 +244,17 @@
 		});
 	}
 
-	function markTimelineControls() {
-		var labels = ['ПОД ЗАЛИВ', 'ДЛЯ МЕДИАБАИНГА', 'ПОД ОБЪЁМ'];
-		var buttons = [];
-		document.querySelectorAll('main button').forEach(function (button) {
-			var value = normalize(button.textContent);
-			for (var i = 0; i < labels.length; i += 1) {
-				if (value.indexOf(labels[i]) !== -1 && /^0[123]/.test(value)) {
-					button.setAttribute('data-iac-timeline-tab', String(i + 1));
-					buttons.push(button);
-					break;
-				}
-			}
-		});
-		if (buttons.length === 3 && buttons[0].parentElement === buttons[1].parentElement) {
-			buttons[0].parentElement.setAttribute('data-iac-timeline-tabs', '1');
-		}
-	}
-
-	function stabilizeMediaBuyingCard() {
-		var title = null;
-		document.querySelectorAll('[data-section="home-hero"] p').forEach(function (paragraph) {
-			if (normalize(paragraph.textContent).indexOf('Подбор трастовых аккаунтов для медиабаинга готов') !== -1) title = paragraph;
-		});
-		if (!title) return;
-		var card = title.closest('.shadow-card');
-		var shell = card && card.parentElement;
-		if (!shell) return;
-		shell.setAttribute('data-iac-static-media-card', '1');
-		if (shell.getAnimations) {
-			shell.getAnimations({ subtree: true }).forEach(function (animation) { animation.cancel(); });
-		}
-	}
-
-	var slowedAnimations = [];
-	function slowHeroMessages() {
-		var hero = document.querySelector('[data-section="home-hero"]');
-		if (!hero || !hero.getAnimations) return;
-		hero.getAnimations({ subtree: true }).forEach(function (animation) {
-			if (slowedAnimations.indexOf(animation) !== -1) return;
-			animation.playbackRate = 0.5;
-			slowedAnimations.push(animation);
-		});
-	}
-
 	var patchQueued = false;
 	function patchRussianHomepage() {
 		if (!isRu()) return;
 		patchQueued = false;
-		var homepageClassWasMissing = !document.documentElement.classList.contains('iah-home');
 		document.documentElement.classList.add('iah-home', 'iac-lang-ru');
-		if (homepageClassWasMissing) {
-			window.setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 50);
-		}
 		patchHeaderCta();
 		patchTimelineCtas();
 		patchPurchaseCards();
 		patchAssuranceSection();
 		patchManifesto();
 		patchFinalFormCta();
-		markTimelineControls();
-		stabilizeMediaBuyingCard();
-		slowHeroMessages();
 	}
 
 	function queueRussianPatch() {
@@ -340,8 +286,8 @@
 			}
 			return;
 		}
-		var controlSection = control.closest('section');
-		if (controlSection && normalize(controlSection.textContent).indexOf('ПОЧЕМУ МЫ') !== -1) {
+		var section = control.closest('section');
+		if (section && normalize(section.textContent).indexOf('ПОЧЕМУ МЫ') !== -1) {
 			[80, 250, 650].forEach(function (delay) {
 				window.setTimeout(function () {
 					if (window.iacHomeI18nApply) window.iacHomeI18nApply();
@@ -363,9 +309,6 @@
 			// React hydrates the full mirrored document. Let its post-loader work
 			// settle before changing any React-owned text nodes.
 			window.setTimeout(queueRussianPatch, 5000);
-			[18000, 22000, 26000, 32000, 40000].forEach(function (delay) {
-				window.setTimeout(queueRussianPatch, delay);
-			});
 		}
 
 		if (!document.querySelector('[data-loader-phase][role="status"]')) {
