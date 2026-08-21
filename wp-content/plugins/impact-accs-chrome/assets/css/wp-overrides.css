@@ -1177,3 +1177,51 @@ html.iah-home .bg-card.w-\[150px\] p.text-\[8px\] {
 	overflow-wrap: anywhere;
 	hyphens: auto;
 }
+
+/* RU homepage copy: keep longer approved strings inside their original UI. */
+html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	a,
+	button,
+	span
+) {
+	min-width: 0;
+	max-width: 100%;
+}
+
+html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(h1, h2, h3, h4, .text-title) {
+	text-wrap: balance;
+	overflow-wrap: normal;
+	word-break: normal;
+}
+
+html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(p, .text-paragraph) {
+	text-wrap: pretty;
+	overflow-wrap: break-word;
+}
+
+html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(a, button) {
+	white-space: normal;
+	text-align: center;
+	line-height: 1.15;
+}
+
+html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(.flex, .grid) > * {
+	min-width: 0;
+}
+
+@media (max-width: 767px) {
+	html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) .text-title {
+		letter-spacing: -0.015em;
+	}
+
+	html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(a, button) {
+		padding-inline: max(12px, 3vw);
+	}
+}
