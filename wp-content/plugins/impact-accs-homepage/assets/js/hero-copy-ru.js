@@ -32,6 +32,7 @@
 		['Request logged — matching supply and terms.', 'Условия подтверждены. Формируем первую поставку.'],
 		['Desk notified @team. Delivery queued.', 'По всем закупкам на связи лично владелец, 24/7.'],
 		['VolumeRequestPending', 'Нужен аккаунт под залив?'],
+		['VolumeRequestPending in AgencyAccounts', 'Нужен аккаунт под залив? Подберём по спенду, гео и валюте.'],
 		['REQUEST STATUS', 'ПАРАМЕТРЫ АККАУНТА'],
 		['SUPPLY STATUS', 'ПАРАМЕТРЫ ПОДБОРА'],
 		['VOLUME TERMS', 'ПРЕДЛОЖЕНИЕ ДЛЯ КОМАНДЫ'],
@@ -40,6 +41,7 @@
 		['Denis A.', 'Медиабайер'],
 		['Elena M.', 'Команда']
 	];
+	pairs.sort(function (a, b) { return b[0].length - a[0].length; });
 
 	function isRussian() {
 		return document.documentElement.lang === 'ru' || document.documentElement.classList.contains('iac-lang-ru');
@@ -49,6 +51,16 @@
 		if (!isRussian()) return;
 		var hero = document.querySelector('[data-section="home-hero"]');
 		if (!hero) return;
+		hero.querySelectorAll('p,span,h1,h2,h3,h4,button,label').forEach(function (element) {
+			if (element.closest('canvas,svg,[data-loader-phase]')) return;
+			var value = (element.textContent || '').replace(/\s+/g, ' ').trim();
+			for (var i = 0; i < pairs.length; i += 1) {
+				if (value === pairs[i][0]) {
+					element.textContent = pairs[i][1];
+					return;
+				}
+			}
+		});
 		var walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT, null);
 		var node;
 		while ((node = walker.nextNode())) {
