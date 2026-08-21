@@ -298,18 +298,10 @@ function impact_runtime_safe_patch_home_html( $html ) {
  * metadata/runtime guards and leaves all Next.js script tags in place.
  */
 function impact_runtime_safe_start_home_buffer() {
-	if ( is_admin() || wp_doing_ajax() ) {
-		return;
-	}
-	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-		return;
-	}
-
-	$path = impact_runtime_safe_request_path();
-	if ( '/' !== $path && '' !== $path ) {
-		return;
-	}
-
-	ob_start( 'impact_runtime_safe_patch_home_html' );
+	// The mirrored Next.js app hydrates the whole document, including <head>.
+	// Even metadata-only buffering changes that document before hydration and
+	// produces React #418. Keep these compatibility helpers for normal
+	// WordPress pages, but leave the exported homepage response untouched.
+	return;
 }
 add_action( 'template_redirect', 'impact_runtime_safe_start_home_buffer', -2000 );
