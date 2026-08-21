@@ -390,11 +390,16 @@ class IAH_Homepage {
 	 * @return string
 	 */
 	private static function localize_ru_hero_document( $html ) {
-		if ( ! class_exists( 'IAC_I18n' ) || ! IAC_I18n::is_ru() || ! class_exists( 'IAH_Home_Js_Localizer' ) ) {
+		$lang = class_exists( 'IAC_I18n' ) ? IAC_I18n::lang() : 'ru';
+		$file = IAH_DIR . 'includes/i18n/ru-home-v2.php';
+		if ( 'ru' !== $lang || ! is_readable( $file ) ) {
 			return $html;
 		}
 
-		$map  = IAH_Home_Js_Localizer::map();
+		$map  = require $file;
+		if ( ! is_array( $map ) ) {
+			return $html;
+		}
 		$keys = array(
 			'WELCOME TO IMPACT',
 			'WELCOME TO IMPACT.',
