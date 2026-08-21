@@ -203,7 +203,15 @@
 		var section = closestSectionWithText('ПОЧЕМУ МЫ');
 		if (!section) return;
 		section.setAttribute('data-iac-manifesto', '1');
-		var link = section.querySelector('a[href*="/blog/manifesto"]');
+		replaceTextNodes(section, {
+			'Resource over noise': 'ТОЛЬКО СПЕНД. БЕЗ ПУСТОГО ФАРМА.',
+			'Account sellers have accumulated noise over the years. None of it makes launches faster. If access is infrastructure, the best interface is direct contact — not screenshots, not emojis, not random chats.': 'Google Ads аккаунты с реальной историей открутки: накопленный траст, выше лимиты и меньше проверок при первом заливе.',
+			'Working resource': 'СНАЧАЛА ПРОВЕРЯЕТЕ. ПОТОМ ПЛАТИТЕ.',
+			'Random Telegram sellers used to be the norm. Structured supply is the strength — clear request, fast contact, working access under terms your team can trust.': 'Получаете аккаунт, сверяете спенд, гео и валюту — и оплачиваете только после проверки.',
+			'Chaos is optional': 'ПОСТАВЩИК, КОТОРОГО НЕ НУЖНО МЕНЯТЬ',
+			'Random sellers are broken. Unstable supply and vague terms. The future is structured access — clear request, fast contact, working resource.': 'Если аккаунт не соответствует заявленным параметрам, заменяем его, пока вы не внесли изменения. Владелец на связи 24/7.'
+		});
+		var link = section.querySelector('a[href*="/blog/manifesto"], a[data-iac-scroll-final]');
 		if (!link) return;
 
 		link.setAttribute('href', '#iac-final-cta');
@@ -287,6 +295,11 @@
 	function patchRussianHomepage() {
 		if (!isRu()) return;
 		patchQueued = false;
+		var homepageClassWasMissing = !document.documentElement.classList.contains('iah-home');
+		document.documentElement.classList.add('iah-home', 'iac-lang-ru');
+		if (homepageClassWasMissing) {
+			window.setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 50);
+		}
 		patchHeaderCta();
 		patchTimelineCtas();
 		patchPurchaseCards();
@@ -327,7 +340,7 @@
 			}
 			return;
 		}
-		if (nearbyContains(control, 'ПОЧЕМУ МЫ', 5)) {
+		if (control.closest('[data-iac-manifesto]')) {
 			[80, 250, 650].forEach(function (delay) {
 				window.setTimeout(function () {
 					if (window.iacHomeI18nApply) window.iacHomeI18nApply();

@@ -91,9 +91,18 @@
 	}
 
 	function schedule() {
-		[22000, 24000, 28000, 36000].forEach(function (delay) {
-			window.setTimeout(patch, delay);
-		});
+		// Hero messages are mounted progressively while the user scrolls through
+		// the scene. Poll only this bounded subtree after hydration has settled;
+		// stop automatically so this never becomes a live-page observer.
+		window.setTimeout(function () {
+			patch();
+			var runs = 0;
+			var timer = window.setInterval(function () {
+				patch();
+				runs += 1;
+				if (runs >= 276) window.clearInterval(timer);
+			}, 500);
+		}, 12000);
 	}
 
 	if (document.readyState === 'complete') schedule();
