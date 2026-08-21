@@ -62,6 +62,16 @@ class IAH_Home_Js_Localizer {
 			}
 		}
 
+		// Canonical homepage brief. This is intentionally merged last so the
+		// approved product copy replaces every legacy translation value.
+		$v2 = IAH_DIR . 'includes/i18n/ru-home-v2.php';
+		if ( is_readable( $v2 ) ) {
+			$approved = require $v2;
+			if ( is_array( $approved ) ) {
+				self::$map = array_merge( self::$map, $approved );
+			}
+		}
+
 		return self::$map;
 	}
 

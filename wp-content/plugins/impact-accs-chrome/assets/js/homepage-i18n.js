@@ -407,6 +407,37 @@
 		return changed;
 	}
 
+	function applyHeroCopy() {
+		if (!onHome || !hydrationReady()) {
+			return 0;
+		}
+		var hero = document.querySelector('[data-section="home-hero"]');
+		var list = getPairs();
+		if (!hero || !list.length) {
+			return 0;
+		}
+
+		var changed = 0;
+		var walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT, null);
+		var node;
+		while ((node = walker.nextNode())) {
+			var parent = node.parentElement;
+			if (!parent || parent.closest('script, style, canvas, svg, [data-loader-phase]')) {
+				continue;
+			}
+			var value = node.nodeValue;
+			if (!value || !/[A-Za-z]/.test(value)) {
+				continue;
+			}
+			var next = replaceInString(value, list);
+			if (next !== value) {
+				node.nodeValue = next;
+				changed += 1;
+			}
+		}
+		return changed;
+	}
+
 	function patchOpenMobileMenu() {
 		if (!onHome || readLang() !== 'ru') {
 			return;
@@ -542,6 +573,7 @@
 		}
 		var root = document.body || document.documentElement;
 		patchDesktopHeaderNav();
+		applyHeroCopy();
 		applyExact(root);
 		apply(root);
 		patchOpenMobileMenu();
