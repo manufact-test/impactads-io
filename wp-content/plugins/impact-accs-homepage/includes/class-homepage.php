@@ -380,91 +380,6 @@ class IAH_Homepage {
 	}
 
 	/**
-	 * Localize hero strings in both SSR markup and the embedded React payload.
-	 *
-	 * The static Next export carries the same copy twice. Replacing the approved
-	 * hero keys in the complete document keeps both representations identical,
-	 * so hydration starts in Russian without a client-side DOM mutation.
-	 *
-	 * @param string $html Exported Next.js document.
-	 * @return string
-	 */
-	private static function localize_ru_hero_document( $html ) {
-		$lang = class_exists( 'IAC_I18n' ) ? IAC_I18n::lang() : 'ru';
-		$file = IAH_DIR . 'includes/i18n/ru-home-v2.php';
-		if ( 'ru' !== $lang || ! is_readable( $file ) ) {
-			return $html;
-		}
-
-		$map  = require $file;
-		if ( ! is_array( $map ) ) {
-			return $html;
-		}
-		$keys = array(
-			'WELCOME TO IMPACT',
-			'WELCOME TO IMPACT.',
-			'Welcome to impact',
-			'Launch blocked — access needed',
-			'Buyer desk needs agency accounts before traffic goes live.',
-			'Supply stable',
-			'Repeat order channel active — terms unchanged.',
-			'Volume request — EU',
-			'50 accounts · GEO locked. Terms needed before 18:00.',
-			'Denis A.',
-			'@impact.accs Need EU accounts before launch.',
-			'Need EU accounts before launch.',
-			'VolumeRequestPending',
-			'AgencyAccounts',
-			'Terms confirmed at 9:11 AM. Preparing delivery now.',
-			'Request status',
-			'REQUEST STATUS',
-			'EU · 50 agency accounts — terms confirmed.',
-			'Delivery scheduled before the launch window.',
-			'Matching supply for AgencyAccounts.RequestEU().',
-			'Terms confirmed. Delivery scheduled before the launch window.',
-			'Access confirmed',
-			'Accounts delivered on agreed terms. Launch window open.',
-			'Working resource — request logged, supply matching.',
-			'Active channels: EU desk, Agency pool, +3 more',
-			'5 years supplying access — repeat orders active',
-			'Supply status',
-			'SUPPLY STATUS',
-			'Repeat order channel active. Terms unchanged.',
-			'Working resource ready for the next launch.',
-			'Repeat order confirmed — ',
-			'Supply confirmed',
-			'Supply matched',
-			'Terms confirmed. Delivery in progress.',
-			'Volume request — GEO: EU',
-			'Elena M.',
-			'Terms draft ready for EU · 50 accounts. Volume and GEO locked.',
-			'Volume terms',
-			'VOLUME TERMS',
-			'50 accounts · EU · delivery before 18:00.',
-			'Posted to #requests — volume logged.',
-			'Request logged — matching supply and terms.',
-			'Desk notified @team. Delivery queued.',
-			'Contact team',
-			'CONTACT TEAM',
-		);
-
-		$replacements = array();
-		foreach ( $keys as $key ) {
-			if ( isset( $map[ $key ] ) ) {
-				$replacements[ $key ] = $map[ $key ];
-			}
-		}
-		uksort(
-			$replacements,
-			static function ( $a, $b ) {
-				return strlen( $b ) - strlen( $a );
-			}
-		);
-
-		return str_replace( array_keys( $replacements ), array_values( $replacements ), $html );
-	}
-
-	/**
 	 * Merge iah-home + lang into the mirrored <html> tag (avoid duplicate class/lang attrs).
 	 *
 	 * @param string $html Document HTML.
@@ -552,7 +467,6 @@ class IAH_Homepage {
 		}
 
 		$html   = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$html   = self::localize_ru_hero_document( $html );
 		$prefix = self::asset_prefix();
 
 		$legacy_hosts = array(
@@ -654,11 +568,15 @@ class IAH_Homepage {
 			$tools_js  = esc_url( $iac_url . 'assets/js/header-tools.js?v=' . rawurlencode( $iac_ver ) );
 			$home_js   = esc_url( $iac_url . 'assets/js/home-chrome.js?v=' . rawurlencode( $iac_ver ) );
 			$i18n_js   = esc_url( $iac_url . 'assets/js/homepage-i18n.js?v=' . rawurlencode( $iac_ver ) );
+			$hero_js   = esc_url( IAH_URL . 'assets/js/hero-copy-ru.js?v=' . rawurlencode( IAH_VERSION ) );
 			// Do NOT inject chrome gsap.min.js / mobile-menu.js — they overwrite window.gsap
 			// and break Next.js ScrollTrigger (scroll city sections). Next bundles its own GSAP.
 			$inject   .= '<script src="' . $footer_js . '"></script>';
 			$inject   .= '<script src="' . $tools_js . '"></script>';
 			$inject   .= '<script src="' . $i18n_js . '"></script>';
+			if ( 'ru' === $lang ) {
+				$inject .= '<script src="' . $hero_js . '"></script>';
+			}
 			$inject   .= '<script src="' . $home_js . '"></script>';
 		}
 		if ( false !== stripos( $html, '</body>' ) ) {
