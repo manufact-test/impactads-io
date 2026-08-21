@@ -1218,13 +1218,13 @@ html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(.flex
 
 /* RU desktop: keep the three purchase tabs readable without changing sections below. */
 @media (min-width: 1024px) {
-	html.iah-home.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 {
+	html.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 {
 		gap: 8px !important;
 		margin-bottom: 28px !important;
 		flex-wrap: nowrap !important;
 	}
 
-	html.iah-home.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 > button > span {
+	html.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 > button > span {
 		min-width: 150px;
 		min-height: 34px;
 		padding: 6px 12px !important;
@@ -1236,7 +1236,7 @@ html.iah-home.iac-lang-ru main section:not([data-section="home-hero"]) :is(.flex
 		line-height: 1 !important;
 	}
 
-	html.iah-home.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 > button:nth-child(2) > span {
+	html.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 > button:nth-child(2) > span {
 		min-width: 190px;
 	}
 }
