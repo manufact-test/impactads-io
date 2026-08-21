@@ -386,34 +386,11 @@ class IAH_Homepage {
 	 * @return string
 	 */
 	private static function patch_home_html_tag( $html, $lang ) {
-		return preg_replace_callback(
-			'/<html\b([^>]*)>/i',
-			static function ( $matches ) use ( $lang ) {
-				$attrs = $matches[1];
-				$attrs = preg_replace( '/\sclass="iah-home"/i', '', $attrs );
-				$attrs = preg_replace( '/\slang="(?:en|ru)"/i', '', $attrs );
-
-				if ( preg_match( '/\bclass=(["\'])([^"\']*)\1/i', $attrs, $class_match ) ) {
-					$classes = trim( $class_match[2] );
-					if ( false === strpos( $classes, 'iah-home' ) ) {
-						$classes .= ' iah-home';
-					}
-					$attrs = preg_replace(
-						'/\bclass=(["\'])[^"\']*\1/i',
-						'class=$1' . esc_attr( $classes ) . '$1',
-						$attrs,
-						1
-					);
-				} else {
-					$attrs .= ' class="iah-home"';
-				}
-
-				$attrs .= ' lang="en"';
-				return '<html' . $attrs . '>';
-			},
-			$html,
-			1
-		);
+		// The mirrored Next app hydrates the document root. Changing <html>
+		// attributes on the server makes the browser DOM differ from the React
+		// payload and triggers recoverable error #418. Runtime chrome adds its
+		// marker class only after the native loader/hydration has completed.
+		return $html;
 	}
 
 	/**
@@ -571,13 +548,9 @@ class IAH_Homepage {
 		$favicon_tags .= '<link rel="apple-touch-icon" href="' . $favicon . '" />';
 		$html          = preg_replace( '/<head>/i', '<head>' . $favicon_tags, $html, 1 );
 
-		$chrome_early = self::chrome_waitlist_snippet();
-		if ( $chrome_early ) {
-			$html = preg_replace( '/<body([^>]*)>/i', '<body$1>' . $chrome_early, $html, 1 );
-		}
-
-		$inline  = class_exists( 'IAC_I18n' ) ? IAC_I18n::bootstrap_script() : '';
-		$inline .= self::gsap_guard_script();
+		// Never prepend custom nodes to <body>: Next hydrates the entire document
+		// and expects its first body child to match the exported React payload.
+		$inline  = self::gsap_guard_script();
 		// Do not replaceState to bare "/" — Hostinger CDN caches "/" per cookie and may serve stale Hello world.
 		$inline .= self::asset_rewrite_script( $prefix );
 		$inline .= self::waitlist_click_guard_script();
