@@ -272,7 +272,9 @@
 			loaderHandled = true;
 			showChrome();
 			revealFooterLinks();
-			queueRussianPatch();
+			// React hydrates the full mirrored document. Let its post-loader work
+			// settle before changing any React-owned text nodes.
+			window.setTimeout(queueRussianPatch, 5000);
 		}
 
 		if (!document.querySelector('[data-loader-phase][role="status"]')) {
