@@ -55,6 +55,11 @@
 		,['Open', 'ОТКРЫТ']
 		,['You', 'Вы']
 		,['Send', 'Отправить']
+		,['Supply status', 'СТАТУС ПОДБОРА']
+		,['Volume terms', 'УСЛОВИЯ ПО ОБЪЁМУ']
+		,['STATUS', 'СТАТУС']
+		,['APP', '24/7']
+		,[' AM', '']
 	];
 	pairs.sort(function (a, b) { return b[0].length - a[0].length; });
 

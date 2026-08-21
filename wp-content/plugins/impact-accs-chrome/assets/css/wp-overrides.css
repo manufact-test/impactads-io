@@ -1191,6 +1191,28 @@ html.iah-home .bg-card.w-\[150px\] p.text-\[8px\] {
 		flex-wrap: nowrap !important;
 	}
 
+	html.iah-home.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 {
+		gap: 8px !important;
+		margin-bottom: 28px !important;
+		flex-wrap: nowrap !important;
+	}
+
+	html.iah-home.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 > button > span {
+		min-width: 150px;
+		min-height: 34px;
+		padding: 6px 12px !important;
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: center;
+		white-space: nowrap !important;
+		font-size: 13px !important;
+		line-height: 1 !important;
+	}
+
+	html.iah-home.iac-lang-ru main .mb-6.flex.items-center.justify-center.gap-1 > button:nth-child(2) > span {
+		min-width: 190px;
+	}
+
 	html.iah-home.iac-lang-ru [data-iac-timeline-tab] > span {
 		min-width: 150px;
 		min-height: 34px;
@@ -1226,6 +1248,10 @@ html.iah-home .bg-card.w-\[150px\] p.text-\[8px\] {
 		min-height: 188px;
 	}
 
+	html.iah-home.iac-lang-ru .bg-card.w-\[150px\] {
+		min-height: 188px;
+	}
+
 	html.iah-home.iac-lang-ru [data-iac-assurance] .bg-card.w-\[150px\] :is(h3, p) {
 		text-align: center;
 		text-wrap: balance;
@@ -1233,8 +1259,8 @@ html.iah-home .bg-card.w-\[150px\] p.text-\[8px\] {
 	}
 
 	html.iah-home.iac-lang-ru [data-iac-final-cta] h3.text-h1 {
-		width: min(100%, 1040px);
-		max-width: 20ch;
+		width: min(90vw, 1040px);
+		max-width: none;
 		font-size: clamp(46px, 4.1vw, 68px) !important;
 		line-height: 0.96 !important;
 		letter-spacing: -0.035em;

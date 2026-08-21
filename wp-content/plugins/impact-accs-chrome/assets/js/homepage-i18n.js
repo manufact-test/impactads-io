@@ -508,19 +508,27 @@
 		if (!onHome || readLang() !== 'ru') {
 			return;
 		}
-		var map = getExactMap();
-		if (!map) {
+		var exactMap = getExactMap();
+		var map = mapSnapshot || (typeof iacData !== 'undefined' ? iacData.htmlReplacements : null);
+		if (!map && !exactMap) {
 			return;
 		}
-		var keys = ['Resource over noise', 'Working resource', 'Chaos is optional'];
+		var keys = [
+			'Resource over noise',
+			'Account sellers have accumulated noise over the years. None of it makes launches faster. If access is infrastructure, the best interface is direct contact — not screenshots, not emojis, not random chats.',
+			'Working resource',
+			'Random Telegram sellers used to be the norm. Structured supply is the strength — clear request, fast contact, working access under terms your team can trust.',
+			'Chaos is optional',
+			'Random sellers are broken. Unstable supply and vague terms. The future is structured access — clear request, fast contact, working resource.'
+		];
 		var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
 		var node;
 		while ((node = walker.nextNode())) {
 			var parent = node.parentElement;
-			if (!parent || shouldSkip(parent)) {
+			if (!parent) {
 				continue;
 			}
-			if (parent.closest('header, [data-main-menu], canvas, [data-scramble]')) {
+			if (parent.closest('header, [data-main-menu], canvas, [data-scramble], [data-section="home-hero"]')) {
 				continue;
 			}
 			var trimmed = normalizeText(node.nodeValue);
@@ -528,7 +536,7 @@
 				continue;
 			}
 			for (var i = 0; i < keys.length; i++) {
-				var ru = lookupMap(map, keys[i]);
+				var ru = lookupMap(exactMap, keys[i]) || lookupMap(map, keys[i]);
 				if (ru && trimmed === normalizeText(keys[i])) {
 					node.nodeValue = ru;
 					break;

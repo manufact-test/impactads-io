@@ -340,7 +340,8 @@
 			}
 			return;
 		}
-		if (control.closest('[data-iac-manifesto]')) {
+		var controlSection = control.closest('section');
+		if (controlSection && normalize(controlSection.textContent).indexOf('ПОЧЕМУ МЫ') !== -1) {
 			[80, 250, 650].forEach(function (delay) {
 				window.setTimeout(function () {
 					if (window.iacHomeI18nApply) window.iacHomeI18nApply();
