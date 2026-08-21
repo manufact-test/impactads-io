@@ -244,7 +244,7 @@
 				return true;
 			}
 			return !!el.closest(
-				'.iac-lang-switch, .notranslate, script, style, [data-iac-no-i18n], #iah-chrome-footer-root, #iac-home-lang-desktop, #iah-home-mobile-menu-lang, #iac-mobile-menu, [data-scramble], [data-iac-i18n-done], canvas, [data-loader-phase], svg'
+				'.iac-lang-switch, .notranslate, script, style, [data-iac-no-i18n], #iah-chrome-footer-root, #iac-home-lang-desktop, #iah-home-mobile-menu-lang, #iac-mobile-menu, [data-section="home-hero"], [data-scramble], [data-iac-i18n-done], canvas, [data-loader-phase], svg'
 			);
 		}
 		return !!el.closest(
@@ -553,7 +553,9 @@
 	window.iacHomeI18nPatchMobileMenu = patchOpenMobileMenu;
 
 	function startObserver() {
-		if (observerStarted || typeof MutationObserver === 'undefined' || !document.body) {
+		// The React/WebGPU homepage owns its live DOM. A body-wide observer can
+		// race React state transitions and blank the scene after scrolling.
+		if (onHome || observerStarted || typeof MutationObserver === 'undefined' || !document.body) {
 			return;
 		}
 		observerStarted = true;
