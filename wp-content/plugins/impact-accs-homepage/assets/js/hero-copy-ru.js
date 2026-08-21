@@ -10,6 +10,12 @@
 		['50 accounts · GEO locked. Terms needed before 18:00.', 'Десятки и сотни аккаунтов без простоев и поиска нового поставщика'],
 		['@impact.accs Need EU accounts before launch.', '@founderads Проверил: спенд, гео и валюта совпадают. Готов оплатить.'],
 		['Need EU accounts before launch.', 'Нужен аккаунт под залив?'],
+		[' Need EU accounts before launch.', ' Нужен аккаунт под залив?'],
+		[' terms and delivery for EU launch', ' Проверил: спенд, гео и валюта совпадают. Готов оплатить.'],
+		['confirm availability for EU and volume terms.', 'подтвердите наличие, объём и условия для команды.'],
+		[' lock terms and confirm delivery for this volume', ' Условия подходят. Зафиксируйте объём и график продаж.'],
+		['Repeat order confirmed — ', 'Подбор подтверждён — '],
+		[' supply stable', ' закрепите 50 аккаунтов и пришлите их на проверку.'],
 		['Terms confirmed at 9:11 AM. Preparing delivery now.', 'Нужен Google Ads аккаунт: спенд $2 000–3 000, USA, USD, под серую вертикаль.'],
 		['EU · 50 agency accounts — terms confirmed.', 'Спенд: $2 000–3 000 · Гео: USA · Валюта: USD'],
 		['Delivery scheduled before the launch window.', 'Оплата — после проверки. Замена — пока аккаунт не тронут.'],
@@ -40,6 +46,15 @@
 		['SCROLL DOWN', 'ЛИСТАЙТЕ ВНИЗ'],
 		['Denis A.', 'Медиабайер'],
 		['Elena M.', 'Команда']
+		,['Severity:', 'Приоритет:']
+		,['Status:', 'Статус:']
+		,['Next step', 'СЛЕДУЮЩИЙ ШАГ']
+		,['REQUEST ACCESS', 'СВЯЗАТЬСЯ']
+		,['Request', 'ЗАПРОС']
+		,['High', 'ВЫСОКИЙ']
+		,['Open', 'ОТКРЫТ']
+		,['You', 'Вы']
+		,['Send', 'Отправить']
 	];
 	pairs.sort(function (a, b) { return b[0].length - a[0].length; });
 
@@ -51,7 +66,7 @@
 		if (!isRussian()) return;
 		var hero = document.querySelector('[data-section="home-hero"]');
 		if (!hero) return;
-		hero.querySelectorAll('p,span,h1,h2,h3,h4,button,label').forEach(function (element) {
+		hero.querySelectorAll('div,p,span,h1,h2,h3,h4,button,label').forEach(function (element) {
 			if (element.closest('canvas,svg,[data-loader-phase]')) return;
 			var value = (element.textContent || '').replace(/\s+/g, ' ').trim();
 			for (var i = 0; i < pairs.length; i += 1) {
