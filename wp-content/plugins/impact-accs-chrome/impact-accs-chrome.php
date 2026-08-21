@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAC_VERSION', '2.4.56' );
+define( 'IAC_VERSION', '2.4.57' );
 define( 'IAC_FILE', __FILE__ );
 define( 'IAC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAC_URL', plugin_dir_url( __FILE__ ) );

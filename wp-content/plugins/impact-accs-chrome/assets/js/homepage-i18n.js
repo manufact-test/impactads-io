@@ -76,6 +76,7 @@
 	var observerStarted = false;
 	var bodyObserver = null;
 	var lastBodyRunAt = 0;
+	var homeBootedAt = Date.now();
 
 	if (iacData.htmlReplacements && typeof iacData.htmlReplacements === 'object') {
 		mapSnapshot = iacData.htmlReplacements;
@@ -85,7 +86,17 @@
 	}
 
 	function loaderActive() {
-		return !!document.querySelector('[data-loader-phase][role="status"]');
+		var loader = document.querySelector('[data-loader-phase][role="status"]');
+		if (!loader) {
+			return false;
+		}
+		try {
+			var style = window.getComputedStyle(loader);
+			var rect = loader.getBoundingClientRect();
+			return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && rect.width > 0 && rect.height > 0;
+		} catch (e) {
+			return true;
+		}
 	}
 
 	function noteLoaderDone() {
@@ -103,7 +114,9 @@
 	}
 
 	function hydrationReady() {
-		if (loaderActive()) {
+		// A hidden loader node can remain mounted indefinitely. Twenty seconds is
+		// also a conservative hard ceiling for the exported React app to settle.
+		if (loaderActive() && Date.now() - homeBootedAt < 20000) {
 			return false;
 		}
 		noteLoaderDone();
