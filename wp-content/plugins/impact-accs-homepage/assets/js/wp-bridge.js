@@ -278,7 +278,7 @@
 		if (!isRu()) return;
 		var control = event.target && event.target.closest ? event.target.closest('button, a') : null;
 		if (!control) return;
-		if (control.matches('[data-iac-scroll-final]') || normalize(control.textContent).indexOf('ПОДОБРАТЬ ПО СПЕНДУ') !== -1) {
+		if (control.matches('[data-iac-scroll-final], a[href*="/blog/manifesto"]') || normalize(control.textContent).indexOf('ПОДОБРАТЬ ПО СПЕНДУ') !== -1) {
 			var target = document.getElementById('iac-final-cta');
 			if (target) {
 				event.preventDefault();
