@@ -1,35 +1,20 @@
 # Hostinger Auto Deploy Result
 
-- status: SUCCESS
+- status: FAILED
 - final stage: committing deployed revision state
-- from: 2154966746fe353905aae071cf2a7e28dea839d5
-- to: d5826ea1d6133091b72f72fbb4dd5240d2d35f3c
+- from: unknown
+- to: e905511d927f0cf2f52e331a8ba3d47f57152807
 - document root: /home/u218517330/domains/impactads.io/public_html
-- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260824T113334Z
+- rollback directory: not-created
 
 ## Output
 ```text
 Deploy impactads.io
-CURRENT_SHA=d5826ea1d6133091b72f72fbb4dd5240d2d35f3c
+CURRENT_SHA=e905511d927f0cf2f52e331a8ba3d47f57152807
 ROOT=/home/u218517330/domains/impactads.io/public_html
-DEPLOYED_SHA=2154966746fe353905aae071cf2a7e28dea839d5
-Files to upload/update: 3
-Files to delete: 0
-New files (rollback tracking): 1
-Upload/update sample:
-wp-content/plugins/impact-accs-chrome/assets/js/team-supply-map-widget.js
-wp-content/plugins/impact-accs-chrome/includes/class-i18n.php
-wp-content/plugins/impact-accs-chrome/includes/i18n/ru-team-supply.php
-No syntax errors detected in wp-content/plugins/impact-accs-chrome/includes/class-i18n.php
-No syntax errors detected in wp-content/plugins/impact-accs-chrome/includes/i18n/ru-team-supply.php
-Rollback file archive prepared.
-Changed files uploaded.
-Remote PHP syntax validation passed.
-WP-CLI core check passed.
-HTTP / => 200
-HTTP /about/ => 200
-HTTP /blog/ => 200
-HTTP /contact/ => 200
-HTTP /application/ => 200
-Server deployment SHA advanced to d5826ea1d6133091b72f72fbb4dd5240d2d35f3c
+Host key scan attempt 1 failed; retrying.
+Host key scan attempt 2 failed; retrying.
+Host key scan attempt 3 failed; retrying.
+Host key scan unavailable; SSH will use StrictHostKeyChecking=accept-new on the authenticated connection.
+ERROR: Expected WordPress markers are missing from target root.
 ```
