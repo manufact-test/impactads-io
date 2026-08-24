@@ -26,22 +26,24 @@ return static function ( $html ) {
 		return substr_replace( $source, $replace, $position, strlen( $search ) );
 	};
 
-	/* Buttons use different copy on the hero, process screen and final form. */
-	$html = $replace_once( $html, '>Request access<', '>СОГЛАСОВАТЬ ПОСТАВКУ<' );
-	$html = $replace_once( $html, '>Request access<', '>ОБСУДИТЬ ОБЪЁМ<' );
+	/* Contextual replacements belong only to the feature template, not footer. */
+	if ( false !== strpos( $html, 'iac-feature-team' ) ) {
+		$html = $replace_once( $html, '>Request access<', '>СОГЛАСОВАТЬ ПОСТАВКУ<' );
+		$html = $replace_once( $html, '>Request access<', '>ОБСУДИТЬ ОБЪЁМ<' );
 
-	/* The same encoded paragraph is reused on screens three and four. */
-	$shared_encoded = 'Ask what&#x27;s available, what&#x27;s pending, and what blocks your launch — in plain language. One channel for availability, terms, and delivery.';
-	$html = $replace_once(
-		$html,
-		$shared_encoded,
-		'Список под объём, трастовые аккаунты с белой историей и быстрая замена позиции. Команда продолжает залив, а не ищет нового продавца.'
-	);
-	$html = $replace_once(
-		$html,
-		$shared_encoded,
-		'Один владелец ведёт весь цикл: принимает запрос, подтверждает список, передаёт аккаунты на проверку, решает замены и собирает следующую поставку.'
-	);
+		/* The same encoded paragraph is reused on screens three and four. */
+		$shared_encoded = 'Ask what&#x27;s available, what&#x27;s pending, and what blocks your launch — in plain language. One channel for availability, terms, and delivery.';
+		$html = $replace_once(
+			$html,
+			$shared_encoded,
+			'Список под объём, трастовые аккаунты с белой историей и быстрая замена позиции. Команда продолжает залив, а не ищет нового продавца.'
+		);
+		$html = $replace_once(
+			$html,
+			$shared_encoded,
+			'Один владелец ведёт весь цикл: принимает запрос, подтверждает список, передаёт аккаунты на проверку, решает замены и собирает следующую поставку.'
+		);
+	}
 
 	$map = array(
 		/* Hero. */
