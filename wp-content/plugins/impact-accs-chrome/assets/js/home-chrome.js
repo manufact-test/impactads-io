@@ -75,7 +75,7 @@
 			);
 		}
 		return (
-			'<div class="iac-lang-switch iac-lang-switch--pill notranslate" role="group" aria-label="Language">' +
+			'<div class="iac-lang-switch iac-lang-switch--pill notranslate" role="group" aria-label="' + (lang === 'ru' ? 'Язык' : 'Language') + '">' +
 			btn('en') +
 			'<span class="iac-lang-switch__sep" aria-hidden="true">/</span>' +
 			btn('ru') +
