@@ -238,6 +238,22 @@
 		if (!section) return;
 		section.id = 'iac-final-cta';
 
+		var finalHeadings = section.querySelectorAll('h1, h2, h3');
+		for (var headingIndex = 0; headingIndex < finalHeadings.length; headingIndex += 1) {
+			var finalHeading = finalHeadings[headingIndex];
+			if (normalize(finalHeading.textContent) !== 'ПОЛУЧИТЕ АККАУНТ. ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.') continue;
+
+			while (finalHeading.firstChild) finalHeading.removeChild(finalHeading.firstChild);
+			['ПОЛУЧИТЕ АККАУНТ.', 'ПРОВЕРЬТЕ.', 'ПОТОМ ПЛАТИТЕ.'].forEach(function (line) {
+				var lineElement = document.createElement('span');
+				lineElement.className = 'iac-final-cta__line';
+				lineElement.style.display = 'block';
+				lineElement.textContent = line;
+				finalHeading.appendChild(lineElement);
+			});
+			break;
+		}
+
 		var sections = document.querySelectorAll('main section, section');
 		for (var i = 0; i < sections.length; i += 1) {
 			var reviewText = normalize(sections[i].textContent).toUpperCase();
