@@ -41,6 +41,7 @@ $base = array(
 	'Sound: ON'     => 'Звук: вкл',
 	'Sound: on'     => 'Звук: вкл',
 	'Sound: off'    => 'Звук: выкл',
+	'Sound: locked' => 'Звук: выкл',
 	'Sound: '       => 'Звук: ',
 	'Enable sound'  => 'Включить звук',
 	'Unmute sound'  => 'Включить звук',

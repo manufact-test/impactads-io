@@ -376,11 +376,11 @@
 			changed += 1;
 		});
 
-		root.querySelectorAll('[aria-label],[title],[placeholder]').forEach(function (el) {
+		root.querySelectorAll('[aria-label],[title],[placeholder],[alt]').forEach(function (el) {
 			if (shouldSkip(el)) {
 				return;
 			}
-			['aria-label', 'title', 'placeholder'].forEach(function (attr) {
+			['aria-label', 'title', 'placeholder', 'alt'].forEach(function (attr) {
 				var value = el.getAttribute(attr);
 				var translated = value ? lookupMap(map, value) : null;
 				if (translated) {
@@ -504,6 +504,25 @@
 		}
 	}
 
+	function patchHeaderUtilities() {
+		if (!onHome || readLang() !== 'ru') {
+			return;
+		}
+		var header = document.querySelector('header');
+		if (header) {
+			var sound = header.querySelector('button[aria-label]');
+			if (sound) {
+				applyExactSafe(sound);
+				var current = sound.getAttribute('aria-label');
+				var translated = current ? lookupMap(getExactMap(), current) : null;
+				if (translated) sound.setAttribute('aria-label', translated);
+			}
+		}
+		document.querySelectorAll('.iac-lang-switch[aria-label]').forEach(function (switcher) {
+			switcher.setAttribute('aria-label', 'Язык');
+		});
+	}
+
 	function patchMorphTitles() {
 		if (!onHome || readLang() !== 'ru') {
 			return;
@@ -545,11 +564,35 @@
 		}
 	}
 
+	function patchLocalizedAssets() {
+		if (!onHome || readLang() !== 'ru') {
+			return;
+		}
+
+		var assetBase = typeof iacData !== 'undefined' && iacData.assetBase ? iacData.assetBase : '/wp-content/plugins/impact-accs-homepage/assets/site/';
+		assetBase = assetBase.replace(/\/?$/, '/');
+		var heroImage = document.querySelector('img[src*="homepage-hero.66784594.webp"]');
+		if (heroImage) {
+			heroImage.removeAttribute('srcset');
+			heroImage.removeAttribute('srcSet');
+			heroImage.setAttribute('alt', 'Панель подбора аккаунтов impact.');
+			var ruImage = assetBase + '_next/static/media/homepage-hero-ru.webp';
+			if (heroImage.getAttribute('src') !== ruImage) {
+				heroImage.setAttribute('src', ruImage);
+			}
+		}
+
+		document.querySelectorAll('a[href="https://t.me/impactaccs"], a[href="https://wa.me/"]').forEach(function (link) {
+			link.setAttribute('href', 'https://t.me/founderads');
+		});
+	}
+
 	function runHeaderOnly() {
 		if (!onHome || !headerReady()) {
 			return;
 		}
 		patchDesktopHeaderNav();
+		patchHeaderUtilities();
 	}
 
 	function run() {
@@ -563,8 +606,10 @@
 		}
 		var root = document.body || document.documentElement;
 		patchDesktopHeaderNav();
+		patchHeaderUtilities();
 		applyExact(root);
 		apply(root);
+		patchLocalizedAssets();
 		patchOpenMobileMenu();
 		patchMenuButtonLabel();
 		patchMorphTitles();

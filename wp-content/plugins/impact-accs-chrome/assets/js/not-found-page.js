@@ -19,6 +19,9 @@
 	var statusTitle = document.getElementById('iac-nf-status-title');
 	var bossBanner = document.getElementById('iac-nf-boss-banner');
 	var actionsPlaying = document.getElementById('iac-nf-actions-playing');
+	var isRu = document.documentElement.lang === 'ru' || document.documentElement.classList.contains('iac-lang-ru');
+	var scoreLabel = isRu ? 'СЧЁТ' : 'SCORE';
+	var waveLabel = isRu ? 'УРОВЕНЬ' : 'WAVE';
 
 	var game = window.IACSpaceInvaders(canvas, {});
 	game.start();
@@ -33,7 +36,7 @@
 				'<svg viewBox="0 0 10 10" class="iac-nf-life"><polygon points="5,1 9,5 5,9 1,5"></polygon></svg>';
 		}
 		livesEl.innerHTML = html;
-		livesEl.setAttribute('aria-label', count + ' lives remaining');
+		livesEl.setAttribute('aria-label', isRu ? 'Осталось жизней: ' + count : count + ' lives remaining');
 	}
 
 	function setVisible(el, show) {
@@ -59,10 +62,10 @@
 
 	function applyState(state, score, wave, lives) {
 		if (scoreEl) {
-			scoreEl.textContent = 'SCORE ' + String(score).padStart(6, '0');
+			scoreEl.textContent = scoreLabel + ' ' + String(score).padStart(6, '0');
 		}
 		if (waveEl) {
-			waveEl.textContent = 'WAVE ' + wave;
+			waveEl.textContent = waveLabel + ' ' + wave;
 		}
 		renderLives(lives);
 
@@ -83,7 +86,11 @@
 		setVisible(statusCard, ended);
 		setVisible(actionsPlaying, playing);
 		if (statusTitle && ended) {
-			statusTitle.innerHTML = state === 'won' ? 'System<br>cleared' : 'System<br>down';
+			if (isRu) {
+				statusTitle.innerHTML = state === 'won' ? 'Система<br>восстановлена' : 'Система<br>не отвечает';
+			} else {
+				statusTitle.innerHTML = state === 'won' ? 'System<br>cleared' : 'System<br>down';
+			}
 		}
 	}
 

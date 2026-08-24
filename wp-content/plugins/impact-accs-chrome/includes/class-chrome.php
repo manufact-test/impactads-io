@@ -744,6 +744,7 @@ class IAC_Chrome {
 	 */
 	public function ajax_submit_access() {
 		check_ajax_referer( 'iac_access', 'nonce' );
+		$is_ru = class_exists( 'IAC_I18n' ) && IAC_I18n::is_ru();
 
 		$first     = isset( $_POST['firstName'] ) ? sanitize_text_field( wp_unslash( $_POST['firstName'] ) ) : '';
 		$last      = isset( $_POST['lastName'] ) ? sanitize_text_field( wp_unslash( $_POST['lastName'] ) ) : '';
@@ -759,7 +760,7 @@ class IAC_Chrome {
 		if ( 'contact' === $form_type ) {
 			if ( '' === $first || '' === $last || ! is_email( $email ) || '' === $topic || '' === $message ) {
 				wp_send_json_error(
-					array( 'message' => __( 'Please fill in all required fields.', 'impact-accs-chrome' ) ),
+					array( 'message' => $is_ru ? 'Заполните все обязательные поля.' : __( 'Please fill in all required fields.', 'impact-accs-chrome' ) ),
 					400
 				);
 			}
@@ -777,14 +778,14 @@ class IAC_Chrome {
 
 			wp_send_json_success(
 				array(
-					'message' => __( "Message sent. We'll get back to you shortly.", 'impact-accs-chrome' ),
+					'message' => $is_ru ? 'Сообщение отправлено. Владелец impact. скоро ответит.' : __( "Message sent. We'll get back to you shortly.", 'impact-accs-chrome' ),
 				)
 			);
 		}
 
 		if ( '' === $first || '' === $last || ! is_email( $email ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Please fill in all required fields.', 'impact-accs-chrome' ) ),
+				array( 'message' => $is_ru ? 'Заполните все обязательные поля.' : __( 'Please fill in all required fields.', 'impact-accs-chrome' ) ),
 				400
 			);
 		}
@@ -801,7 +802,7 @@ class IAC_Chrome {
 
 		wp_send_json_success(
 			array(
-				'message' => __( "You're in. We'll be in touch when it's your turn.", 'impact-accs-chrome' ),
+				'message' => $is_ru ? 'Заявка отправлена. Владелец impact. скоро ответит.' : __( "You're in. We'll be in touch when it's your turn.", 'impact-accs-chrome' ),
 			)
 		);
 	}
@@ -850,6 +851,8 @@ class IAC_Chrome {
 			'?waitlist=true'                     => class_exists( 'IAC_Application_Page' ) ? IAC_Application_Page::url() : home_url( '/application/' ),
 			'/application'                       => class_exists( 'IAC_Application_Page' ) ? IAC_Application_Page::url() : home_url( '/application/' ),
 			'?contact=true'                      => class_exists( 'IAC_Contact_Page' ) ? IAC_Contact_Page::url() : $home . 'contact/',
+			'https://t.me/impactaccs'             => 'https://t.me/founderads',
+			'https://wa.me/'                      => 'https://t.me/founderads',
 			'/about'                             => class_exists( 'IAC_About_Page' ) ? IAC_About_Page::url() : $this->page_url( 'about', $home . 'about/' ),
 			'/blog'                              => class_exists( 'IAC_Blog_Page' ) ? IAC_Blog_Page::url() : $this->page_url( 'blog', $home . 'blog/' ),
 			'/'                                  => $home,

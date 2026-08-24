@@ -54,6 +54,8 @@ return static function ( $html ) {
 		'Random account shops make you hunt for supply. impact.accs works as your resource layer — clear terms, fast contact, repeat orders.' => 'Десятки аккаунтов под текущий залив, подбор под несколько связок или регулярные продажи сотен позиций. Везде — проверка до оплаты и контакт с владельцем.',
 		'>Platform Access<' => '>ПОД ТЕКУЩИЙ ЗАЛИВ<',
 		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what&#x27;s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунтов по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
+		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what\'s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунтов по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
+		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what’s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунтов по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
 		'>Agency Accounts<' => '>ДЛЯ МЕДИАБАИНГА<',
 		'Random sellers fail when launch windows close. Verified agency accounts through one channel — availability, terms, and handoff before you go live.' => 'Соберём несколько связок в один заказ. Разные тиры при USA и USD — с проверкой каждой позиции и одним ответственным со стороны impact.',
 		'>Team Supply<' => '>РЕГУЛЯРНЫЕ ПРОДАЖИ<',

@@ -20,4 +20,6 @@ return array(
 	'blog' => 'Блог',
 	'menu' => 'Меню',
 	'wave' => 'ВОЛНА',
+	'language' => 'Язык',
+	'brand' => 'impact.',
 );
