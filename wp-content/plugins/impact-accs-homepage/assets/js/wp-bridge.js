@@ -307,12 +307,6 @@
 			loaderHandled = true;
 			showChrome();
 			revealFooterLinks();
-			// Nested client-only hero content hydrates after the loader disappears.
-			// Reuse the existing safe five-second boundary: one pass replaces the
-			// former 22-36 second timer chain without racing React hydration.
-			window.setTimeout(function () {
-				if (window.iahApplyRuHeroCopy) window.iahApplyRuHeroCopy();
-			}, 5000);
 			// The rest of the long page keeps the conservative post-loader delay.
 			window.setTimeout(queueRussianPatch, 5000);
 		}

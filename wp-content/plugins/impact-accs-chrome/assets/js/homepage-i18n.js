@@ -737,6 +737,11 @@
 				return;
 			}
 			run();
+			// Hero copy shares this single post-hydration boundary. Keeping it out
+			// of the later retry timers avoids repeated writes to React-owned nodes.
+			if (window.iahApplyRuHeroCopy) {
+				window.iahApplyRuHeroCopy();
+			}
 			window.setTimeout(run, 400);
 			window.setTimeout(run, 1200);
 			window.setTimeout(run, 3000);
