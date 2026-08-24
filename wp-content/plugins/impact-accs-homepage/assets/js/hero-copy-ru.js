@@ -4,6 +4,7 @@
 	var pairs = [
 		['Launch blocked — access needed', 'Команде нужен аккаунт под залив'],
 		['Buyer desk needs agency accounts before traffic goes live.', 'Подбор по спенду, USA и USD с проверкой до оплаты.'],
+		['Buyer desk needs agency accounts before traffic goes live. GEO: EU.', 'Подбор по спенду, USA и USD с проверкой до оплаты.'],
 		['Supply stable', 'Медиабаингу нужны трастовые аккаунты'],
 		['Repeat order channel active — terms unchanged.', 'Десятки аккаунтов от одного поставщика: проверка до оплаты и связь с владельцем.'],
 		['Volume request — EU', 'Команде нужен стабильный объём аккаунтов'],
@@ -55,11 +56,18 @@
 		,['Open', 'ОТКРЫТ']
 		,['You', 'Вы']
 		,['Send', 'Отправить']
+		,['Request access', 'ЗАПРОС ДОСТУПА']
+		,['ЗАПРОС access', 'ЗАПРОС ДОСТУПА']
+		,['ЗАПРОС status', 'СТАТУС ЗАПРОСА']
+		,['Supply status', 'СТАТУС ПОДБОРА']
+		,['Volume terms', 'УСЛОВИЯ ПО ОБЪЁМУ']
+		,['Contact team', 'СВЯЗАТЬСЯ С КОМАНДОЙ']
+		,['APP', '24/7']
 	];
 	pairs.sort(function (a, b) { return b[0].length - a[0].length; });
 
 	function isRussian() {
-		return document.documentElement.lang === 'ru' || document.documentElement.classList.contains('iac-lang-ru');
+		return (window.iacData && window.iacData.lang === 'ru') || document.documentElement.lang === 'ru' || document.documentElement.classList.contains('iac-lang-ru');
 	}
 
 	function patch() {
@@ -97,12 +105,8 @@
 		}
 	}
 
-	function schedule() {
-		[22000, 24000, 28000, 36000].forEach(function (delay) {
-			window.setTimeout(patch, delay);
-		});
+	window.iahApplyRuHeroCopy = patch;
+	if (!document.querySelector('[data-loader-phase][role="status"]')) {
+		window.requestAnimationFrame(patch);
 	}
-
-	if (document.readyState === 'complete') schedule();
-	else window.addEventListener('load', schedule, { once: true });
 })();

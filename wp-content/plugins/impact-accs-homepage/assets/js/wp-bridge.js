@@ -305,10 +305,14 @@
 		function onLoaderDone() {
 			if (loaderHandled) return;
 			loaderHandled = true;
+			// The loader disappears only after the mirrored React document has
+			// hydrated. Patch the first visible frame before revealing the chrome.
+			if (window.iacHomeI18nApply) window.iacHomeI18nApply();
+			patchHeaderCta();
+			if (window.iahApplyRuHeroCopy) window.iahApplyRuHeroCopy();
 			showChrome();
 			revealFooterLinks();
-			// React hydrates the full mirrored document. Let its post-loader work
-			// settle before changing any React-owned text nodes.
+			// The rest of the long page keeps the conservative post-loader delay.
 			window.setTimeout(queueRussianPatch, 5000);
 		}
 
