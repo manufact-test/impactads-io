@@ -104,6 +104,61 @@ class IAC_I18n {
 	}
 
 	/**
+	 * Is the current request the Platform Access account page?
+	 *
+	 * @return bool
+	 */
+	private static function is_platform_access_request() {
+		if ( class_exists( 'IAC_Feature_Page' ) && method_exists( 'IAC_Feature_Page', 'get_slug' ) ) {
+			$slug = IAC_Feature_Page::get_slug();
+			if ( '' !== $slug ) {
+				return 'platform-access' === $slug;
+			}
+		}
+
+		$request = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		if ( ! is_string( $request ) || '' === $request ) {
+			return false;
+		}
+
+		$path = trim( (string) parse_url( $request, PHP_URL_PATH ), '/' );
+		return in_array(
+			$path,
+			array(
+				'accounts/platform-access',
+				'features/conversational-debugging',
+			),
+			true
+		);
+	}
+
+	/**
+	 * Apply page-specific Platform Access copy before the global RU map.
+	 *
+	 * Kept in a separate file so identical English labels can be translated
+	 * differently by screen without touching React, hydration or live DOM.
+	 *
+	 * @param string $html Template HTML.
+	 * @return string
+	 */
+	private static function localize_platform_access_html( $html ) {
+		static $loaded    = false;
+		static $localizer = null;
+
+		if ( ! $loaded ) {
+			$file = IAC_DIR . 'includes/i18n/ru-platform-access.php';
+			$localizer = is_readable( $file ) ? require $file : null;
+			$loaded = true;
+		}
+
+		if ( is_callable( $localizer ) ) {
+			return $localizer( $html );
+		}
+
+		return $html;
+	}
+
+	/**
 	 * Replace English copy in rendered HTML.
 	 *
 	 * @param string $html Template HTML.
@@ -112,6 +167,10 @@ class IAC_I18n {
 	public static function localize_html( $html ) {
 		if ( ! self::is_ru() || '' === $html ) {
 			return $html;
+		}
+
+		if ( self::is_platform_access_request() ) {
+			$html = self::localize_platform_access_html( $html );
 		}
 
 		$map = self::html_map();
