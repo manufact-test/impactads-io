@@ -20,6 +20,8 @@
 
 	function scheduleMorphPatch() {
 		patchMorphTitles();
+		patchHeaderUtilities();
+		patchAccessibilityLabels();
 	}
 
 	function startMorphWatcher() {
@@ -58,6 +60,33 @@
 			return iacData.lang;
 		}
 		return 'en';
+	}
+
+	function patchHomepageSeo() {
+		if (!onHome || typeof iacData === 'undefined') {
+			return;
+		}
+		var title = iacData.seoTitle || '';
+		var description = iacData.seoDescription || '';
+		if (title) {
+			document.title = title;
+			document.querySelectorAll('meta[property="og:title"],meta[name="twitter:title"]').forEach(function (meta) {
+				meta.setAttribute('content', title);
+			});
+		}
+		if (description) {
+			document.querySelectorAll('meta[name="description"],meta[property="og:description"],meta[name="twitter:description"]').forEach(function (meta) {
+				meta.setAttribute('content', description);
+			});
+		}
+	}
+
+	if (onHome) {
+		var scheduleSeo = function () {
+			window.setTimeout(patchHomepageSeo, 5500);
+		};
+		if (document.readyState === 'complete') scheduleSeo();
+		else window.addEventListener('load', scheduleSeo, { once: true });
 	}
 
 	if (readLang() !== 'ru') {
@@ -510,7 +539,7 @@
 		}
 		var header = document.querySelector('header');
 		if (header) {
-			var sound = header.querySelector('button[aria-label]');
+			var sound = header.querySelector('button[aria-label*="sound" i], button[aria-label*="звук" i]');
 			if (sound) {
 				applyExactSafe(sound);
 				var current = sound.getAttribute('aria-label');
@@ -518,8 +547,28 @@
 				if (translated) sound.setAttribute('aria-label', translated);
 			}
 		}
-		document.querySelectorAll('.iac-lang-switch[aria-label]').forEach(function (switcher) {
+		document.querySelectorAll('.iac-lang-switch[aria-label], [role="group"][aria-label="Language"]').forEach(function (switcher) {
 			switcher.setAttribute('aria-label', 'Язык');
+		});
+	}
+
+	function patchAccessibilityLabels() {
+		if (!onHome || readLang() !== 'ru') {
+			return;
+		}
+		var map = getExactMap();
+		if (!map || !document.body) {
+			return;
+		}
+		document.body.querySelectorAll('[aria-label],[title],[placeholder],[alt]').forEach(function (el) {
+			if (el.closest('canvas,svg,[data-loader-phase],[data-scramble]')) {
+				return;
+			}
+			['aria-label', 'title', 'placeholder', 'alt'].forEach(function (attr) {
+				var value = el.getAttribute(attr);
+				var translated = value ? lookupMap(map, value) : null;
+				if (translated) el.setAttribute(attr, translated);
+			});
 		});
 	}
 
@@ -607,8 +656,10 @@
 		var root = document.body || document.documentElement;
 		patchDesktopHeaderNav();
 		patchHeaderUtilities();
+		patchHomepageSeo();
 		applyExact(root);
 		apply(root);
+		patchAccessibilityLabels();
 		patchLocalizedAssets();
 		patchOpenMobileMenu();
 		patchMenuButtonLabel();

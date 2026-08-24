@@ -37,6 +37,7 @@ $base = array(
 	'Sound: locked' => 'Звук: выкл',
 	'SOUND: OFF'    => 'ЗВУК: ВЫКЛ',
 	'SOUND: ON'     => 'ЗВУК: ВКЛ',
+	'SOUND: LOCKED' => 'ЗВУК: ВЫКЛ',
 	'Sound: OFF'    => 'Звук: выкл',
 	'Sound: ON'     => 'Звук: вкл',
 	'Sound: on'     => 'Звук: вкл',
