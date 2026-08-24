@@ -104,6 +104,27 @@ class IAC_I18n {
 	}
 
 	/**
+	 * Is the current request the About page?
+	 *
+	 * @return bool
+	 */
+	private static function is_about_request() {
+		if ( class_exists( 'IAC_About_Page' ) && method_exists( 'IAC_About_Page', 'is_about_page' ) ) {
+			if ( IAC_About_Page::is_about_page() ) {
+				return true;
+			}
+		}
+
+		$request = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		if ( ! is_string( $request ) || '' === $request ) {
+			return false;
+		}
+
+		$path = trim( (string) parse_url( $request, PHP_URL_PATH ), '/' );
+		return 'about' === $path;
+	}
+
+	/**
 	 * Is the current request the Platform Access account page?
 	 *
 	 * @return bool
@@ -191,6 +212,29 @@ class IAC_I18n {
 	}
 
 	/**
+	 * Apply page-specific About copy before the global RU map.
+	 *
+	 * @param string $html Template HTML.
+	 * @return string
+	 */
+	private static function localize_about_html( $html ) {
+		static $loaded    = false;
+		static $localizer = null;
+
+		if ( ! $loaded ) {
+			$file = IAC_DIR . 'includes/i18n/ru-about.php';
+			$localizer = is_readable( $file ) ? require $file : null;
+			$loaded = true;
+		}
+
+		if ( is_callable( $localizer ) ) {
+			return $localizer( $html );
+		}
+
+		return $html;
+	}
+
+	/**
 	 * Apply page-specific Platform Access copy before the global RU map.
 	 *
 	 * Kept in a separate file so identical English labels can be translated
@@ -273,7 +317,9 @@ class IAC_I18n {
 			return $html;
 		}
 
-		if ( self::is_platform_access_request() ) {
+		if ( self::is_about_request() ) {
+			$html = self::localize_about_html( $html );
+		} elseif ( self::is_platform_access_request() ) {
 			$html = self::localize_platform_access_html( $html );
 		} elseif ( self::is_agency_accounts_request() ) {
 			$html = self::localize_agency_accounts_html( $html );
