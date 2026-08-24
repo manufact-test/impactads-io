@@ -199,8 +199,9 @@
 	}
 
 	function patchManifesto() {
-		var section = closestSectionWithText('ПОЧЕМУ МЫ');
+		var section = closestSectionWithText('ПОЧЕМУ МЫ') || closestSectionWithText('WHY US') || closestSectionWithText('Why Us');
 		if (!section) return;
+
 		replaceTextNodes(section, {
 			'Resource over noise': 'ТОЛЬКО СПЕНД. БЕЗ ПУСТОГО ФАРМА.',
 			'Account sellers have accumulated noise over the years. None of it makes launches faster. If access is infrastructure, the best interface is direct contact — not screenshots, not emojis, not random chats.': 'Мы продаём Google Ads аккаунты с реальной историей открутки. Не автореги и не фарм без трат: у аккаунта уже есть спенд, а значит — накопленный траст, выше лимиты, мягче модерация и меньше проверок при первом заливе. Вы платите за готовый рабочий ресурс и экономите время на самостоятельном прогреве перед заливом.',
@@ -209,25 +210,26 @@
 			'Chaos is optional': 'ПОСТАВЩИК, КОТОРОГО НЕ НУЖНО МЕНЯТЬ',
 			'Random sellers are broken. Unstable supply and vague terms. The future is structured access — clear request, fast contact, working resource.': 'Аккаунт не заходит или не соответствует заявленному спенду, гео или валюте — заменяем, пока вы не внесли в него изменения. Без тикетов, мелкого шрифта и споров. По каждой покупке на связи лично владелец, поддержка работает 24/7. За impact. — 7 лет на рынке, 15 000 выданных аккаунтов и 100+ активных команд.'
 		});
-		var link = section.querySelector('a[href*="/blog/manifesto"], a[data-iac-scroll-final]');
-		if (!link) return;
 
-		link.setAttribute('href', '#iac-final-cta');
-		link.setAttribute('data-iac-scroll-final', '1');
-		var currentTitle = '';
-		section.querySelectorAll('h3').forEach(function (heading) {
-			if (!currentTitle && normalize(heading.textContent)) currentTitle = normalize(heading.textContent);
-		});
+		Array.prototype.forEach.call(section.querySelectorAll('a'), function (link) {
+			var text = normalize(link.textContent).toLowerCase();
+			var href = (link.getAttribute('href') || '').toLowerCase();
+			var isAction = /read|learn|подробнее|связаться|подобрать|получить/.test(text) ||
+				href.indexOf('/blog/manifesto') !== -1 ||
+				href.indexOf('/features/') !== -1 ||
+				href.indexOf('#iac-final-cta') !== -1;
+			if (!isAction) return;
 
-		var label = 'ПОДОБРАТЬ АККАУНТ';
-		if (currentTitle.indexOf('ТОЛЬКО СПЕНД') !== -1) label = 'ПОДОБРАТЬ ПО СПЕНДУ';
-		if (currentTitle.indexOf('СНАЧАЛА ПРОВЕРЯЕТЕ') !== -1) label = 'ПОЛУЧИТЬ НА ПРОВЕРКУ';
-		replaceTextNodes(link, {
-			'Read Blog': label,
-			'Читать блог': label,
-			'ПОДОБРАТЬ АККАУНТ': label,
-			'ПОДОБРАТЬ ПО СПЕНДУ': label,
-			'ПОЛУЧИТЬ НА ПРОВЕРКУ': label
+			link.setAttribute('href', '#iac-final-cta');
+			link.setAttribute('data-iac-scroll-final', '1');
+
+			var walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
+			var node;
+			while ((node = walker.nextNode())) {
+				if (!normalize(node.nodeValue)) continue;
+				node.nodeValue = 'СВЯЗАТЬСЯ';
+				break;
+			}
 		});
 	}
 
@@ -235,13 +237,59 @@
 		var section = closestSectionWithText('ПОЛУЧИТЕ АККАУНТ. ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.') || document.querySelector('footer');
 		if (!section) return;
 		section.id = 'iac-final-cta';
-		replaceTextNodes(section, {
-			'Apply': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
-			'Request access': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
-			'REQUEST ACCESS': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
-			'Связаться': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ',
-			'СВЯЗАТЬСЯ': 'ПОЛУЧИТЬ АККАУНТ НА ПРОВЕРКУ'
-		});
+
+		var sections = document.querySelectorAll('main section, section');
+		for (var i = 0; i < sections.length; i += 1) {
+			var reviewText = normalize(sections[i].textContent).toUpperCase();
+			if (!reviewText || reviewText.length > 9000) continue;
+			var ruReviews = reviewText.indexOf('КЛИЕНТЫ') !== -1 && reviewText.indexOf('ОТЗЫВЫ') !== -1;
+			var enReviews = reviewText.indexOf('CUSTOMER') !== -1 && reviewText.indexOf('REVIEWS') !== -1;
+			if (ruReviews || enReviews) {
+				sections[i].remove();
+				break;
+			}
+		}
+
+		var form = section.querySelector('form');
+		var existing = section.querySelector('.iac-telegram-cta');
+		if (existing) {
+			if (form) form.remove();
+			return;
+		}
+		if (!form) return;
+
+		var link = document.createElement('a');
+		link.className = 'iac-telegram-cta';
+		link.href = 'https://t.me/founderads';
+		link.target = '_blank';
+		link.rel = 'noopener noreferrer';
+		link.setAttribute('aria-label', 'Связаться в Telegram');
+
+		var signal = document.createElement('span');
+		signal.className = 'iac-telegram-cta__signal';
+		signal.setAttribute('aria-hidden', 'true');
+		signal.appendChild(document.createElement('span'));
+
+		var copy = document.createElement('span');
+		copy.className = 'iac-telegram-cta__copy';
+		var status = document.createElement('span');
+		status.className = 'iac-telegram-cta__status';
+		status.textContent = 'НА СВЯЗИ';
+		var title = document.createElement('span');
+		title.className = 'iac-telegram-cta__title';
+		title.textContent = 'НАПИСАТЬ В TELEGRAM';
+		copy.appendChild(status);
+		copy.appendChild(title);
+
+		var arrow = document.createElement('span');
+		arrow.className = 'iac-telegram-cta__arrow';
+		arrow.setAttribute('aria-hidden', 'true');
+		arrow.textContent = '↗';
+
+		link.appendChild(signal);
+		link.appendChild(copy);
+		link.appendChild(arrow);
+		form.replaceWith(link);
 	}
 
 	var faqItems = [

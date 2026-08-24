@@ -1125,6 +1125,12 @@
 
 	function bindWaitlistCaptureTriggers() {
 		function handleApplicationNav(event) {
+            var directFinalCta = event.target && event.target.closest
+                ? event.target.closest('a[data-iac-scroll-final]')
+                : null;
+            if (directFinalCta) {
+                return;
+            }
 			if (iacData.isApplication === '1' || iacData.isContact === '1') {
 				return;
 			}

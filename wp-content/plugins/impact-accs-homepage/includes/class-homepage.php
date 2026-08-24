@@ -252,7 +252,7 @@ class IAH_Homepage {
 	}
 
 	public static function waitlist_click_guard_script() {
-		$url = class_exists( 'IAC_Application_Page' ) ? IAC_Application_Page::url() : home_url( '/application/' );
+		$url = '#iac-final-cta';
 		$url = esc_js( $url );
 		return '<script>(function(){var U="' . $url . '";function hit(t){if(!t||!t.closest)return false;var hdr=t.closest("header");if(!hdr)return false;var wrap=t.closest(\'header [class*="scale-95"], header .pointer-events-auto.absolute.top-0.right-0\');if(wrap&&/request access|get access|запросить доступ|получить доступ|связаться/i.test((wrap.textContent||"").replace(/\\s+/g," ").trim()))return true;var el=t.closest("header button, button[data-slot=button]");if(!el||!hdr.contains(el))return false;return /request access|get access|запросить доступ|получить доступ|связаться/i.test((el.textContent||"").replace(/\\s+/g," ").trim())}function stop(e){if(!hit(e.target))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();window.location.href=U}document.addEventListener("pointerdown",stop,true);document.addEventListener("click",stop,true);window.__iahOpenWaitlist=function(){window.location.href=U}})();</script>';
 	}
@@ -278,6 +278,7 @@ class IAH_Homepage {
 		$blog     = esc_js( class_exists( 'IAC_Blog_Page' ) ? IAC_Blog_Page::url() : home_url( '/blog/' ) );
 		$contact  = esc_js( class_exists( 'IAC_Contact_Page' ) ? IAC_Contact_Page::url() : home_url( '/contact/' ) );
 		$app      = esc_js( class_exists( 'IAC_Application_Page' ) ? IAC_Application_Page::url() : home_url( '/application/' ) );
+		$cta      = esc_js( home_url( '/#iac-final-cta' ) );
 		$agency   = esc_js( class_exists( 'IAC_Feature_Page' ) ? IAC_Feature_Page::urls_for_js()['agency'] : home_url( '/accounts/agency-accounts/' ) );
 		$platform = esc_js( class_exists( 'IAC_Feature_Page' ) ? IAC_Feature_Page::urls_for_js()['platform'] : home_url( '/accounts/platform-access/' ) );
 		$team     = esc_js( class_exists( 'IAC_Feature_Page' ) ? IAC_Feature_Page::urls_for_js()['team'] : home_url( '/accounts/team-supply/' ) );
