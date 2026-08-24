@@ -265,7 +265,7 @@ class IAH_Homepage {
 	public static function contact_link_patch_script() {
 		$url = class_exists( 'IAC_Contact_Page' ) ? IAC_Contact_Page::url() : home_url( '/contact/' );
 		$url = esc_js( $url );
-		return '<script>(function(){var U="' . $url . '";function isContactHref(h){if(!h)return false;h=String(h);return h.indexOf("contact=true")!==-1||h==="/contact"||h==="/contact/"}function patch(){document.querySelectorAll("a[href]").forEach(function(a){var h=a.getAttribute("href")||"";if(isContactHref(h))a.setAttribute("href",U)})}function go(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||!isContactHref(a.getAttribute("href")||""))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();window.location.href=U}patch();document.addEventListener("DOMContentLoaded",patch);document.addEventListener("click",go,true);document.addEventListener("pointerdown",go,true);if(window.MutationObserver){new MutationObserver(patch).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["href"]})}})();</script>';
+		return '<script>(function(){var U="' . $url . '";function isContactHref(h){if(!h)return false;h=String(h);return h.indexOf("contact=true")!==-1||h==="/contact"||h==="/contact/"}function go(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||!isContactHref(a.getAttribute("href")||""))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();window.location.href=U}document.addEventListener("click",go,true);document.addEventListener("pointerdown",go,true)})();</script>';
 	}
 
 	/**
@@ -510,8 +510,7 @@ class IAH_Homepage {
 			$head_css  = '<link rel="stylesheet" href="' . $wp_css . '" />'
 				. '<link rel="stylesheet" href="' . $tools_css . '" />'
 				. '<link rel="stylesheet" href="' . $menu_css . '" />'
-				. '<style id="iah-hide-investors">html.iah-home section:has([data-credits-badge="true"]),html.iah-home section:has([data-credits-col="0"]){display:none!important;visibility:hidden!important;height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;pointer-events:none!important;opacity:0!important}</style>'
-				. '<script>(function(){function h(){document.querySelectorAll("[data-credits-badge],[data-credits-col]").forEach(function(el){var s=el.closest("section");if(s&&!s.hasAttribute("data-iah-hidden-investors")){s.style.setProperty("display","none","important");s.setAttribute("data-iah-hidden-investors","1");}});}h();document.addEventListener("DOMContentLoaded",h);if(window.MutationObserver){new MutationObserver(h).observe(document.documentElement,{childList:true,subtree:true});}})();</script>';
+				. '<style id="iah-hide-investors">html.iah-home section:has([data-credits-badge="true"]),html.iah-home section:has([data-credits-col="0"]){display:none!important;visibility:hidden!important;height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;pointer-events:none!important;opacity:0!important}</style>';
 			$html = preg_replace( '/<\/head>/i', $head_css . '</head>', $html, 1 );
 			$html = self::patch_home_html_tag( $html, $lang );
 		}
@@ -608,14 +607,17 @@ class IAH_Homepage {
 				'strings'          => class_exists( 'IAC_I18n' ) ? IAC_I18n::js_strings() : array(),
 				'htmlReplacements' => self::home_i18n_map(),
 				'exactReplacements' => self::home_exact_i18n_map(),
+				'seoTitle'          => class_exists( 'IAC_SEO' ) ? ( 'ru' === $lang ? IAC_SEO::RU_DEFAULT_TITLE : IAC_SEO::DEFAULT_TITLE ) : '',
+				'seoDescription'    => class_exists( 'IAC_SEO' ) ? ( 'ru' === $lang ? IAC_SEO::RU_DEFAULT_DESCRIPTION : IAC_SEO::DEFAULT_DESCRIPTION ) : '',
 			);
 			$iac_data   = wp_json_encode( $iac_payload );
 			$head_data  = '<script>var iacData=' . $iac_data . ';</script>';
 			$html       = preg_replace( '/<\/head>/i', $head_data . '</head>', $html, 1 );
 		}
-		if ( class_exists( 'IAC_SEO' ) ) {
-			$html = IAC_SEO::patch_homepage_html( $html );
-		}
+		// The mirrored app hydrates the whole document, including <head>. SEO text
+		// is applied by homepage-i18n.js only after hydration; server-side title
+		// replacement produces React #418 because the Flight payload still holds
+		// the original title.
 
 		if ( ! $bypass && is_string( $html ) && '' !== $html ) {
 			$ttl = (int) apply_filters( 'iah_home_cache_ttl', HOUR_IN_SECONDS );
