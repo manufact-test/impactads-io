@@ -3,7 +3,7 @@
  * Plugin Name:       Impact.accs Homepage
  * Plugin URI:        https://cu59725-wordpress-9vuvh.tw1.ru/
  * Description:       Создаёт страницу главной 1:1 как на impact.accs (Next.js, 3D/WebGPU, анимации).
- * Version:           1.5.42
+ * Version:           1.5.43
  * Author:            Impact
  * Text Domain:       impact-accs-homepage
  * Requires at least: 5.8

@@ -97,9 +97,9 @@
 	}
 
 	var HOME_POST_LOADER_MS = onHome ? 5000 : 500;
-	// The native loader is removed by the hydrated app. Header-only text is safe
-	// to update at that point; the old extra five-second wait caused the EN flash.
-	var HOME_HEADER_MS = 0;
+	// Keep React-owned header text untouched while hydration and nested suspense
+	// settle. Russian first paint is handled by server-scoped CSS instead.
+	var HOME_HEADER_MS = onHome ? 5000 : 500;
 	var pairsCache = null;
 	var mapSnapshot = null;
 	var exactSnapshot = null;

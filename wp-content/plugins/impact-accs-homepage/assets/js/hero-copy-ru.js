@@ -106,7 +106,4 @@
 	}
 
 	window.iahApplyRuHeroCopy = patch;
-	if (!document.querySelector('[data-loader-phase][role="status"]')) {
-		window.requestAnimationFrame(patch);
-	}
 })();

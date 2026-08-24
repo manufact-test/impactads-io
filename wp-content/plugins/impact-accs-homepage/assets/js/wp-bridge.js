@@ -305,13 +305,14 @@
 		function onLoaderDone() {
 			if (loaderHandled) return;
 			loaderHandled = true;
-			// The loader disappears only after the mirrored React document has
-			// hydrated. Patch the first visible frame before revealing the chrome.
-			if (window.iacHomeI18nApply) window.iacHomeI18nApply();
-			patchHeaderCta();
-			if (window.iahApplyRuHeroCopy) window.iahApplyRuHeroCopy();
 			showChrome();
 			revealFooterLinks();
+			// Nested client-only hero content settles shortly after the loader.
+			// One delayed pass replaces the former 22-36 second timer chain without
+			// mutating React-owned nodes during hydration.
+			window.setTimeout(function () {
+				if (window.iahApplyRuHeroCopy) window.iahApplyRuHeroCopy();
+			}, 1200);
 			// The rest of the long page keeps the conservative post-loader delay.
 			window.setTimeout(queueRussianPatch, 5000);
 		}
