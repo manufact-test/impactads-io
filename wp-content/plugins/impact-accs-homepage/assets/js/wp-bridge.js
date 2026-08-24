@@ -636,7 +636,7 @@
 				}, 650);
 				return;
 			}
-			window.location.href = applicationUrl();
+			window.location.href = 'https://t.me/founderads';
 		});
 
 		cta.appendChild(ctaCopy);
@@ -696,7 +696,12 @@
 		event.preventDefault();
 		event.stopPropagation();
 		if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-		window.location.href = applicationUrl();
+		var target = document.getElementById('iac-final-cta');
+		if (target) {
+			target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			return;
+		}
+		window.location.href = '#iac-final-cta';
 	}, true);
 
 	document.addEventListener('click', function (event) {
@@ -734,9 +739,15 @@
 			showChrome();
 			revealFooterLinks();
 			if (isRu()) {
+				// Structural CTA/form cleanup is safe immediately after the site's own loader completes.
+				window.setTimeout(function () {
+					patchHeaderCta();
+					patchManifesto();
+					patchFinalFormCta();
+				}, 120);
 				window.setTimeout(ensureFaqSection, 1400);
 			}
-			// The rest of the long page keeps the conservative post-loader delay.
+			// Keep the conservative full-page localization pass for the remaining long-page copy.
 			window.setTimeout(queueRussianPatch, 5000);
 		}
 
