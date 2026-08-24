@@ -893,6 +893,7 @@
 
 			form.addEventListener('submit', function (event) {
 				event.preventDefault();
+				var requestFailed = (iacData.strings && iacData.strings.requestFailed) || 'Request failed';
 
 				var error =
 					form.querySelector('#iac-modal-waitlist-error') ||
@@ -919,13 +920,13 @@
 					})
 					.then(function (payload) {
 						if (!payload.success) {
-							throw new Error((payload.data && payload.data.message) || 'Request failed');
+							throw new Error((payload.data && payload.data.message) || requestFailed);
 						}
 						handleFormSuccess(form);
 					})
 					.catch(function (err) {
 						if (error) {
-							error.textContent = (err.message || 'Request failed').toUpperCase();
+							error.textContent = (err.message || requestFailed).toUpperCase();
 							error.style.opacity = '1';
 						}
 					});

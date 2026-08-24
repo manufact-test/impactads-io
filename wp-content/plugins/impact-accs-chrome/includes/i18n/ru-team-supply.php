@@ -165,11 +165,11 @@ return static function ( $html ) {
 		/* Final request form on this page only. */
 		'>REQUEST ACCESS<' => '>ПОЛУЧИТЕ АККАУНТЫ.<br/>ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.<',
 		'Closed access infrastructure for media buying teams. Accounts and access for launch, tests, and scale.' => 'Напишите, что нужно. Владелец impact. подберёт аккаунты и передаст их на проверку — без предоплаты вслепую.',
-		'placeholder="FIRST NAME"' => 'placeholder="ВАШ TELEGRAM ИЛИ EMAIL · @username или example@mail.com"',
+		'placeholder="FIRST NAME"' => 'placeholder="ВАШ TELEGRAM ИЛИ ЭЛ. ПОЧТА · @username или example@mail.com"',
 		'placeholder="LAST NAME"' => 'placeholder="НУЖНЫЙ СПЕНД · Например, $2 000–3 000"',
 		'placeholder="EMAIL ADDRESS"' => 'placeholder="ГЕО И ВАЛЮТА · Например, USA · USD"',
 		'placeholder="COMPANY NAME"' => 'placeholder="ВЕРТИКАЛЬ И ОБЪЁМ · Нутра · 50 аккаунтов регулярно"',
-		'aria-label="First name"' => 'aria-label="Ваш Telegram или email"',
+		'aria-label="First name"' => 'aria-label="Ваш Telegram или эл. почта"',
 		'aria-label="Last name"' => 'aria-label="Нужный спенд"',
 		'aria-label="Email address"' => 'aria-label="Гео и валюта"',
 		'aria-label="Company name"' => 'aria-label="Вертикаль и объём"',

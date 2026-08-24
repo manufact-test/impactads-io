@@ -249,7 +249,40 @@ return static function ( $html ) {
 				)
 			);
 
-			return $hero . $second . $third . $fourth . $fifth;
+			$feature = $hero . $second . $third . $fourth . $fifth;
+			$feature = $replace(
+				$feature,
+				array(
+					'EU verified'                              => 'USA проверено',
+					'>@impact<'                                => '>@founderads<',
+					'alt="Team desk illustration"'            => 'alt="Иллюстрация медиабаинговой команды"',
+					'alt="Multi-platform access layer"'        => 'alt="Схема подбора аккаунта"',
+					'alt="Repeat order flow"'                  => 'alt="Схема повторного заказа"',
+					'alt="Dedicated contact handoff"'          => 'alt="Схема работы с владельцем impact."',
+					'alt="Avatar Team Lead"'                   => 'alt="Аватар участника команды"',
+					'alt="Avatar Elena M."'                    => 'alt="Аватар участника диалога"',
+					'alt="Avatar Asif Arman"'                  => 'alt="Аватар участника диалога"',
+					'alt="Avatar Alex Holovach"'               => 'alt="Аватар участника диалога"',
+					'alt="Avatar Tom Nagengast"'               => 'alt="Аватар участника диалога"',
+					'alt="Asif Arman"'                         => 'alt=""',
+					'alt="Andrew Aymeloglu"'                   => 'alt=""',
+					'alt="Elena M."'                           => 'alt=""',
+					'alt="Alex Holovach"'                      => 'alt=""',
+					'alt="Lewis Liu"'                          => 'alt=""',
+					'alt="Tom Nagengast"'                      => 'alt=""',
+					'alt="Rupa Vemulapalli"'                   => 'alt=""',
+					'alt="Daniel Young"'                       => 'alt=""',
+					'alt="Hadley Callaway"'                    => 'alt=""',
+					'alt="Abhi Aiyer"'                        => 'alt=""',
+					'alt="Demetrios Brinkmann"'                => 'alt=""',
+					'alt="Ivan Burazin"'                       => 'alt=""',
+					'alt="Harrison Chase"'                     => 'alt=""',
+					'alt="Sonny Gupta"'                        => 'alt=""',
+					'alt="Jay Hack"'                           => 'alt=""',
+				)
+			);
+
+			return $feature;
 		}
 	}
 
@@ -261,13 +294,17 @@ return static function ( $html ) {
 			array(
 				'>REQUEST ACCESS<' => '>ПОЛУЧИТЕ АККАУНТЫ.<br/>ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.<',
 				'Closed access infrastructure for media buying teams. Accounts and access for launch, tests, and scale.' => 'Напишите, что нужно. Владелец impact. подберёт аккаунты и передаст их на проверку — без предоплаты вслепую.',
-				'placeholder="FIRST NAME"' => 'placeholder="ВАШ TELEGRAM ИЛИ EMAIL · @username или example@mail.com"',
+				'placeholder="FIRST NAME"' => 'placeholder="ВАШ TELEGRAM ИЛИ ЭЛ. ПОЧТА · @username или example@mail.com"',
 				'placeholder="LAST NAME"' => 'placeholder="НУЖНЫЙ СПЕНД · например, $2 000–3 000"',
 				'placeholder="EMAIL ADDRESS"' => 'placeholder="ГЕО И ВАЛЮТА · например, USA · USD"',
 				'placeholder="COMPANY NAME"' => 'placeholder="ВЕРТИКАЛЬ И ОБЪЁМ · Нутра · 50 аккаунтов регулярно"',
 				'>Apply<' => '>ПОЛУЧИТЬ АККАУНТЫ НА ПРОВЕРКУ<',
 				'>Request access<' => '>ПОЛУЧИТЬ АККАУНТЫ НА ПРОВЕРКУ<',
 				'>Access<' => '>ЗАЯВКА<',
+				'aria-label="First name"' => 'aria-label="Ваш Telegram или эл. почта"',
+				'aria-label="Last name"' => 'aria-label="Нужный спенд"',
+				'aria-label="Email address"' => 'aria-label="Гео и валюта"',
+				'aria-label="Company name"' => 'aria-label="Вертикаль и объём"',
 			)
 		);
 	}

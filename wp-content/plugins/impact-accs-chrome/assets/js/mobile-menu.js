@@ -307,8 +307,8 @@
 
 		var legal = el('div', 'iac-mobile-menu__legal');
 		var legalLeft = el('div', 'iac-mobile-menu__legal-col');
-		var legalCorp = el('p', 'iac-mobile-menu__legal-line', 'impact.corp\u00AE');
-		legalCorp.setAttribute('data-scramble', 'impact.corp\u00AE');
+		var legalCorp = el('p', 'iac-mobile-menu__legal-line', t('brand', 'impact.corp\u00AE'));
+		legalCorp.setAttribute('data-scramble', t('brand', 'impact.corp\u00AE'));
 		var legalRights = el('p', 'iac-mobile-menu__legal-line', t('rightsReserved', 'RIGHTS RESERVED'));
 		legalRights.setAttribute('data-scramble', t('rightsReserved', 'RIGHTS RESERVED'));
 		legalLeft.appendChild(legalCorp);
@@ -328,7 +328,7 @@
 
 		var mobileLang = el('div', 'iac-mobile-menu__lang lg:hidden');
 		mobileLang.innerHTML =
-			'<div class="iac-lang-switch iac-lang-switch--pill notranslate" role="group" aria-label="Language">' +
+			'<div class="iac-lang-switch iac-lang-switch--pill notranslate" role="group" aria-label="' + t('language', 'Language') + '">' +
 			'<button type="button" class="iac-lang-switch__btn iac-lang-switch__btn--active" data-lang="en" aria-pressed="true">EN</button>' +
 			'<span class="iac-lang-switch__sep" aria-hidden="true">/</span>' +
 			'<button type="button" class="iac-lang-switch__btn" data-lang="ru" aria-pressed="false">RU</button>' +

@@ -212,6 +212,75 @@ class IAC_I18n {
 	}
 
 	/**
+	 * Current request path without query string or surrounding slashes.
+	 *
+	 * @return string
+	 */
+	private static function request_path() {
+		$request = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		if ( ! is_string( $request ) || '' === $request ) {
+			return '';
+		}
+
+		return trim( (string) parse_url( $request, PHP_URL_PATH ), '/' );
+	}
+
+	/**
+	 * @return bool
+	 */
+	private static function is_contact_request() {
+		if ( class_exists( 'IAC_Contact_Page' ) && method_exists( 'IAC_Contact_Page', 'is_contact_page' ) ) {
+			if ( IAC_Contact_Page::is_contact_page() ) {
+				return true;
+			}
+		}
+
+		return 'contact' === self::request_path();
+	}
+
+	/**
+	 * @return bool
+	 */
+	private static function is_application_request() {
+		if ( class_exists( 'IAC_Application_Page' ) && method_exists( 'IAC_Application_Page', 'is_application_page' ) ) {
+			if ( IAC_Application_Page::is_application_page() ) {
+				return true;
+			}
+		}
+
+		return 'application' === self::request_path();
+	}
+
+	/**
+	 * @return bool
+	 */
+	private static function is_not_found_request() {
+		if ( class_exists( 'IAC_Not_Found_Page' ) && method_exists( 'IAC_Not_Found_Page', 'is_not_found' ) ) {
+			return IAC_Not_Found_Page::is_not_found();
+		}
+
+		return function_exists( 'is_404' ) && is_404();
+	}
+
+	/**
+	 * Apply a request-specific RU localizer from includes/i18n/.
+	 *
+	 * @param string $html Template HTML.
+	 * @param string $file Localizer filename.
+	 * @return string
+	 */
+	private static function localize_request_html( $html, $file ) {
+		static $localizers = array();
+
+		if ( ! array_key_exists( $file, $localizers ) ) {
+			$path = IAC_DIR . 'includes/i18n/' . $file;
+			$localizers[ $file ] = is_readable( $path ) ? require $path : null;
+		}
+
+		return is_callable( $localizers[ $file ] ) ? $localizers[ $file ]( $html ) : $html;
+	}
+
+	/**
 	 * Apply page-specific About copy before the global RU map.
 	 *
 	 * @param string $html Template HTML.
@@ -317,7 +386,13 @@ class IAC_I18n {
 			return $html;
 		}
 
-		if ( self::is_about_request() ) {
+		if ( self::is_contact_request() ) {
+			$html = self::localize_request_html( $html, 'ru-contact.php' );
+		} elseif ( self::is_application_request() ) {
+			$html = self::localize_request_html( $html, 'ru-application.php' );
+		} elseif ( self::is_not_found_request() ) {
+			$html = self::localize_request_html( $html, 'ru-not-found.php' );
+		} elseif ( self::is_about_request() ) {
 			$html = self::localize_about_html( $html );
 		} elseif ( self::is_platform_access_request() ) {
 			$html = self::localize_platform_access_html( $html );

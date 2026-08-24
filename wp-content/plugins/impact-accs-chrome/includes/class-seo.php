@@ -25,6 +25,33 @@ class IAC_SEO {
 	const DEFAULT_TITLE = 'impact.accs | Closed Access Infrastructure';
 
 	/**
+	 * Russian defaults used when the native RU locale is active.
+	 */
+	const RU_DEFAULT_DESCRIPTION = 'Трастовые Google Ads спенд-аккаунты для медиабаинговых и арбитражных команд. USA, USD, проверка до оплаты и поддержка владельца 24/7.';
+	const RU_DEFAULT_TITLE = 'impact. — Google Ads спенд-аккаунты для медиабаинга';
+
+	/**
+	 * @return bool
+	 */
+	private static function is_ru() {
+		return class_exists( 'IAC_I18n' ) && IAC_I18n::is_ru();
+	}
+
+	/**
+	 * @return string
+	 */
+	private static function default_description() {
+		return self::is_ru() ? self::RU_DEFAULT_DESCRIPTION : self::DEFAULT_DESCRIPTION;
+	}
+
+	/**
+	 * @return string
+	 */
+	private static function default_title() {
+		return self::is_ru() ? self::RU_DEFAULT_TITLE : self::DEFAULT_TITLE;
+	}
+
+	/**
 	 * Singleton.
 	 *
 	 * @var IAC_SEO|null
@@ -69,64 +96,81 @@ class IAC_SEO {
 	 * @return array{title:string,description:string}|null
 	 */
 	public function get_page_seo() {
+		$description = self::default_description();
+		$is_ru       = self::is_ru();
+
 		if ( class_exists( 'IAC_Not_Found_Page' ) && IAC_Not_Found_Page::is_not_found() ) {
 			return array(
-				'title'       => 'Access Route Not Found | impact.accs',
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => $is_ru ? 'Страница не найдена | impact.' : 'Access Route Not Found | impact.accs',
+				'description' => $description,
 			);
 		}
 
 		if ( class_exists( 'IAC_Feature_Page' ) && IAC_Feature_Page::is_feature_page() ) {
 			$slug = IAC_Feature_Page::get_slug();
 			if ( isset( IAC_Feature_Page::FEATURES[ $slug ]['title'] ) ) {
+				$ru_titles = array(
+					'platform-access' => 'Google Ads аккаунт под залив | impact.',
+					'agency-accounts' => 'Google Ads аккаунты для медиабаинга | impact.',
+					'team-supply'     => 'Поставка Google Ads аккаунтов для команды | impact.',
+				);
 				return array(
-					'title'       => IAC_Feature_Page::FEATURES[ $slug ]['title'] . ' | impact.accs',
-					'description' => self::DEFAULT_DESCRIPTION,
+					'title'       => $is_ru && isset( $ru_titles[ $slug ] ) ? $ru_titles[ $slug ] : IAC_Feature_Page::FEATURES[ $slug ]['title'] . ' | impact.accs',
+					'description' => $description,
 				);
 			}
 		}
 
 		if ( class_exists( 'IAC_About_Page' ) && IAC_About_Page::is_about_page() ) {
 			return array(
-				'title'       => 'About | impact.accs',
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => $is_ru ? 'О компании | impact.' : 'About | impact.accs',
+				'description' => $description,
 			);
 		}
 
 		if ( class_exists( 'IAC_Blog_Page' ) && IAC_Blog_Page::is_blog_index() ) {
 			return array(
-				'title'       => 'Blog | impact.accs',
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => $is_ru ? 'Блог о Google Ads аккаунтах | impact.' : 'Blog | impact.accs',
+				'description' => $description,
 			);
 		}
 
 		if ( class_exists( 'IAC_Blog_Page' ) && IAC_Blog_Page::is_blog_post() ) {
 			$post = get_queried_object();
 			$name = ( $post instanceof WP_Post ) ? get_the_title( $post ) : 'Blog';
+			if ( $is_ru && $post instanceof WP_Post ) {
+				$ru_post_titles = array(
+					'manifesto' => 'Манифест impact.',
+					'markets'   => 'Пять лет на рынке',
+				);
+				if ( isset( $ru_post_titles[ $post->post_name ] ) ) {
+					$name = $ru_post_titles[ $post->post_name ];
+				}
+			}
 			return array(
-				'title'       => wp_strip_all_tags( $name ) . ' | impact.accs',
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => wp_strip_all_tags( $name ) . ( $is_ru ? ' | impact.' : ' | impact.accs' ),
+				'description' => $description,
 			);
 		}
 
 		if ( class_exists( 'IAC_Contact_Page' ) && IAC_Contact_Page::is_contact_page() ) {
 			return array(
-				'title'       => 'Contact | impact.accs',
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => $is_ru ? 'Контакты | impact.' : 'Contact | impact.accs',
+				'description' => $description,
 			);
 		}
 
 		if ( class_exists( 'IAC_Application_Page' ) && IAC_Application_Page::is_application_page() ) {
 			return array(
-				'title'       => 'Request Access | impact.accs',
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => $is_ru ? 'Запросить подбор аккаунтов | impact.' : 'Request Access | impact.accs',
+				'description' => $description,
 			);
 		}
 
 		if ( is_front_page() ) {
 			return array(
-				'title'       => self::DEFAULT_TITLE,
-				'description' => self::DEFAULT_DESCRIPTION,
+				'title'       => self::default_title(),
+				'description' => $description,
 			);
 		}
 
@@ -220,8 +264,8 @@ class IAC_SEO {
 	 * @return string
 	 */
 	public static function patch_homepage_html( $html ) {
-		$title = self::DEFAULT_TITLE;
-		$desc  = self::DEFAULT_DESCRIPTION;
+		$title = self::default_title();
+		$desc  = self::default_description();
 		$home  = esc_url( home_url( '/' ) );
 
 		$patterns = array(
@@ -241,8 +285,10 @@ class IAC_SEO {
 		$legacy_titles = array(
 			'Impact | AI-Native Observability',
 			'Sazabi | AI-Native Observability',
+			self::DEFAULT_TITLE,
 		);
 		$html = str_replace( $legacy_titles, $title, $html );
+		$html = str_replace( self::DEFAULT_DESCRIPTION, $desc, $html );
 
 		$desc_json = str_replace( '"', '\\"', $desc );
 		$html      = preg_replace(

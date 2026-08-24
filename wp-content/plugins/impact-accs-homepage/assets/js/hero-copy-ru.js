@@ -69,6 +69,13 @@
 		hero.querySelectorAll('div,p,span,h1,h2,h3,h4,button,label').forEach(function (element) {
 			if (element.closest('canvas,svg,[data-loader-phase]')) return;
 			var value = (element.textContent || '').replace(/\s+/g, ' ').trim();
+			var clock = value.match(/^(\d{1,2}):(\d{2})\s+(AM|PM)$/i);
+			if (clock && element.childNodes.length === 1 && element.childNodes[0].nodeType === 3) {
+				var hour = parseInt(clock[1], 10) % 12;
+				if (clock[3].toUpperCase() === 'PM') hour += 12;
+				element.textContent = String(hour).padStart(2, '0') + ':' + clock[2];
+				return;
+			}
 			for (var i = 0; i < pairs.length; i += 1) {
 				if (value === pairs[i][0]) {
 					element.textContent = pairs[i][1];
