@@ -3,7 +3,7 @@
  * Plugin Name:       Impact.accs Chrome for Elementor
  * Plugin URI:        https://cu59725-wordpress-9vuvh.tw1.ru/
  * Description:       1:1 хедер, футер, рамки, скроллбар и Request Access с сайта impact.accs для Hello Elementor + Elementor.
- * Version:           2.4.71
+ * Version:           2.4.72
  * Author:            Impact
  * Text Domain:       impact-accs-chrome
  * Requires at least: 5.8
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAC_VERSION', '2.4.71' );
+define( 'IAC_VERSION', '2.4.72' );
 define( 'IAC_FILE', __FILE__ );
 define( 'IAC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAC_URL', plugin_dir_url( __FILE__ ) );
@@ -28,6 +28,7 @@ require_once IAC_DIR . 'includes/class-contact-page.php';
 require_once IAC_DIR . 'includes/class-blog-page.php';
 require_once IAC_DIR . 'includes/class-about-page.php';
 require_once IAC_DIR . 'includes/class-feature-page.php';
+require_once IAC_DIR . 'includes/class-page-faq.php';
 require_once IAC_DIR . 'includes/class-not-found-page.php';
 require_once IAC_DIR . 'includes/class-seo.php';
 require_once IAC_DIR . 'includes/class-i18n.php';
@@ -46,6 +47,7 @@ function iac_init() {
 	IAC_Blog_Page::instance();
 	IAC_About_Page::instance();
 	IAC_Feature_Page::instance();
+	IAC_Page_FAQ::instance();
 	IAC_Not_Found_Page::instance();
 	IAC_SEO::instance();
 	IAC_Chrome::instance();
