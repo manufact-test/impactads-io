@@ -10,6 +10,7 @@
 	var toggleBtn = root.querySelector('.gt-icon-btn');
 	var iconEl = root.querySelector('.gt-btn-icon');
 	var loadingEl = root.querySelector('.gt-loading');
+	var isRu = document.documentElement.lang === 'ru' || document.documentElement.classList.contains('iac-lang-ru');
 
 	function loadScript(src, testFn) {
 		return new Promise(function (resolve, reject) {
@@ -105,7 +106,7 @@
 			);
 		} catch (error) {
 			if (loadingEl) {
-				loadingEl.textContent = 'Library loading error';
+				loadingEl.textContent = isRu ? 'Ошибка загрузки карты' : 'Library loading error';
 			}
 			console.error(error);
 			return;
@@ -161,7 +162,50 @@
 		var flatCoords = [];
 		var markers = [];
 
-		var markerData = [
+		var markerData = isRu ? [
+			{
+				name: 'ЗАПРОС КОМАНДЫ',
+				lat: 50.1,
+				lon: 10.4,
+				status: '200 аккаунтов · USA · параметры приняты',
+				detail: 'Подтверждаем текущий список аккаунтов и условия.'
+			},
+			{
+				name: 'ПОДБОР ПО ТИРАМ',
+				lat: 37.0,
+				lon: -95.7,
+				status: 'Спенд, гео и валюта согласованы',
+				detail: 'Цена каждой позиции известна до проверки.'
+			},
+			{
+				name: 'ПАРТИЯ ГОТОВА',
+				lat: 35.6,
+				lon: 139.6,
+				status: 'Аккаунты переданы команде на проверку',
+				detail: 'Оплата — после подтверждения параметров.'
+			},
+			{
+				name: 'ВСЕГО ОБЪЁМА НЕТ В СПИСКЕ',
+				lat: 51.5,
+				lon: -0.1,
+				status: 'Доступную часть фиксируем сейчас',
+				detail: 'Остальное ищем под запрос.'
+			},
+			{
+				name: 'ПОЗИЦИЯ НЕ СОВПАЛА',
+				lat: 25.2,
+				lon: 55.3,
+				status: 'Несоответствующий аккаунт заменяем',
+				detail: 'Остальная партия остаётся за командой.'
+			},
+			{
+				name: 'ПОВТОРНЫЙ ЗАКАЗ',
+				lat: 1.3,
+				lon: 103.8,
+				status: 'Параметры прошлой поставки уже известны',
+				detail: 'Актуальный список аккаунтов и цену подтверждаем заново.'
+			}
+		] : [
 			{
 				name: 'EU Agency Batch',
 				lat: 50.1,
