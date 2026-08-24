@@ -21,7 +21,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply source patch
-        run: python3 .github/oneoff_formless_patch.py
+        run: |
+          sed -i 's/private static function waitlist_click_guard_script/function waitlist_click_guard_script/' .github/oneoff_formless_patch.py
+          python3 .github/oneoff_formless_patch.py
 
       - name: Validate and commit
         run: |
