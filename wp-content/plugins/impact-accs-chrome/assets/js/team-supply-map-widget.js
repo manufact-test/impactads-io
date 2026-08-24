@@ -10,7 +10,10 @@
 	var toggleBtn = root.querySelector('.gt-icon-btn');
 	var iconEl = root.querySelector('.gt-btn-icon');
 	var loadingEl = root.querySelector('.gt-loading');
-	var isRu = document.documentElement.lang === 'ru' || document.documentElement.classList.contains('iac-lang-ru');
+	var isRu =
+		document.documentElement.lang === 'ru' ||
+		document.documentElement.classList.contains('iac-lang-ru') ||
+		window.location.pathname.indexOf('/accounts/team-supply/') !== -1;
 
 	function loadScript(src, testFn) {
 		return new Promise(function (resolve, reject) {
@@ -164,46 +167,46 @@
 
 		var markerData = isRu ? [
 			{
-				name: 'ЗАПРОС КОМАНДЫ',
+				name: 'ПРОВЕРКА ДО ОПЛАТЫ',
 				lat: 50.1,
 				lon: 10.4,
-				status: '200 аккаунтов · USA · параметры приняты',
-				detail: 'Подтверждаем текущий список аккаунтов и условия.'
+				status: 'Сначала смотрите аккаунты',
+				detail: 'Проверяете спенд, гео, валюту и доступ до оплаты.'
 			},
 			{
-				name: 'ПОДБОР ПО ТИРАМ',
+				name: 'ОБЪЁМ ПОД КОМАНДУ',
 				lat: 37.0,
 				lon: -95.7,
-				status: 'Спенд, гео и валюта согласованы',
-				detail: 'Цена каждой позиции известна до проверки.'
+				status: 'Сотни аккаунтов под ваш темп',
+				detail: 'Подбираем США, нужный спенд, валюту и вертикаль под запрос.'
 			},
 			{
-				name: 'ПАРТИЯ ГОТОВА',
+				name: 'ЧАСТИЧНАЯ ПОСТАВКА',
 				lat: 35.6,
 				lon: 139.6,
-				status: 'Аккаунты переданы команде на проверку',
-				detail: 'Оплата — после подтверждения параметров.'
+				status: 'Если всего объёма нет сразу',
+				detail: 'Фиксируем доступную часть сейчас, остальное быстро добираем.'
 			},
 			{
-				name: 'ВСЕГО ОБЪЁМА НЕТ В СПИСКЕ',
+				name: 'ПРЯМОЙ КОНТАКТ',
 				lat: 51.5,
 				lon: -0.1,
-				status: 'Доступную часть фиксируем сейчас',
-				detail: 'Остальное ищем под запрос.'
+				status: 'Один владелец ведёт поставку',
+				detail: 'Подбор, передача, замены и повторные заказы — в одном диалоге.'
 			},
 			{
-				name: 'ПОЗИЦИЯ НЕ СОВПАЛА',
+				name: 'БЫСТРАЯ ЗАМЕНА',
 				lat: 25.2,
 				lon: 55.3,
-				status: 'Несоответствующий аккаунт заменяем',
-				detail: 'Остальная партия остаётся за командой.'
+				status: 'Если позиция не подошла',
+				detail: 'Меняем конкретный аккаунт без споров, если он не тронут.'
 			},
 			{
 				name: 'ПОВТОРНЫЙ ЗАКАЗ',
 				lat: 1.3,
 				lon: 103.8,
-				status: 'Параметры прошлой поставки уже известны',
-				detail: 'Актуальный список аккаунтов и цену подтверждаем заново.'
+				status: 'Следующая закупка быстрее',
+				detail: 'Сохраняем параметры команды и заново подтверждаем актуальный список.'
 			}
 		] : [
 			{
