@@ -34,6 +34,23 @@ class IAB_Integration {
 	}
 
 	/**
+	 * Remove the retired public brand name from rendered blog markup.
+	 *
+	 * This runs server-side on the final blog HTML, so both the static chrome
+	 * template and dynamically injected post/card markup stay consistent.
+	 *
+	 * @param string $html Rendered blog HTML.
+	 * @return string
+	 */
+	private static function replace_legacy_brand( $html ) {
+		if ( ! is_string( $html ) || '' === $html ) {
+			return $html;
+		}
+
+		return str_replace( 'impact.accs', 'impact.', $html );
+	}
+
+	/**
 	 * @param string $html Empty default.
 	 * @param string $slug Post slug.
 	 * @return string
@@ -46,7 +63,7 @@ class IAB_Integration {
 			return '';
 		}
 
-		return IAB_Render::single( $post );
+		return self::replace_legacy_brand( IAB_Render::single( $post ) );
 	}
 
 	/**
@@ -54,6 +71,6 @@ class IAB_Integration {
 	 * @return string
 	 */
 	public static function inject_blog_index( $html ) {
-		return IAB_Render::inject_index( $html );
+		return self::replace_legacy_brand( IAB_Render::inject_index( $html ) );
 	}
 }
