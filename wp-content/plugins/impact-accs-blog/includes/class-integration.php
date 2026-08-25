@@ -54,6 +54,12 @@ class IAB_Integration {
 	 * @return string
 	 */
 	public static function inject_blog_index( $html ) {
-		return IAB_Render::inject_index( $html );
+		$html = IAB_Render::inject_index( $html );
+
+		return str_replace(
+			array( 'журнал impact.accs', 'impact.accs journal' ),
+			array( 'журнал impact.', 'impact. journal' ),
+			$html
+		);
 	}
 }
