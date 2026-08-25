@@ -1,0 +1,33 @@
+name: One-time revert broken preloader
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/one-time-revert-broken-preloader.yml
+
+permissions:
+  contents: write
+
+jobs:
+  revert-broken-preloader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Revert broken preloader commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git revert --no-edit dd528c66ce26f62d07f8b6ba4723b5b3a1b7e7f3
+          git push origin HEAD:main
