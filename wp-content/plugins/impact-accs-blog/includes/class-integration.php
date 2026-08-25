@@ -21,6 +21,7 @@ class IAB_Integration {
 		add_filter( 'iac_blog_resolve_post_slug', array( __CLASS__, 'resolve_slug' ), 10, 2 );
 		add_filter( 'iac_blog_render_dynamic_post', array( __CLASS__, 'render_dynamic_post' ), 10, 2 );
 		add_filter( 'iac_blog_page_html', array( __CLASS__, 'inject_blog_index' ), 10, 1 );
+		add_filter( 'iac_blog_post_html', array( __CLASS__, 'normalize_blog_post_html' ), 20, 2 );
 	}
 
 	/**
@@ -75,6 +76,24 @@ class IAB_Integration {
 
 		if ( class_exists( 'IAC_I18n' ) && method_exists( 'IAC_I18n', 'localize_html' ) ) {
 			$html = IAC_I18n::localize_html( $html );
+		}
+
+		return self::replace_legacy_brand_text( $html );
+	}
+
+	/**
+	 * Final cleanup for every rendered blog article, including reserved static
+	 * posts such as /blog/markets/ and /blog/manifesto/.
+	 *
+	 * @param string $html Rendered post HTML.
+	 * @param string $slug Post slug.
+	 * @return string
+	 */
+	public static function normalize_blog_post_html( $html, $slug ) {
+		unset( $slug );
+
+		if ( ! is_string( $html ) || '' === $html ) {
+			return $html;
 		}
 
 		return self::replace_legacy_brand_text( $html );
