@@ -181,14 +181,14 @@ html.iah-home .absolute.inset-0.max-lg\\:hidden {
 	opacity: 1 !important;
 }
 
-/* Homepage preloader branding — visual-only so React hydration stays untouched. */
-html.iah-home [data-loader-content] h2.font-display > span.block:first-child {
+/* Homepage preloader branding — visual-only, keyed to React-owned loader markup. */
+[data-loader-content] h2.font-display > span.block:first-child {
 	position: relative;
 	color: transparent !important;
 	text-shadow: none !important;
 }
 
-html.iah-home [data-loader-content] h2.font-display > span.block:first-child::after {
+[data-loader-content] h2.font-display > span.block:first-child::after {
 	content: 'impact.';
 	position: absolute;
 	inset: 0;

@@ -509,6 +509,8 @@ class IAH_Homepage {
 			$tools_css = esc_url( $iac_url . 'assets/css/header-tools.css?v=' . rawurlencode( $iac_ver ) );
 			$menu_css  = esc_url( $iac_url . 'assets/css/mobile-menu.css?v=' . rawurlencode( $iac_ver ) );
 			$inline_css = 'html.iah-home section:has([data-credits-badge="true"]),html.iah-home section:has([data-credits-col="0"]){display:none!important;visibility:hidden!important;height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;pointer-events:none!important;opacity:0!important}';
+			// Visual-only preloader brand: applies before and during React hydration without changing DOM text.
+			$inline_css .= '[data-loader-content] h2.font-display>span.block:first-child{position:relative;color:transparent!important;text-shadow:none!important}[data-loader-content] h2.font-display>span.block:first-child::after{content:"impact.";position:absolute;inset:0;color:var(--primary,#ff0027);text-shadow:0 0 10px rgb(255 0 39 / 68%)}';
 			if ( 'ru' === $lang ) {
 				// First-paint labels only: CSS changes presentation without touching
 				// the React-owned document before hydration.
