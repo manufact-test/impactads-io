@@ -160,13 +160,6 @@ class IAC_SEO {
 			);
 		}
 
-		if ( class_exists( 'IAC_Application_Page' ) && IAC_Application_Page::is_application_page() ) {
-			return array(
-				'title'       => $is_ru ? 'Запросить подбор аккаунтов | impact.' : 'Request Access | impact.accs',
-				'description' => $description,
-			);
-		}
-
 		if ( is_front_page() ) {
 			return array(
 				'title'       => self::default_title(),

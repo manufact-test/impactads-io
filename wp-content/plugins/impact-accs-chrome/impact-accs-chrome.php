@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Impact.accs Chrome for Elementor
  * Plugin URI:        https://cu59725-wordpress-9vuvh.tw1.ru/
- * Description:       1:1 хедер, футер, рамки, скроллбар и Request Access с сайта impact.accs для Hello Elementor + Elementor.
- * Version:           2.4.74
+ * Description:       1:1 хедер, футер, рамки и скроллбар сайта impact.accs для Hello Elementor + Elementor.
+ * Version:           2.4.75
  * Author:            Impact
  * Text Domain:       impact-accs-chrome
  * Requires at least: 5.8
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAC_VERSION', '2.4.74' );
+define( 'IAC_VERSION', '2.4.75' );
 define( 'IAC_FILE', __FILE__ );
 define( 'IAC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAC_URL', plugin_dir_url( __FILE__ ) );
@@ -38,6 +38,7 @@ require_once IAC_DIR . 'includes/class-chrome.php';
  * Bootstrap plugin.
  */
 function iac_init() {
+	// Remove the retired application page instead of ever recreating it.
 	IAC_Application_Page::ensure_page();
 	IAC_Contact_Page::ensure_page();
 	IAC_Blog_Page::ensure_pages();
@@ -50,7 +51,12 @@ function iac_init() {
 	IAC_Page_FAQ::instance();
 	IAC_Not_Found_Page::instance();
 	IAC_SEO::instance();
-	IAC_Chrome::instance();
+
+	$chrome = IAC_Chrome::instance();
+
+	// The retired access/contact form must no longer expose an AJAX endpoint.
+	remove_action( 'wp_ajax_iac_submit_access', array( $chrome, 'ajax_submit_access' ) );
+	remove_action( 'wp_ajax_nopriv_iac_submit_access', array( $chrome, 'ajax_submit_access' ) );
 }
 add_action( 'plugins_loaded', 'iac_init' );
 
@@ -83,10 +89,8 @@ function iac_activate() {
 		update_option( 'permalink_structure', '/%postname%/' );
 	}
 
-	$page_id = IAC_Application_Page::ensure_page();
-	if ( $page_id ) {
-		set_transient( 'iac_application_page_created', 1, 60 );
-	}
+	// Cleanup any legacy application page left by older plugin versions.
+	IAC_Application_Page::ensure_page();
 
 	$contact_id = IAC_Contact_Page::ensure_page();
 	if ( $contact_id ) {

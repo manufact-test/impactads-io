@@ -1,6 +1,10 @@
 <?php
 /**
- * /application page — full-page access request form.
+ * Legacy application route cleanup.
+ *
+ * The public /application page and access form have been retired. This small
+ * compatibility class exists only so older templates/scripts resolve former
+ * access links to /contact/ while the obsolete WordPress page is removed.
  *
  * @package ImpactAccsChrome
  */
@@ -10,12 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Application page installer + content renderer.
+ * Remove the retired application page and route legacy query links to Contact.
  */
 class IAC_Application_Page {
 
 	/**
-	 * Option key for page ID.
+	 * Legacy option key for the old page ID.
 	 */
 	const OPTION_PAGE_ID = 'iac_application_page_id';
 
@@ -39,122 +43,74 @@ class IAC_Application_Page {
 	}
 
 	/**
-	 * Constructor.
+	 * Register compatibility redirects for the retired query-string entrypoints.
 	 */
 	private function __construct() {
-		add_filter( 'the_content', array( $this, 'filter_content' ), 1 );
-		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_legacy_queries' ), -1000 );
 	}
 
 	/**
-	 * Ensure application page exists.
+	 * Delete the old WordPress application page if it still exists.
 	 *
-	 * @return int Page ID.
+	 * @return int Always zero: the page must never be recreated.
 	 */
 	public static function ensure_page() {
 		$page_id = (int) get_option( self::OPTION_PAGE_ID, 0 );
-		if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
-			return $page_id;
+		if ( $page_id ) {
+			$page = get_post( $page_id );
+			if ( $page instanceof WP_Post && 'page' === $page->post_type && 'application' === $page->post_name ) {
+				wp_delete_post( $page_id, true );
+			}
 		}
 
-		$existing = get_page_by_path( 'application' );
-		if ( $existing instanceof WP_Post ) {
-			update_option( self::OPTION_PAGE_ID, $existing->ID );
-			return (int) $existing->ID;
+		$legacy = get_page_by_path( 'application', OBJECT, 'page' );
+		if ( $legacy instanceof WP_Post ) {
+			wp_delete_post( $legacy->ID, true );
 		}
 
-		$page_id = wp_insert_post(
-			array(
-				'post_title'   => 'Request Access',
-				'post_name'    => 'application',
-				'post_status'  => 'publish',
-				'post_type'    => 'page',
-				'post_content' => '<!-- impact-accs-application -->',
-			),
-			true
-		);
+		delete_option( self::OPTION_PAGE_ID );
+		delete_transient( 'iac_application_page_created' );
 
-		if ( is_wp_error( $page_id ) ) {
-			return 0;
-		}
-
-		update_option( self::OPTION_PAGE_ID, $page_id );
-		return (int) $page_id;
+		return 0;
 	}
 
 	/**
-	 * Application page URL.
+	 * Compatibility URL used by old cached markup/scripts.
 	 *
 	 * @return string
 	 */
 	public static function url() {
-		$page_id = (int) get_option( self::OPTION_PAGE_ID, 0 );
-		if ( $page_id ) {
-			$link = get_permalink( $page_id );
-			if ( is_string( $link ) && '' !== $link ) {
-				return $link;
-			}
+		if ( class_exists( 'IAC_Contact_Page' ) ) {
+			return IAC_Contact_Page::url();
 		}
-
-		$page = get_page_by_path( 'application' );
-		if ( $page instanceof WP_Post ) {
-			return get_permalink( $page );
-		}
-
-		return home_url( '/application/' );
+		return home_url( '/contact/' );
 	}
 
 	/**
-	 * Is current request the application page?
+	 * The retired page is never a valid current page.
 	 *
 	 * @return bool
 	 */
 	public static function is_application_page() {
-		if ( ! is_page() ) {
-			return false;
-		}
-
-		$page_id = (int) get_option( self::OPTION_PAGE_ID, 0 );
-		if ( $page_id && get_queried_object_id() === $page_id ) {
-			return true;
-		}
-
-		$post = get_queried_object();
-		return $post instanceof WP_Post && 'application' === $post->post_name;
+		return false;
 	}
 
 	/**
-	 * Replace page content with application layout.
-	 *
-	 * @param string $content Post content.
-	 * @return string
+	 * Preserve old bookmarked query URLs without reviving the popup/form.
 	 */
-	public function filter_content( $content ) {
-		if ( ! self::is_application_page() || ! in_the_loop() || ! is_main_query() ) {
-			return $content;
-		}
-
-		return IAC_Chrome::instance()->render_application_page();
-	}
-
-	/**
-	 * Admin notice after page creation.
-	 */
-	public function admin_notice() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+	public function redirect_legacy_queries() {
+		if ( is_admin() || wp_doing_ajax() ) {
 			return;
 		}
 
-		if ( ! get_transient( 'iac_application_page_created' ) ) {
+		$contact  = isset( $_GET['contact'] ) ? sanitize_text_field( wp_unslash( $_GET['contact'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$waitlist = isset( $_GET['waitlist'] ) ? sanitize_text_field( wp_unslash( $_GET['waitlist'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		if ( 'true' !== strtolower( $contact ) && 'true' !== strtolower( $waitlist ) ) {
 			return;
 		}
 
-		delete_transient( 'iac_application_page_created' );
-
-		$url = self::url();
-		echo '<div class="notice notice-success is-dismissible"><p>';
-		echo esc_html__( 'Impact.accs: страница заявки создана.', 'impact-accs-chrome' );
-		echo ' <a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Открыть /application', 'impact-accs-chrome' ) . '</a>';
-		echo '</p></div>';
+		wp_safe_redirect( self::url(), 301 );
+		exit;
 	}
 }
