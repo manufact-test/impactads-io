@@ -34,6 +34,29 @@ class IAB_Integration {
 	}
 
 	/**
+	 * Finalize blog markup after dynamic content has been injected.
+	 *
+	 * Dynamic blog cards are added after the chrome template's first i18n pass,
+	 * so run the native localization once more and only then normalize the
+	 * retired public brand name. This stays entirely server-side and does not
+	 * mutate the browser DOM.
+	 *
+	 * @param string $html Rendered blog HTML.
+	 * @return string
+	 */
+	private static function finalize_blog_html( $html ) {
+		if ( ! is_string( $html ) || '' === $html ) {
+			return $html;
+		}
+
+		if ( class_exists( 'IAC_I18n' ) && method_exists( 'IAC_I18n', 'localize_html' ) ) {
+			$html = IAC_I18n::localize_html( $html );
+		}
+
+		return str_ireplace( 'impact.accs', 'impact.', $html );
+	}
+
+	/**
 	 * @param string $html Empty default.
 	 * @param string $slug Post slug.
 	 * @return string
@@ -46,7 +69,7 @@ class IAB_Integration {
 			return '';
 		}
 
-		return IAB_Render::single( $post );
+		return self::finalize_blog_html( IAB_Render::single( $post ) );
 	}
 
 	/**
@@ -54,12 +77,6 @@ class IAB_Integration {
 	 * @return string
 	 */
 	public static function inject_blog_index( $html ) {
-		$html = IAB_Render::inject_index( $html );
-
-		return str_replace(
-			array( 'журнал impact.accs', 'impact.accs journal' ),
-			array( 'журнал impact.', 'impact. journal' ),
-			$html
-		);
+		return self::finalize_blog_html( IAB_Render::inject_index( $html ) );
 	}
 }
