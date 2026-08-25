@@ -293,7 +293,7 @@
 		link.href = 'https://t.me/founderads';
 		link.target = '_blank';
 		link.rel = 'noopener noreferrer';
-		link.setAttribute('aria-label', 'Связаться в Telegram');
+		link.setAttribute('aria-label', isRu() ? 'Связаться в Telegram' : 'Contact on Telegram');
 
 		var signal = document.createElement('span');
 		signal.className = 'iac-telegram-cta__signal';
@@ -304,10 +304,10 @@
 		copy.className = 'iac-telegram-cta__copy';
 		var status = document.createElement('span');
 		status.className = 'iac-telegram-cta__status';
-		status.textContent = 'НА СВЯЗИ';
+		status.textContent = isRu() ? 'НА СВЯЗИ' : 'ONLINE · 24/7';
 		var title = document.createElement('span');
 		title.className = 'iac-telegram-cta__title';
-		title.textContent = 'НАПИСАТЬ В TELEGRAM';
+		title.textContent = isRu() ? 'НАПИСАТЬ В TELEGRAM' : 'MESSAGE ON TELEGRAM';
 		copy.appendChild(status);
 		copy.appendChild(title);
 
@@ -768,13 +768,10 @@
 			loaderHandled = true;
 			showChrome();
 			revealFooterLinks();
+			// Structural form removal is safe only after the site's own loader/hydration boundary.
+			window.setTimeout(function () { patchFinalFormCta(); }, 120);
 			if (isRu()) {
-				// Structural CTA/form cleanup is safe immediately after the site's own loader completes.
-				window.setTimeout(function () {
-					patchHeaderCta();
-					patchManifesto();
-					patchFinalFormCta();
-				}, 120);
+				window.setTimeout(function () { patchHeaderCta(); patchManifesto(); }, 120);
 				window.setTimeout(ensureFaqSection, 1400);
 			}
 			// Keep the conservative full-page localization pass for the remaining long-page copy.

@@ -263,7 +263,7 @@ class IAC_Page_FAQ {
 	 * @return string
 	 */
 	private function render_section( $config ) {
-		$application_url = class_exists( 'IAC_Application_Page' ) ? IAC_Application_Page::url() : home_url( '/application/' );
+		$application_url = class_exists( 'IAC_Application_Page' ) ? IAC_Application_Page::url() : 'https://t.me/founderads';
 
 		ob_start();
 		?>
@@ -294,7 +294,7 @@ class IAC_Page_FAQ {
 						<p><?php echo esc_html( $config['cta_text'] ); ?></p>
 					</div>
 					<div class="iac-page-faq__cta-action">
-						<a class="iac-page-faq__cta-button" href="<?php echo esc_url( $application_url ); ?>"><?php echo esc_html( $config['cta_label'] ); ?></a>
+						<a class="iac-page-faq__cta-button" href="<?php echo esc_url( $application_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $config['cta_label'] ); ?></a>
 						<div class="iac-page-faq__cta-meta"><?php echo esc_html( $config['cta_meta'] ); ?></div>
 					</div>
 				</aside>

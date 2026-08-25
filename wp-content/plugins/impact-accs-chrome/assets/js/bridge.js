@@ -935,32 +935,7 @@
 	}
 
 	function openWaitlist() {
-		if (!waitlistModal) {
-			return;
-		}
-
-		waitlistOpen = true;
-		if (root) {
-			root.classList.add('iac-waitlist-open');
-		}
-		if (waitlistHost) {
-			waitlistHost.classList.add('iac-waitlist-open');
-		}
-		document.documentElement.classList.add('iac-waitlist-open');
-		document.body.classList.add('iac-waitlist-open');
-		waitlistModal.classList.add('iac-waitlist-open');
-		waitlistModal.setAttribute('aria-hidden', 'false');
-
-		if (typeof updateChromeState === 'function') {
-			updateChromeState();
-		}
-
-		var firstInput = waitlistModal.querySelector('#iac-wl-firstName');
-		if (firstInput) {
-			window.setTimeout(function () {
-				firstInput.focus();
-			}, 120);
-		}
+		window.open('https://t.me/founderads', '_blank', 'noopener,noreferrer');
 	}
 
 	function closeWaitlist() {
