@@ -181,6 +181,21 @@ html.iah-home .absolute.inset-0.max-lg\\:hidden {
 	opacity: 1 !important;
 }
 
+/* Homepage preloader branding — visual-only so React hydration stays untouched. */
+html.iah-home [data-loader-content] h2.font-display > span.block:first-child {
+	position: relative;
+	color: transparent !important;
+	text-shadow: none !important;
+}
+
+html.iah-home [data-loader-content] h2.font-display > span.block:first-child::after {
+	content: 'impact.';
+	position: absolute;
+	inset: 0;
+	color: var(--primary, #ff0027);
+	text-shadow: 0 0 10px rgb(255 0 39 / 68%);
+}
+
 /* Homepage chrome footer — always visible, separate from React footer */
 html.iah-home #iah-chrome-footer-root {
 	position: relative;
