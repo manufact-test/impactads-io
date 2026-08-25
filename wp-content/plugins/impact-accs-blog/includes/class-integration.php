@@ -34,6 +34,30 @@ class IAB_Integration {
 	}
 
 	/**
+	 * Replace the retired brand only in visible HTML text nodes.
+	 *
+	 * Attributes such as href/src/mailto are deliberately left untouched.
+	 *
+	 * @param string $html Rendered blog HTML.
+	 * @return string
+	 */
+	private static function replace_legacy_brand_text( $html ) {
+		$parts = preg_split( '#(<[^>]+>)#s', $html, -1, PREG_SPLIT_DELIM_CAPTURE );
+		if ( ! is_array( $parts ) ) {
+			return $html;
+		}
+
+		foreach ( $parts as $index => $part ) {
+			if ( '' === $part || '<' === $part[0] ) {
+				continue;
+			}
+			$parts[ $index ] = str_ireplace( 'impact.accs', 'impact.', $part );
+		}
+
+		return implode( '', $parts );
+	}
+
+	/**
 	 * Finalize blog markup after dynamic content has been injected.
 	 *
 	 * Dynamic blog cards are added after the chrome template's first i18n pass,
@@ -53,7 +77,7 @@ class IAB_Integration {
 			$html = IAC_I18n::localize_html( $html );
 		}
 
-		return str_ireplace( 'impact.accs', 'impact.', $html );
+		return self::replace_legacy_brand_text( $html );
 	}
 
 	/**
