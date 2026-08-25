@@ -238,6 +238,20 @@
 		if (!section) return;
 		section.id = 'iac-final-cta';
 
+		var waitlistError = section.querySelector('#waitlist-error');
+		if (waitlistError) {
+			var waitlistErrorWrap = waitlistError.closest('div');
+			if (waitlistErrorWrap) waitlistErrorWrap.remove();
+		}
+
+		Array.prototype.forEach.call(section.querySelectorAll('p'), function (label) {
+			var labelText = normalize(label.textContent).toLowerCase();
+			if (labelText !== 'access' && labelText !== 'waitlist' && labelText !== 'лист ожидания') return;
+			var labelWrap = label.parentElement;
+			if (!labelWrap || !labelWrap.classList.contains('absolute') || !labelWrap.classList.contains('top-0') || !labelWrap.classList.contains('left-4')) return;
+			labelWrap.remove();
+		});
+
 		var finalHeadings = section.querySelectorAll('h1, h2, h3');
 		for (var headingIndex = 0; headingIndex < finalHeadings.length; headingIndex += 1) {
 			var finalHeading = finalHeadings[headingIndex];
@@ -434,7 +448,7 @@
 			'.iah-faq__cta-title{margin:0;font:inherit;font-size:clamp(30px,4vw,66px);line-height:.98;letter-spacing:-.045em;text-transform:uppercase;font-weight:700;}',
 			'.iah-faq__cta-text{margin:22px 0 0;max-width:760px;font-size:clamp(15px,1.15vw,19px);line-height:1.6;color:rgba(255,255,255,.62);}',
 			'.iah-faq__cta-action{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:14px;}',
-			'.iah-faq__cta-button{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:0 28px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:var(--iah-faq-red);color:#fff;text-decoration:none;font:inherit;font-size:11px;font-weight:700;line-height:1;letter-spacing:.13em;text-transform:uppercase;box-shadow:0 0 0 1px rgba(244,11,50,.2),0 0 34px rgba(244,11,50,.22);cursor:pointer;transition:transform .28s ease,box-shadow .28s ease,background-color .28s ease;}',
+			'.iah-faq__cta-button{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:var(--iah-faq-red);color:#fff;text-decoration:none;font:inherit;font-size:11px;font-weight:700;line-height:1;letter-spacing:.13em;text-transform:uppercase;box-shadow:0 0 0 1px rgba(244,11,50,.2),0 0 34px rgba(244,11,50,.22);cursor:pointer;transition:transform .28s ease,box-shadow .28s ease,background-color .28s ease;}',
 			'.iah-faq__cta-button:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(244,11,50,.35),0 12px 44px rgba(244,11,50,.34);}',
 			'.iah-faq__cta-meta{max-width:360px;font-size:10px;line-height:1.55;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38);}',
 			'.iah-faq-reveal{opacity:0;transform:translateY(24px);transition:opacity .75s ease,transform .75s cubic-bezier(.22,1,.36,1);}',
