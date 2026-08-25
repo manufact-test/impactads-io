@@ -1,6 +1,6 @@
 <?php
 /**
- * /contact page — full-page contact form.
+ * /contact page — full-page contact details.
  *
  * @package ImpactAccsChrome
  */
@@ -124,7 +124,7 @@ class IAC_Contact_Page {
 	}
 
 	/**
-	 * Replace page content with contact layout.
+	 * Replace page content with the contact layout.
 	 *
 	 * @param string $content Post content.
 	 * @return string
