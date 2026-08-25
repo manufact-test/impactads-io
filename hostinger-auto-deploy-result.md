@@ -1,32 +1,20 @@
 # Hostinger Auto Deploy Result
 
-- status: SUCCESS
+- status: FAILED
 - final stage: committing deployed revision state
-- from: a183294a3614a17e2bcbff53bde35d72a97ea522
-- to: 5c33ebf6d8dc3ca5dd39e3390339e4dc9688f8c9
+- from: unknown
+- to: 0e7354af85d19550d5971b8615e27c068b7a4a2e
 - document root: /home/u218517330/domains/impactads.io/public_html
-- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260825T145128Z
+- rollback directory: not-created
 
 ## Output
 ```text
 Deploy impactads.io
-CURRENT_SHA=5c33ebf6d8dc3ca5dd39e3390339e4dc9688f8c9
+CURRENT_SHA=0e7354af85d19550d5971b8615e27c068b7a4a2e
 ROOT=/home/u218517330/domains/impactads.io/public_html
-DEPLOYED_SHA=a183294a3614a17e2bcbff53bde35d72a97ea522
-Files to upload/update: 1
-Files to delete: 0
-New files (rollback tracking): 0
-Upload/update sample:
-wp-content/plugins/impact-accs-blog/includes/class-integration.php
-No syntax errors detected in wp-content/plugins/impact-accs-blog/includes/class-integration.php
-Rollback file archive prepared.
-Changed files uploaded.
-Remote PHP syntax validation passed.
-WP-CLI core check passed.
-HTTP / => 200
-HTTP /about/ => 200
-HTTP /blog/ => 200
-HTTP /contact/ => 200
-HTTP /application/ => 404
-Server deployment SHA advanced to 5c33ebf6d8dc3ca5dd39e3390339e4dc9688f8c9
+Host key scan attempt 1 failed; retrying.
+Host key scan attempt 2 failed; retrying.
+Host key scan attempt 3 failed; retrying.
+Host key scan unavailable; SSH will use StrictHostKeyChecking=accept-new on the authenticated connection.
+ERROR: Expected WordPress markers are missing from target root.
 ```
