@@ -1,0 +1,132 @@
+name: One-time safe preloader brand fix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/one-time-safe-preloader-brand.yml
+
+permissions:
+  contents: write
+
+jobs:
+  safe-preloader-brand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch visual-only preloader branding
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+
+          python <<'PY'
+          from pathlib import Path
+
+          tools_path = Path('wp-content/plugins/impact-accs-chrome/assets/css/header-tools.css')
+          home_php_path = Path('wp-content/plugins/impact-accs-homepage/includes/class-homepage.php')
+          chrome_php_path = Path('wp-content/plugins/impact-accs-chrome/impact-accs-chrome.php')
+
+          tools = tools_path.read_text(encoding='utf-8')
+          old_tools = '''/* Homepage preloader branding — visual-only so React hydration stays untouched. */
+html.iah-home [data-loader-content] h2.font-display > span.block:first-child {
+\tposition: relative;
+\tcolor: transparent !important;
+\ttext-shadow: none !important;
+}
+
+html.iah-home [data-loader-content] h2.font-display > span.block:first-child::after {
+\tcontent: 'impact.';
+\tposition: absolute;
+\tinset: 0;
+\tcolor: var(--primary, #ff0027);
+\ttext-shadow: 0 0 10px rgb(255 0 39 / 68%);
+}
+'''
+          new_tools = '''/* Homepage preloader branding — visual-only, keyed to React-owned loader markup. */
+[data-loader-content] h2.font-display > span.block:first-child {
+\tposition: relative;
+\tcolor: transparent !important;
+\ttext-shadow: none !important;
+}
+
+[data-loader-content] h2.font-display > span.block:first-child::after {
+\tcontent: 'impact.';
+\tposition: absolute;
+\tinset: 0;
+\tcolor: var(--primary, #ff0027);
+\ttext-shadow: 0 0 10px rgb(255 0 39 / 68%);
+}
+'''
+          if tools.count(old_tools) != 1:
+              raise SystemExit('Expected exactly one legacy homepage preloader CSS block')
+          tools = tools.replace(old_tools, new_tools, 1)
+          tools_path.write_text(tools, encoding='utf-8')
+
+          home_php = home_php_path.read_text(encoding='utf-8')
+          anchor = "\t\t\t$inline_css = 'html.iah-home section:has([data-credits-badge=\"true\"]),html.iah-home section:has([data-credits-col=\"0\"]){display:none!important;visibility:hidden!important;height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;pointer-events:none!important;opacity:0!important}';"
+          addition = anchor + "\n\t\t\t// Visual-only preloader brand: applies before and during React hydration without changing DOM text.\n\t\t\t$inline_css .= '[data-loader-content] h2.font-display>span.block:first-child{position:relative;color:transparent!important;text-shadow:none!important}[data-loader-content] h2.font-display>span.block:first-child::after{content:\"impact.\";position:absolute;inset:0;color:var(--primary,#ff0027);text-shadow:0 0 10px rgb(255 0 39 / 68%)}';"
+          if home_php.count(anchor) != 1:
+              raise SystemExit('Critical CSS anchor not found exactly once')
+          if 'Visual-only preloader brand: applies before and during React hydration' in home_php:
+              raise SystemExit('Critical preloader rule already present')
+          home_php = home_php.replace(anchor, addition, 1)
+          home_php_path.write_text(home_php, encoding='utf-8')
+
+          chrome_php = chrome_php_path.read_text(encoding='utf-8')
+          if chrome_php.count('2.4.76') != 2:
+              raise SystemExit('Expected exactly two 2.4.76 version literals')
+          chrome_php = chrome_php.replace('2.4.76', '2.4.77')
+          chrome_php_path.write_text(chrome_php, encoding='utf-8')
+
+          # Guardrails: never touch the mirrored Next/React export for this fix.
+          forbidden = [
+              Path('wp-content/plugins/impact-accs-homepage/content/index.html'),
+              Path('wp-content/plugins/impact-accs-homepage/assets/site/_next/static/chunks/1e7f2c52e84d02fd.js'),
+          ]
+          for path in forbidden:
+              if not path.exists():
+                  raise SystemExit(f'Expected protected file missing: {path}')
+          PY
+
+          php -l wp-content/plugins/impact-accs-homepage/includes/class-homepage.php
+          php -l wp-content/plugins/impact-accs-chrome/impact-accs-chrome.php
+          git diff --check
+
+          mapfile -t changed < <(git diff --name-only | sort)
+          expected=(
+            "wp-content/plugins/impact-accs-chrome/assets/css/header-tools.css"
+            "wp-content/plugins/impact-accs-chrome/impact-accs-chrome.php"
+            "wp-content/plugins/impact-accs-homepage/includes/class-homepage.php"
+          )
+          mapfile -t expected_sorted < <(printf '%s\n' "${expected[@]}" | sort)
+          if [ "${changed[*]}" != "${expected_sorted[*]}" ]; then
+            printf 'Unexpected changed files:\n%s\n' "${changed[*]}" >&2
+            exit 1
+          fi
+
+          if git diff --name-only | grep -q 'wp-content/plugins/impact-accs-homepage/assets/site/_next/'; then
+            echo 'Refusing to modify Next/React assets' >&2
+            exit 1
+          fi
+
+      - name: Commit safe CSS-only behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            wp-content/plugins/impact-accs-chrome/assets/css/header-tools.css \
+            wp-content/plugins/impact-accs-chrome/impact-accs-chrome.php \
+            wp-content/plugins/impact-accs-homepage/includes/class-homepage.php
+          git commit -m "Keep preloader brand visual-only across hydration"
+          git push origin HEAD:main
