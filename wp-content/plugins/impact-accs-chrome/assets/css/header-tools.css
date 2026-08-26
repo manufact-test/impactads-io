@@ -454,3 +454,512 @@ html.translated-rtl .iac-feature-team [data-hero='agents'] {
 	opacity: 1 !important;
 	visibility: visible !important;
 }
+
+/* Homepage FAQ — compact feature-page visual system. High specificity intentionally
+ * overrides the legacy runtime style without adding another JS layer. */
+html body #iah-home-faq {
+	--iah-faq-red: var(--primary, var(--color-primary, #ff0027));
+	--iah-faq-bg: #020706;
+	padding: clamp(58px, 5vw, 82px) 0 clamp(60px, 5.4vw, 88px);
+	background:
+		radial-gradient(circle at 50% -12%, rgb(255 0 39 / 0.11), transparent 44%),
+		#020706;
+}
+
+html body #iah-home-faq::before {
+	inset: 0;
+	height: auto;
+	z-index: -2;
+	background: none;
+	background-image:
+		linear-gradient(rgb(255 255 255 / 0.018) 1px, transparent 1px),
+		linear-gradient(90deg, rgb(255 255 255 / 0.018) 1px, transparent 1px);
+	background-size: 56px 56px;
+	filter: none;
+	opacity: .7;
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 90%, transparent 100%);
+	mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 90%, transparent 100%);
+}
+
+html body #iah-home-faq::after {
+	inset: auto;
+	left: 50%;
+	top: -54%;
+	width: min(900px, 72vw);
+	height: auto;
+	aspect-ratio: 1;
+	z-index: -1;
+	transform: translate3d(-50%, 0, 0);
+	background: radial-gradient(circle, rgb(255 0 39 / 0.11) 0, rgb(255 0 39 / 0.04) 34%, transparent 68%);
+	background-size: auto;
+	opacity: .82;
+	-webkit-mask-image: none;
+	mask-image: none;
+	animation: iacHomeFaqGlow 10s ease-in-out infinite alternate;
+}
+
+#iah-home-faq .iah-faq__shell {
+	position: relative;
+	z-index: 1;
+	width: min(1180px, calc(100% - 40px));
+}
+
+#iah-home-faq .iah-faq__header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0;
+	max-width: 920px;
+	margin: 0 auto clamp(30px, 3.2vw, 44px);
+	padding: 0;
+	text-align: center;
+	border: 0;
+}
+
+#iah-home-faq .iah-faq__eyebrow {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	margin: 0 0 14px;
+	font-size: 10px;
+	letter-spacing: .17em;
+	color: rgb(255 255 255 / 0.43);
+}
+
+#iah-home-faq .iah-faq__eyebrow-dot {
+	box-shadow: 0 0 14px rgb(255 0 39 / 0.72);
+	animation-duration: 2.2s;
+}
+
+#iah-home-faq .iah-faq__title {
+	max-width: 920px;
+	margin: 0;
+	font-size: clamp(40px, 4.8vw, 70px);
+	line-height: .95;
+	letter-spacing: -.048em;
+	text-align: center;
+}
+
+#iah-home-faq .iah-faq__title span {
+	display: inline;
+	text-shadow: 0 0 22px rgb(255 0 39 / 0.18);
+}
+
+#iah-home-faq .iah-faq__lead {
+	max-width: 690px;
+	margin: 18px auto 0;
+	font-size: clamp(14px, 1.15vw, 17px);
+	line-height: 1.55;
+	text-align: center;
+	color: rgb(255 255 255 / 0.58);
+}
+
+#iah-home-faq .iah-faq__list {
+	display: grid;
+	gap: 10px;
+	max-width: 1100px;
+	margin: 0 auto;
+}
+
+#iah-home-faq .iah-faq__item {
+	border: 1px solid rgb(255 255 255 / 0.10);
+	border-radius: 18px;
+	background:
+		linear-gradient(180deg, rgb(255 255 255 / 0.026), rgb(255 255 255 / 0.012)),
+		rgb(6 12 10 / 0.92);
+	transform: translate3d(0, 14px, 0);
+	transition:
+		opacity .55s ease,
+		transform .55s cubic-bezier(.22, 1, .36, 1),
+		border-color .28s ease,
+		background-color .28s ease,
+		box-shadow .28s ease;
+}
+
+#iah-home-faq .iah-faq__item::before {
+	left: 18px;
+	right: 18px;
+	top: 0;
+	bottom: auto;
+	width: auto;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, var(--iah-faq-red), transparent);
+	transform: scaleX(0);
+	transform-origin: center;
+	opacity: 0;
+	transition: transform .42s cubic-bezier(.22, 1, .36, 1), opacity .28s ease;
+}
+
+#iah-home-faq .iah-faq__item.is-visible {
+	transform: none;
+}
+
+#iah-home-faq .iah-faq__item:hover {
+	transform: translateY(-1px);
+	border-color: rgb(255 255 255 / 0.16);
+	background:
+		linear-gradient(180deg, rgb(255 255 255 / 0.034), rgb(255 255 255 / 0.014)),
+		rgb(6 12 10 / 0.94);
+}
+
+#iah-home-faq .iah-faq__item.is-open {
+	border-color: rgb(255 0 39 / 0.42);
+	background:
+		linear-gradient(110deg, rgb(255 0 39 / 0.075), transparent 42%),
+		linear-gradient(180deg, rgb(255 255 255 / 0.032), rgb(255 255 255 / 0.014)),
+		rgb(10 14 12 / 0.98);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.025), 0 16px 44px rgb(0 0 0 / 0.18);
+}
+
+#iah-home-faq .iah-faq__item:hover::before {
+	transform: scaleX(0);
+}
+
+#iah-home-faq .iah-faq__item.is-open::before {
+	transform: scaleX(1);
+	opacity: 1;
+}
+
+#iah-home-faq .iah-faq__question {
+	grid-template-columns: 38px minmax(0, 1fr) 34px;
+	gap: 16px;
+	min-height: 70px;
+	padding: 16px 18px;
+}
+
+#iah-home-faq .iah-faq__question:focus-visible {
+	outline: 2px solid var(--iah-faq-red);
+	outline-offset: -3px;
+	border-radius: 16px;
+}
+
+#iah-home-faq .iah-faq__index {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: 1px solid rgb(255 255 255 / 0.10);
+	border-radius: 9px;
+	font-size: 9px;
+	line-height: 1;
+	letter-spacing: .12em;
+	color: rgb(255 255 255 / 0.38);
+	transition: color .28s ease, border-color .28s ease, background-color .28s ease;
+}
+
+#iah-home-faq .iah-faq__item:hover .iah-faq__index {
+	color: rgb(255 255 255 / 0.68);
+	border-color: rgb(255 255 255 / 0.17);
+}
+
+#iah-home-faq .iah-faq__item.is-open .iah-faq__index {
+	color: #fff;
+	border-color: rgb(255 0 39 / 0.55);
+	background: rgb(255 0 39 / 0.14);
+}
+
+#iah-home-faq .iah-faq__question-text {
+	font-size: clamp(15px, 1.25vw, 18px);
+	line-height: 1.34;
+}
+
+#iah-home-faq .iah-faq__plus {
+	width: 32px;
+	height: 32px;
+	border-color: rgb(255 255 255 / 0.16);
+	color: rgb(255 255 255 / 0.76);
+}
+
+#iah-home-faq .iah-faq__item:hover .iah-faq__plus {
+	border-color: rgb(255 255 255 / 0.28);
+	color: #fff;
+}
+
+#iah-home-faq .iah-faq__item.is-open .iah-faq__plus {
+	border-color: rgb(255 0 39 / 0.58);
+	background: rgb(255 0 39 / 0.12);
+}
+
+#iah-home-faq .iah-faq__answer {
+	max-width: 890px;
+	margin: 0;
+	padding: 0 58px 20px 72px;
+	font-size: clamp(14px, 1vw, 16px);
+	line-height: 1.66;
+}
+
+#iah-home-faq .iah-faq__answer p + p {
+	margin-top: 10px;
+}
+
+#iah-home-faq .iah-faq__more-row {
+	position: relative;
+	justify-content: center;
+	max-width: 1100px;
+	min-height: 38px;
+	margin: 20px auto 0;
+	padding-top: 0;
+}
+
+#iah-home-faq .iah-faq__more {
+	gap: 10px;
+	min-height: 38px;
+	padding: 0 14px 0 8px;
+	border: 1px solid rgb(255 255 255 / 0.10);
+	border-radius: 999px;
+	background: rgb(255 255 255 / 0.018);
+	font-size: 10px;
+	letter-spacing: .13em;
+	transition: border-color .28s ease, background-color .28s ease, transform .28s ease;
+}
+
+#iah-home-faq .iah-faq__more:hover {
+	transform: translateY(-1px);
+	border-color: rgb(255 0 39 / 0.38);
+	background: rgb(255 0 39 / 0.055);
+}
+
+#iah-home-faq .iah-faq__more-icon {
+	width: 26px;
+	height: 26px;
+	border: 0;
+	font-size: 15px;
+}
+
+#iah-home-faq .iah-faq__count {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 9px;
+	letter-spacing: .15em;
+}
+
+#iah-home-faq .iah-faq__cta {
+	grid-template-columns: minmax(0, 1fr) minmax(235px, .38fr);
+	gap: clamp(24px, 4vw, 54px);
+	align-items: center;
+	max-width: 1100px;
+	margin: clamp(34px, 4vw, 48px) auto 0;
+	padding: clamp(26px, 3.8vw, 44px);
+	border-color: rgb(255 0 39 / 0.28);
+	border-radius: 24px;
+	background:
+		radial-gradient(circle at 10% 20%, rgb(255 0 39 / 0.15), transparent 33%),
+		linear-gradient(120deg, rgb(68 0 11 / 0.42), rgb(7 12 10 / 0.96) 54%, rgb(3 7 6 / 0.98));
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 20px 54px rgb(0 0 0 / 0.20);
+	transform: translate3d(0, 16px, 0);
+	transition: opacity .62s ease, transform .62s cubic-bezier(.22, 1, .36, 1);
+}
+
+#iah-home-faq .iah-faq__cta.is-visible {
+	transform: none;
+}
+
+#iah-home-faq .iah-faq__cta::before {
+	opacity: .25;
+	background-image:
+		linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+		linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+	background-size: 52px 52px;
+}
+
+#iah-home-faq .iah-faq__cta-kicker {
+	margin-bottom: 12px;
+	font-size: 9px;
+	line-height: 1.2;
+	letter-spacing: .15em;
+}
+
+#iah-home-faq .iah-faq__cta-title {
+	max-width: 720px;
+	font-size: clamp(30px, 3.4vw, 50px);
+	line-height: .98;
+	letter-spacing: -.042em;
+}
+
+#iah-home-faq .iah-faq__cta-text {
+	max-width: 690px;
+	margin-top: 15px;
+	font-size: clamp(14px, 1vw, 16px);
+	line-height: 1.58;
+	color: rgb(255 255 255 / 0.58);
+}
+
+#iah-home-faq .iah-faq__cta-action {
+	align-items: stretch;
+	gap: 12px;
+}
+
+#iah-home-faq .iah-faq__cta-button {
+	min-height: 50px;
+	padding: 0 22px;
+	border-radius: 999px;
+	font-size: 10px;
+	letter-spacing: .11em;
+	box-shadow: 0 0 0 1px rgb(255 0 39 / 0.14), 0 10px 30px rgb(255 0 39 / 0.13);
+}
+
+#iah-home-faq .iah-faq__cta-meta {
+	font-size: 8px;
+	line-height: 1.5;
+	letter-spacing: .065em;
+	color: rgb(255 255 255 / 0.32);
+}
+
+#iah-home-faq .iah-faq-reveal {
+	transform: translate3d(0, 14px, 0);
+	transition: opacity .62s ease, transform .62s cubic-bezier(.22, 1, .36, 1);
+}
+
+@keyframes iacHomeFaqGlow {
+	from { opacity: .62; transform: translate3d(-50%, -2%, 0) scale(.96); }
+	to { opacity: 1; transform: translate3d(-50%, 2%, 0) scale(1.04); }
+}
+
+@media (max-width: 900px) {
+	html body #iah-home-faq {
+		padding-top: 60px;
+		padding-bottom: 64px;
+	}
+
+	#iah-home-faq .iah-faq__shell {
+		width: min(100% - 30px, 760px);
+	}
+
+	#iah-home-faq .iah-faq__title {
+		font-size: clamp(38px, 8vw, 58px);
+	}
+
+	#iah-home-faq .iah-faq__cta {
+		grid-template-columns: 1fr;
+	}
+
+	#iah-home-faq .iah-faq__cta-action {
+		max-width: 360px;
+	}
+}
+
+@media (max-width: 600px) {
+	html body #iah-home-faq {
+		padding: 50px 0 54px;
+	}
+
+	html body #iah-home-faq::before {
+		background-size: 42px 42px;
+	}
+
+	html body #iah-home-faq::after {
+		width: 115vw;
+		top: -25%;
+	}
+
+	#iah-home-faq .iah-faq__shell {
+		width: calc(100% - 24px);
+	}
+
+	#iah-home-faq .iah-faq__header {
+		margin-bottom: 26px;
+	}
+
+	#iah-home-faq .iah-faq__eyebrow {
+		margin-bottom: 11px;
+		font-size: 8px;
+	}
+
+	#iah-home-faq .iah-faq__title {
+		font-size: clamp(34px, 11.2vw, 48px);
+		line-height: .96;
+	}
+
+	#iah-home-faq .iah-faq__lead {
+		margin-top: 14px;
+		font-size: 13px;
+		line-height: 1.5;
+	}
+
+	#iah-home-faq .iah-faq__list {
+		gap: 8px;
+	}
+
+	#iah-home-faq .iah-faq__item {
+		border-radius: 14px;
+	}
+
+	#iah-home-faq .iah-faq__question {
+		grid-template-columns: 30px minmax(0, 1fr) 30px;
+		gap: 10px;
+		min-height: 62px;
+		padding: 13px 12px;
+	}
+
+	#iah-home-faq .iah-faq__index {
+		width: 28px;
+		height: 28px;
+		border-radius: 7px;
+		font-size: 8px;
+	}
+
+	#iah-home-faq .iah-faq__question-text {
+		font-size: 14px;
+		line-height: 1.34;
+	}
+
+	#iah-home-faq .iah-faq__plus {
+		width: 28px;
+		height: 28px;
+	}
+
+	#iah-home-faq .iah-faq__answer {
+		padding: 0 12px 17px 52px;
+		font-size: 13px;
+		line-height: 1.58;
+	}
+
+	#iah-home-faq .iah-faq__more-row {
+		margin-top: 16px;
+	}
+
+	#iah-home-faq .iah-faq__count {
+		position: static;
+		margin-left: 12px;
+		transform: none;
+	}
+
+	#iah-home-faq .iah-faq__cta {
+		margin-top: 30px;
+		padding: 22px 18px;
+		border-radius: 18px;
+	}
+
+	#iah-home-faq .iah-faq__cta-kicker {
+		margin-bottom: 10px;
+		font-size: 8px;
+	}
+
+	#iah-home-faq .iah-faq__cta-title {
+		font-size: clamp(28px, 9vw, 38px);
+	}
+
+	#iah-home-faq .iah-faq__cta-text {
+		margin-top: 13px;
+		font-size: 13px;
+	}
+
+	#iah-home-faq .iah-faq__cta-action {
+		max-width: none;
+		width: 100%;
+	}
+
+	#iah-home-faq .iah-faq__cta-button {
+		width: 100%;
+		min-height: 48px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html body #iah-home-faq::after {
+		animation: none !important;
+	}
+}
