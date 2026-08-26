@@ -1,2 +1,3 @@
 Retrigger Hostinger deployment after repository was switched to public.
+Public GitHub-hosted runner retry after private Actions budget exhaustion.
 This control file is excluded from the Hostinger deployment manifest.
