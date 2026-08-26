@@ -3,7 +3,7 @@
  * Plugin Name:       Impact.accs Homepage
  * Plugin URI:        https://cu59725-wordpress-9vuvh.tw1.ru/
  * Description:       Создаёт страницу главной 1:1 как на impact.accs (Next.js, 3D/WebGPU, анимации).
- * Version:           1.5.54
+ * Version:           1.5.55
  * Author:            Impact
  * Text Domain:       impact-accs-homepage
  * Requires at least: 5.8
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAH_VERSION', '1.5.54' );
+define( 'IAH_VERSION', '1.5.55' );
 define( 'IAH_FILE', __FILE__ );
 define( 'IAH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAH_URL', plugin_dir_url( __FILE__ ) );
@@ -32,6 +32,7 @@ define( 'IAH_FAVICON_URL', $iah_favicon_url );
 require_once IAH_DIR . 'includes/class-homepage.php';
 require_once IAH_DIR . 'includes/class-asset-proxy.php';
 require_once IAH_DIR . 'includes/class-home-js-localizer.php';
+require_once IAH_DIR . 'includes/class-home-native-ru-phase1.php';
 
 /**
  * Bootstrap.
