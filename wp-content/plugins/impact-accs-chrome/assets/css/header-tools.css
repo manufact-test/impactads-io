@@ -978,11 +978,11 @@ body.iac-chrome-about .iac-page-faq::after {
 	display: none !important;
 }
 
-html.iah-home body #iah-home-faq {
+html body #iah-home-faq {
 	background: #020706 !important;
 }
 
-html.iah-home body #iah-home-faq::before {
+html body #iah-home-faq::before {
 	content: "" !important;
 	display: block !important;
 	position: absolute !important;
@@ -996,11 +996,11 @@ html.iah-home body #iah-home-faq::before {
 	background-attachment: fixed !important;
 	filter: none !important;
 	opacity: 1 !important;
-	-webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.72) 7%, #000 16%, #000 100%) !important;
-	mask-image: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.72) 7%, #000 16%, #000 100%) !important;
+	-webkit-mask-image: none !important;
+	mask-image: none !important;
 }
 
-html.iah-home body #iah-home-faq::after {
+html body #iah-home-faq::after {
 	content: "" !important;
 	display: block !important;
 	position: absolute !important;
@@ -1012,9 +1012,7 @@ html.iah-home body #iah-home-faq::after {
 	aspect-ratio: auto !important;
 	z-index: -1 !important;
 	transform: none !important;
-	background:
-		linear-gradient(to bottom, rgba(2,7,6,.38) 0, rgba(2,7,6,.08) 13%, rgba(2,7,6,.08) 86%, rgba(2,7,6,.50) 100%),
-		radial-gradient(circle at 50% 52%, rgba(255,0,39,.045), transparent 48%) !important;
+	background: radial-gradient(circle at 50% 55%, rgba(255,0,39,.035), transparent 48%) !important;
 	opacity: 1 !important;
 	-webkit-mask-image: none !important;
 	mask-image: none !important;
@@ -1022,7 +1020,7 @@ html.iah-home body #iah-home-faq::after {
 }
 
 @media (max-width: 600px) {
-	html.iah-home body #iah-home-faq::before {
+	html body #iah-home-faq::before {
 		background-size: 708px 662px !important;
 		background-position: center top !important;
 	}
