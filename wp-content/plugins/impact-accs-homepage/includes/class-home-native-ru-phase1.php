@@ -66,6 +66,7 @@ class IAH_Home_Native_Ru_Phase1 {
 			exit;
 		}
 
+		$js = self::normalize_turbopack_chunk_identity( $js );
 		$js = self::localize_visible_hero_copy( $js );
 
 		if ( ! headers_sent() ) {
@@ -108,6 +109,26 @@ class IAH_Home_Native_Ru_Phase1 {
 		}
 
 		return preg_replace( '/<head>/i', '<head>' . $script, $html, 1 );
+	}
+
+	/**
+	 * Keep Turbopack's logical chunk ID equal to the original static path even
+	 * though phase 1 serves the bytes from a WordPress endpoint. Turbopack
+	 * explicitly supports a string chunk ID in this metadata position.
+	 *
+	 * @param string $js Original hero chunk.
+	 * @return string
+	 */
+	private static function normalize_turbopack_chunk_identity( $js ) {
+		$dynamic = '"object"==typeof document?document.currentScript:void 0';
+		$stable  = wp_json_encode( 'static/chunks/' . self::HERO_CHUNK, JSON_UNESCAPED_SLASHES );
+		$offset  = strpos( $js, $dynamic );
+
+		if ( false === $offset || ! is_string( $stable ) ) {
+			return $js;
+		}
+
+		return substr_replace( $js, $stable, $offset, strlen( $dynamic ) );
 	}
 
 	/**
@@ -222,7 +243,7 @@ class IAH_Home_Native_Ru_Phase1 {
 			return;
 		}
 
-		$path   = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+		$path   = '/';
 		$domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : '';
 
 		setcookie(
