@@ -1,6 +1,6 @@
 <?php
 /**
- * Homepage native Russian transition layer for the mobile/touch hero, phase 1.
+ * Homepage native Russian transition layer for the f7f1 homepage UI chunk.
  *
  * @package ImpactAccsHomepage
  */
@@ -10,23 +10,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Localizes the client-only conversation module used by the mobile/touch hero.
- *
- * The module is an initial parser-created script, so it cannot be caught by the
- * narrow HTMLScriptElement.src interceptor used for the dynamically loaded 3D
- * hero chunk. We rewrite only this one script tag in the final document and
- * keep its original Turbopack logical chunk id.
+ * Localizes the client-only conversation/homepage module used by the hero and
+ * the main content sections. The original chunk remains untouched on disk.
  */
 class IAH_Home_Native_Ru_Mobile_Phase1 {
 
-	/** Client-only chunk that owns the Slack-like hero conversations. */
+	/** Homepage UI chunk that owns hero conversations and main content copy. */
 	private const MOBILE_HERO_CHUNK = 'f7f1c59a71681025.js';
 
-	/** Shared phase-1 endpoint. */
+	/** Shared native-RU endpoint. */
 	private const ENDPOINT = 'iah-home-native-ru';
 
 	/**
-	 * Register the mobile transition layer.
+	 * Register the transition layer.
 	 */
 	public static function boot() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'maybe_serve_mobile_hero_chunk' ), -997 );
@@ -34,7 +30,7 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 	}
 
 	/**
-	 * Serve the localized mobile/touch conversation chunk.
+	 * Serve the localized f7f1 homepage chunk.
 	 */
 	public static function maybe_serve_mobile_hero_chunk() {
 		if ( ! self::is_mobile_chunk_request() ) {
@@ -54,12 +50,12 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 		}
 
 		$js = self::normalize_turbopack_chunk_identity( $js );
-		$js = self::localize_visible_mobile_copy( $js );
+		$js = self::localize_visible_home_copy( $js );
 
 		if ( ! headers_sent() ) {
 			header( 'Content-Type: application/javascript; charset=utf-8' );
 			header( 'Cache-Control: public, max-age=31536000, immutable' );
-			header( 'X-IAH-Native-RU: phase1-mobile-hero' );
+			header( 'X-IAH-Native-RU: phase2-home-content' );
 		}
 
 		/* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
@@ -79,9 +75,8 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 	}
 
 	/**
-	 * Route only the initial mobile conversation script through the RU endpoint.
-	 * Flight metadata and every other script reference remain byte-for-byte as
-	 * rendered by the existing homepage plugin.
+	 * Route only the initial f7f1 script through the RU endpoint. Flight metadata
+	 * and every other script reference remain byte-for-byte untouched here.
 	 *
 	 * @param string $html Rendered homepage document.
 	 * @return string
@@ -129,27 +124,31 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 	}
 
 	/**
-	 * Replace only confirmed user-facing literals from module 24684. Both quote
-	 * styles are supported because this compiled chunk contains a mix of JSON-
-	 * style double quotes and minifier-produced single-quoted children values.
-	 * Code/state tokens such as VolumeRequestPending and AgencyAccounts remain
-	 * untouched deliberately.
+	 * Apply the approved v2 homepage copy to exact quoted literals only, while
+	 * retaining the few safe hero fragments that predate v2. State identifiers
+	 * such as VolumeRequestPending and AgencyAccounts are never rewritten.
 	 *
 	 * @param string $js Original chunk.
 	 * @return string
 	 */
-	private static function localize_visible_mobile_copy( $js ) {
-		$map = class_exists( 'IAH_Home_Js_Localizer' ) ? IAH_Home_Js_Localizer::map() : array();
+	private static function localize_visible_home_copy( $js ) {
+		$merged   = class_exists( 'IAH_Home_Js_Localizer' ) ? IAH_Home_Js_Localizer::map() : array();
+		$approved = class_exists( 'IAH_Home_Native_Ru_Phase2' ) ? IAH_Home_Native_Ru_Phase2::approved_map() : array();
+		$keys     = array_unique( array_merge( array_keys( $approved ), self::legacy_visible_keys() ) );
+		$unsafe   = class_exists( 'IAH_Home_Native_Ru_Phase2' ) ? array_fill_keys( IAH_Home_Native_Ru_Phase2::unsafe_keys(), true ) : array();
 
-		foreach ( self::visible_keys() as $en ) {
-			if ( ! isset( $map[ $en ] ) || ! is_string( $map[ $en ] ) ) {
+		foreach ( $keys as $en ) {
+			if ( isset( $unsafe[ $en ] ) ) {
 				continue;
 			}
-			$js = self::replace_quoted_literal( $js, $en, $map[ $en ] );
+			$ru = isset( $approved[ $en ] ) && is_string( $approved[ $en ] ) ? $approved[ $en ] : ( isset( $merged[ $en ] ) && is_string( $merged[ $en ] ) ? $merged[ $en ] : null );
+			if ( ! is_string( $ru ) ) {
+				continue;
+			}
+			$js = self::replace_quoted_literal( $js, $en, $ru );
 		}
 
-		// These phrases are split into separate React children in the source, so
-		// the approved full-sentence map cannot match them as one literal.
+		/* Split React children that cannot be represented by a full-sentence key. */
 		$fragments = array(
 			'Terms confirmed at '       => 'Параметры подтверждены в ',
 			'. Preparing delivery now.' => '. Готовим передачу.',
@@ -170,14 +169,15 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 	}
 
 	/**
-	 * User-facing strings confirmed inside the mobile conversation module.
+	 * Safe hero literals that are not all present in the canonical v2 map.
 	 *
 	 * @return array<int,string>
 	 */
-	private static function visible_keys() {
+	private static function legacy_visible_keys() {
 		return array(
 			'Need EU accounts before launch.',
 			' terms and delivery for EU launch',
+			'confirm availability for EU and volume terms.',
 			' lock terms and confirm delivery for this volume',
 			'Repeat order confirmed — ',
 			' supply stable',
@@ -222,6 +222,10 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 	 * @return string
 	 */
 	private static function replace_quoted_literal( $js, $from, $to ) {
+		if ( class_exists( 'IAH_Home_Native_Ru_Phase2' ) ) {
+			return IAH_Home_Native_Ru_Phase2::replace_quoted_literal( $js, $from, $to );
+		}
+
 		$from_double = wp_json_encode( $from, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		$to_double   = wp_json_encode( $to, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		if ( is_string( $from_double ) && is_string( $to_double ) ) {
@@ -234,8 +238,6 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 	}
 
 	/**
-	 * Escape a value for an already-quoted single-quoted JS literal.
-	 *
 	 * @param string $value Value.
 	 * @return string
 	 */
@@ -263,18 +265,18 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 			return false;
 		}
 
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
 		$path = is_string( $uri ) && '' !== $uri ? wp_parse_url( $uri, PHP_URL_PATH ) : null;
 		return '/' === $path || '' === $path;
 	}
 
 	/**
-	 * Match only the exact f7f1 phase-1 endpoint.
+	 * Match only the exact f7f1 native-RU endpoint.
 	 *
 	 * @return bool
 	 */
 	private static function is_mobile_chunk_request() {
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
 		$path = is_string( $uri ) && '' !== $uri ? wp_parse_url( $uri, PHP_URL_PATH ) : null;
 		return '/' . self::ENDPOINT . '/' . self::MOBILE_HERO_CHUNK === $path;
 	}
