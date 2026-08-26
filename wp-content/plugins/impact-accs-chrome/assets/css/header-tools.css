@@ -963,3 +963,67 @@ html body #iah-home-faq::after {
 		animation: none !important;
 	}
 }
+
+/* FAQ background continuity — use the same site grid instead of a separate red panel. */
+body.iac-chrome-feature .iac-page-faq,
+body.iac-chrome-about .iac-page-faq {
+	background: transparent !important;
+}
+
+body.iac-chrome-feature .iac-page-faq::before,
+body.iac-chrome-feature .iac-page-faq::after,
+body.iac-chrome-about .iac-page-faq::before,
+body.iac-chrome-about .iac-page-faq::after {
+	content: none !important;
+	display: none !important;
+}
+
+html.iah-home body #iah-home-faq {
+	background: #020706 !important;
+}
+
+html.iah-home body #iah-home-faq::before {
+	content: "" !important;
+	display: block !important;
+	position: absolute !important;
+	inset: 0 !important;
+	height: auto !important;
+	z-index: -2 !important;
+	background-image: url("../images/frame-square-bg0520.png") !important;
+	background-repeat: repeat !important;
+	background-size: 944px 882px !important;
+	background-position: center top !important;
+	background-attachment: fixed !important;
+	filter: none !important;
+	opacity: 1 !important;
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.72) 7%, #000 16%, #000 100%) !important;
+	mask-image: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.72) 7%, #000 16%, #000 100%) !important;
+}
+
+html.iah-home body #iah-home-faq::after {
+	content: "" !important;
+	display: block !important;
+	position: absolute !important;
+	inset: 0 !important;
+	left: 0 !important;
+	top: 0 !important;
+	width: auto !important;
+	height: auto !important;
+	aspect-ratio: auto !important;
+	z-index: -1 !important;
+	transform: none !important;
+	background:
+		linear-gradient(to bottom, rgba(2,7,6,.38) 0, rgba(2,7,6,.08) 13%, rgba(2,7,6,.08) 86%, rgba(2,7,6,.50) 100%),
+		radial-gradient(circle at 50% 52%, rgba(255,0,39,.045), transparent 48%) !important;
+	opacity: 1 !important;
+	-webkit-mask-image: none !important;
+	mask-image: none !important;
+	animation: none !important;
+}
+
+@media (max-width: 600px) {
+	html.iah-home body #iah-home-faq::before {
+		background-size: 708px 662px !important;
+		background-position: center top !important;
+	}
+}
