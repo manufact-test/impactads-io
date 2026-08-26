@@ -3,7 +3,7 @@
  * Plugin Name:       Impact.accs Chrome for Elementor
  * Plugin URI:        https://cu59725-wordpress-9vuvh.tw1.ru/
  * Description:       1:1 хедер, футер, рамки и скроллбар сайта impact.accs для Hello Elementor + Elementor.
- * Version:           2.4.78
+ * Version:           2.4.79
  * Author:            Impact
  * Text Domain:       impact-accs-chrome
  * Requires at least: 5.8
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IAC_VERSION', '2.4.78' );
+define( 'IAC_VERSION', '2.4.79' );
 define( 'IAC_FILE', __FILE__ );
 define( 'IAC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IAC_URL', plugin_dir_url( __FILE__ ) );
