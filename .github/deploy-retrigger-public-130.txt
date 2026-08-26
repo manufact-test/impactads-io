@@ -1,0 +1,2 @@
+Retrigger Hostinger deployment after repository was switched to public.
+This control file is excluded from the Hostinger deployment manifest.
