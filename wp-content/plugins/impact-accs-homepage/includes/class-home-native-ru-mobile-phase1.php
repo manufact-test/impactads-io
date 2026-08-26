@@ -97,21 +97,16 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 			return $html;
 		}
 
-		$chunk = preg_quote( self::MOBILE_HERO_CHUNK, '#' );
-		$pattern = '#<script\\b(?=[^>]*\\bsrc=)(?P<tag>[^>]*)>?#i';
+		$chunk   = preg_quote( self::MOBILE_HERO_CHUNK, '#' );
+		$pattern = "#(<script\\b[^>]*\\bsrc=)([\"'])([^\"']*/_next/static/chunks/" . $chunk . "(?:\\?[^\"']*)?)\\2#i";
 
 		return preg_replace_callback(
 			$pattern,
-			static function ( $matches ) use ( $chunk, $url ) {
-				$tag = '<script' . $matches['tag'] . '>';
-				$src_pattern = "#\\bsrc=([\"'])([^\"']*/_next/static/chunks/" . $chunk . "(?:\\?[^\"']*)?)\\1#i";
-				if ( ! preg_match( $src_pattern, $tag ) ) {
-					return $tag;
-				}
-
-				return preg_replace( $src_pattern, 'src="' . $url . '"', $tag, 1 );
+			static function ( $matches ) use ( $url ) {
+				return $matches[1] . '"' . $url . '"';
 			},
-			$html
+			$html,
+			1
 		);
 	}
 
