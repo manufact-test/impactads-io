@@ -10,13 +10,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Keeps the shared React chrome and the server-rendered homepage copy in the
- * same RU state before hydration, without touching WebGPU/scene code.
+ * Keeps the server-rendered homepage and its known UI chunks in the same RU
+ * state before hydration, without touching WebGPU, scene state or Turbopack
+ * bootstrap code outside the original logical chunk id.
  */
 class IAH_Home_Native_Ru_Phase2 {
 
-	/** Shared header/mobile-menu chunk. */
+	/** Shared header/mobile-menu/preloader chunk. */
 	private const COMMON_CHUNK = '1e7f2c52e84d02fd.js';
+
+	/** Main lower-page UI/content chunk. */
+	private const HOME_CONTENT_CHUNK = '827ff3490ba1793e.js';
+
+	/** Timeline data + original Next footer/form chunk. */
+	private const FOOTER_CONTENT_CHUNK = 'd53e27b68750e6f9.js';
 
 	/** Shared native-RU endpoint used by phase 1/2. */
 	private const ENDPOINT = 'iah-home-native-ru';
@@ -25,19 +32,20 @@ class IAH_Home_Native_Ru_Phase2 {
 	 * Register before the mirrored homepage renderer.
 	 */
 	public static function boot() {
-		add_action( 'plugins_loaded', array( __CLASS__, 'maybe_serve_common_chunk' ), -996 );
+		add_action( 'plugins_loaded', array( __CLASS__, 'maybe_serve_phase2_chunk' ), -996 );
 		add_action( 'template_redirect', array( __CLASS__, 'start_document_buffer' ), -1001 );
 	}
 
 	/**
-	 * Serve the localized shared header/menu chunk.
+	 * Serve one of the three explicitly owned phase-2 UI chunks.
 	 */
-	public static function maybe_serve_common_chunk() {
-		if ( ! self::is_common_chunk_request() ) {
+	public static function maybe_serve_phase2_chunk() {
+		$chunk = self::requested_phase2_chunk();
+		if ( null === $chunk ) {
 			return;
 		}
 
-		$path = IAH_DIR . 'assets/site/_next/static/chunks/' . self::COMMON_CHUNK;
+		$path = IAH_DIR . 'assets/site/_next/static/chunks/' . $chunk;
 		if ( ! is_readable( $path ) ) {
 			status_header( 404 );
 			exit;
@@ -49,13 +57,13 @@ class IAH_Home_Native_Ru_Phase2 {
 			exit;
 		}
 
-		$js = self::normalize_turbopack_chunk_identity( $js, self::COMMON_CHUNK );
-		$js = self::localize_common_chunk( $js );
+		$js = self::normalize_turbopack_chunk_identity( $js, $chunk );
+		$js = self::localize_owned_chunk( $js, $chunk );
 
 		if ( ! headers_sent() ) {
 			header( 'Content-Type: application/javascript; charset=utf-8' );
 			header( 'Cache-Control: public, max-age=31536000, immutable' );
-			header( 'X-IAH-Native-RU: phase2-common' );
+			header( 'X-IAH-Native-RU: phase2-' . substr( $chunk, 0, 8 ) );
 		}
 
 		/* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
@@ -64,8 +72,8 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Capture the final mirrored document. This starts before all existing phase
-	 * buffers, so the callback sees the fully assembled page at flush time.
+	 * Capture the final mirrored document. This starts outside the existing phase
+	 * buffers so the callback sees the fully assembled page at flush time.
 	 */
 	public static function start_document_buffer() {
 		if ( ! self::is_home_request() ) {
@@ -76,8 +84,9 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Keep initial HTML/Flight copy aligned with the localized client chunks and
-	 * route only the known common chunk through the phase-2 endpoint.
+	 * Route only the three confirmed parser-created scripts through the native RU
+	 * endpoint, then align exact SSR/Flight presentation literals with the same
+	 * client-side RU copy. Flight dependency filenames remain original.
 	 *
 	 * @param string $html Rendered homepage document.
 	 * @return string
@@ -87,27 +96,45 @@ class IAH_Home_Native_Ru_Phase2 {
 			return $html;
 		}
 
-		$html = self::rewrite_common_chunk_src( $html );
-		$html = self::localize_body_and_flight( $html );
-		return $html;
+		foreach ( self::phase2_chunks() as $chunk ) {
+			$html = self::rewrite_parser_chunk_src( $html, $chunk );
+		}
+
+		return self::localize_body_and_flight( $html );
 	}
 
 	/**
-	 * Replace only the parser-created script src for the shared chunk. Flight
-	 * dependency metadata keeps the original filename/logical chunk id.
+	 * Explicit phase-2 ownership list. f7f1 and 5308 remain on their existing,
+	 * separately tested phase-1 paths.
+	 *
+	 * @return array<int,string>
+	 */
+	private static function phase2_chunks() {
+		return array(
+			self::COMMON_CHUNK,
+			self::HOME_CONTENT_CHUNK,
+			self::FOOTER_CONTENT_CHUNK,
+		);
+	}
+
+	/**
+	 * Replace only the real parser-created script src for one known chunk.
+	 * Escaped script references inside Next Flight strings do not match this
+	 * pattern and therefore retain their original dependency filename.
 	 *
 	 * @param string $html Document.
+	 * @param string $chunk Original chunk basename.
 	 * @return string
 	 */
-	private static function rewrite_common_chunk_src( $html ) {
-		$url = trailingslashit( home_url( self::ENDPOINT ) ) . self::COMMON_CHUNK . '?v=' . rawurlencode( IAH_VERSION );
+	private static function rewrite_parser_chunk_src( $html, $chunk ) {
+		$url = trailingslashit( home_url( self::ENDPOINT ) ) . $chunk . '?v=' . rawurlencode( IAH_VERSION );
 		$url = esc_url( $url );
 		if ( '' === $url ) {
 			return $html;
 		}
 
-		$chunk   = preg_quote( self::COMMON_CHUNK, '#' );
-		$pattern = "#(<script\\b[^>]*\\bsrc=)([\"'])([^\"']*/_next/static/chunks/" . $chunk . "(?:\\?[^\"']*)?)\\2#i";
+		$quoted  = preg_quote( $chunk, '#' );
+		$pattern = "#(<script\\b[^>]*\\bsrc=)([\"'])([^\"']*/_next/static/chunks/" . $quoted . "(?:\\?[^\"']*)?)\\2#i";
 
 		return preg_replace_callback(
 			$pattern,
@@ -120,8 +147,8 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Translate only the body. iacData and SEO helpers are injected into <head>
-	 * and intentionally stay untouched so dictionary keys are never rewritten.
+	 * Translate only the document body. iacData and SEO dictionaries are injected
+	 * into <head> and remain untouched, so their English lookup keys stay intact.
 	 *
 	 * @param string $html Document.
 	 * @return string
@@ -150,20 +177,15 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Approved homepage copy plus the small shared-nav labels that live in the
-	 * exact dictionary. Unsafe React state/identifier values are excluded.
+	 * Exact presentation copy whose owning client code is now covered by 1e7,
+	 * 827, d53, f7f1 or the existing 5308 phase-1 endpoint. Server-only children
+	 * (for example the final footer CTA) are also safe because Flight supplies the
+	 * translated prop to the localized client boundary.
 	 *
 	 * @return array<string,string>
 	 */
 	private static function document_map() {
-		$map = self::approved_map();
-
-		$merged = class_exists( 'IAH_Home_Js_Localizer' ) ? IAH_Home_Js_Localizer::map() : array();
-		foreach ( self::common_visible_keys() as $key ) {
-			if ( isset( $merged[ $key ] ) && is_string( $merged[ $key ] ) ) {
-				$map[ $key ] = $merged[ $key ];
-			}
-		}
+		$map = self::presentation_map();
 
 		foreach ( self::unsafe_keys() as $key ) {
 			unset( $map[ $key ] );
@@ -180,7 +202,7 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Client-approved v2 copy only. Legacy maps are not bulk-applied to chunks.
+	 * Client-approved v2 copy.
 	 *
 	 * @return array<string,string>
 	 */
@@ -191,7 +213,37 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Values known to be program state/identifiers rather than presentation.
+	 * Canonical v2 copy plus a deliberately small exact-label supplement for the
+	 * header, mobile menu, footer and preloader. No broad legacy dictionary is
+	 * applied to arbitrary bundle strings.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function presentation_map() {
+		$map    = self::approved_map();
+		$merged = class_exists( 'IAH_Home_Js_Localizer' ) ? IAH_Home_Js_Localizer::map() : array();
+
+		foreach ( self::supplemental_visible_keys() as $key ) {
+			if ( isset( $merged[ $key ] ) && is_string( $merged[ $key ] ) ) {
+				$map[ $key ] = $merged[ $key ];
+			}
+		}
+
+		/* Native preloader copy did not exist in the legacy dictionaries. */
+		$map['Initializing']                    = 'ЗАГРУЗКА';
+		$map['Loading']                         = 'Загрузка';
+		$map['Sound muted']                     = 'Звук выключен';
+		$map['Sound enabled']                   = 'Звук включён';
+		$map['Click anywhere to enable sound']  = 'Нажмите, чтобы включить звук';
+		$map['Impact System']                   = 'Система Impact';
+
+		return $map;
+	}
+
+	/**
+	 * Values known to be program state/identifiers, or too generic to rewrite in
+	 * the Flight payload. EU-agency-50 is not listed: in 827 it is confirmed as a
+	 * visible PR-card title and is intentionally translated by v2.
 	 *
 	 * @return array<int,string>
 	 */
@@ -199,22 +251,17 @@ class IAH_Home_Native_Ru_Phase2 {
 		return array(
 			'VolumeRequestPending',
 			'AgencyAccounts',
-			'EU-agency-50',
 			'and',
 		);
 	}
 
 	/**
-	 * Shared navigation/menu copy owned by 1e7. Sound state text stays on the
-	 * existing CSS presentation layer because its suffix is a live state enum.
+	 * Small exact-label supplement shared by the owned chunks.
 	 *
 	 * @return array<int,string>
 	 */
-	private static function common_visible_keys() {
+	private static function supplemental_visible_keys() {
 		return array(
-			'Platform Access',
-			'Agency Accounts',
-			'Team Supply',
 			'About',
 			'ABOUT',
 			'Blog',
@@ -224,43 +271,83 @@ class IAH_Home_Native_Ru_Phase2 {
 			'Accounts',
 			'ACCOUNTS',
 			'FEATURES',
-			'Request access',
-			'REQUEST ACCESS',
-			'Get access',
-			'GET ACCESS',
 			'Menu',
 			'MENU',
 			'Close',
 			'CLOSE',
 			'Back to list',
 			'BACK TO LIST',
-			'impact.corp®',
-			'RIGHTS RESERVED',
-			'all rights reserved',
+			'Waitlist',
+			'Impact starts with access',
+			'Enable sound',
+			'Unmute sound',
+			'Mute sound',
+			'SCROLL DOWN',
+			'Scroll down',
 		);
 	}
 
 	/**
-	 * Apply exact visible literals to the shared chunk only.
+	 * Header/mobile-menu/preloader values confirmed inside 1e7. The live
+	 * Sound: off/on/locked suffix is intentionally not rewritten here; the
+	 * existing first-paint CSS presentation remains until final visual QA.
+	 *
+	 * @return array<int,string>
+	 */
+	private static function common_visible_keys() {
+		return array_merge(
+			array(
+				'Platform Access',
+				'Agency Accounts',
+				'Team Supply',
+				'Request access',
+				'REQUEST ACCESS',
+				'Get access',
+				'GET ACCESS',
+				'impact.corp®',
+				'RIGHTS RESERVED',
+				'all rights reserved',
+				'Initializing',
+				'Loading',
+				'Sound muted',
+				'Sound enabled',
+				'Click anywhere to enable sound',
+				'Impact System',
+			),
+			self::supplemental_visible_keys()
+		);
+	}
+
+	/**
+	 * Localize one known UI chunk using exact quoted literals only.
 	 *
 	 * @param string $js Chunk source.
+	 * @param string $chunk Original chunk basename.
 	 * @return string
 	 */
-	private static function localize_common_chunk( $js ) {
-		$map = class_exists( 'IAH_Home_Js_Localizer' ) ? IAH_Home_Js_Localizer::map() : array();
-		foreach ( self::common_visible_keys() as $en ) {
-			if ( ! isset( $map[ $en ] ) || ! is_string( $map[ $en ] ) ) {
+	private static function localize_owned_chunk( $js, $chunk ) {
+		$map = self::presentation_map();
+
+		if ( self::COMMON_CHUNK === $chunk ) {
+			$keys = self::common_visible_keys();
+		} else {
+			$keys = array_keys( $map );
+		}
+
+		$unsafe = array_fill_keys( self::unsafe_keys(), true );
+		foreach ( $keys as $en ) {
+			if ( isset( $unsafe[ $en ] ) || ! isset( $map[ $en ] ) || ! is_string( $map[ $en ] ) ) {
 				continue;
 			}
 			$js = self::replace_quoted_literal( $js, $en, $map[ $en ] );
 		}
+
 		return $js;
 	}
 
 	/**
 	 * Replace one presentation value in normal HTML and in escaped Next Flight
-	 * strings, but never as an unbounded substring such as Request inside a state
-	 * token.
+	 * strings, never as an unbounded substring.
 	 *
 	 * @param string $body Body HTML.
 	 * @param string $from English value.
@@ -293,8 +380,8 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * Escape a JSON string literal one level deeper for a JS string that carries
-	 * the Next Flight payload.
+	 * Escape a JSON string literal one level deeper for a JS string carrying a
+	 * Next Flight payload.
 	 *
 	 * @param string $json JSON string literal including quotes.
 	 * @return string
@@ -336,6 +423,9 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
+	 * Preserve the original Turbopack logical id while bytes are served through
+	 * WordPress. Only the bootstrap identity expression is replaced.
+	 *
 	 * @param string $js Chunk source.
 	 * @param string $chunk Original basename.
 	 * @return string
@@ -372,12 +462,24 @@ class IAH_Home_Native_Ru_Phase2 {
 	}
 
 	/**
-	 * @return bool
+	 * Return the requested phase-2 filename only for the exact native-RU route.
+	 *
+	 * @return string|null
 	 */
-	private static function is_common_chunk_request() {
+	private static function requested_phase2_chunk() {
 		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
 		$path = is_string( $uri ) && '' !== $uri ? wp_parse_url( $uri, PHP_URL_PATH ) : null;
-		return '/' . self::ENDPOINT . '/' . self::COMMON_CHUNK === $path;
+		if ( ! is_string( $path ) ) {
+			return null;
+		}
+
+		$prefix = '/' . self::ENDPOINT . '/';
+		if ( 0 !== strpos( $path, $prefix ) ) {
+			return null;
+		}
+
+		$chunk = substr( $path, strlen( $prefix ) );
+		return in_array( $chunk, self::phase2_chunks(), true ) ? $chunk : null;
 	}
 }
 
