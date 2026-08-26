@@ -1,0 +1,3 @@
+Manual deploy retrigger for stuck GitHub Actions run #130.
+Created 2026-08-26.
+This .github control file is excluded from the Hostinger deployment manifest.
