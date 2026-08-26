@@ -1,6 +1,7 @@
 (function () {
 	'use strict';
 
+	var SAFE_POST_LOAD_MS = 5500;
 	var footerHtml = typeof window.__iahChromeFooter === 'string' ? window.__iahChromeFooter : '';
 	var mounted = false;
 
@@ -100,10 +101,14 @@
 		}
 	}
 
-	/* No language polling, DOM translation or mutation observers on the homepage. */
-	run();
-	if (document.readyState !== 'complete') {
-		window.addEventListener('load', run, { once: true });
+	function schedule() {
+		window.setTimeout(run, SAFE_POST_LOAD_MS);
 	}
-	window.setTimeout(run, 900);
+
+	/* No language polling, DOM translation or mutation observers on the homepage. */
+	if (document.readyState === 'complete') {
+		schedule();
+	} else {
+		window.addEventListener('load', schedule, { once: true });
+	}
 })();
