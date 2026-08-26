@@ -104,7 +104,7 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 			$pattern,
 			static function ( $matches ) use ( $chunk, $url ) {
 				$tag = '<script' . $matches['tag'] . '>';
-				$src_pattern = '#\\bsrc=(["\\'])([^"\\']*/_next/static/chunks/' . $chunk . '(?:\\?[^"\\']*)?)\\1#i';
+				$src_pattern = "#\\bsrc=([\"'])([^\"']*/_next/static/chunks/" . $chunk . "(?:\\?[^\"']*)?)\\1#i";
 				if ( ! preg_match( $src_pattern, $tag ) ) {
 					return $tag;
 				}
@@ -156,16 +156,16 @@ class IAH_Home_Native_Ru_Mobile_Phase1 {
 		// These phrases are split into separate React children in the source, so
 		// the approved full-sentence map cannot match them as one literal.
 		$fragments = array(
-			'Terms confirmed at '    => 'Параметры подтверждены в ',
+			'Terms confirmed at '       => 'Параметры подтверждены в ',
 			'. Preparing delivery now.' => '. Готовим передачу.',
-			'Request '               => 'Запрос: ',
-			'9:11 AM'                => '09:11',
-			'9:16 AM'                => '09:16',
-			'9:17 AM'                => '09:17',
-			'9:18 AM'                => '09:18',
-			'9:19 AM'                => '09:19',
-			'9:20 AM'                => '09:20',
-			'9:22 AM'                => '09:22',
+			'Request '                  => 'Запрос: ',
+			'9:11 AM'                   => '09:11',
+			'9:16 AM'                   => '09:16',
+			'9:17 AM'                   => '09:17',
+			'9:18 AM'                   => '09:18',
+			'9:19 AM'                   => '09:19',
+			'9:20 AM'                   => '09:20',
+			'9:22 AM'                   => '09:22',
 		);
 		foreach ( $fragments as $en => $ru ) {
 			$js = self::replace_quoted_literal( $js, $en, $ru );
