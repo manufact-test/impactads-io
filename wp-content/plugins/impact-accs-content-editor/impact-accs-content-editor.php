@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Impact.accs Content Editor
  * Description:       Админка для безопасного редактирования текстов и ссылок на сайте impact.accs (EN/RU).
- * Version:           1.5.5
+ * Version:           1.5.7
  * Author:            Impact
  * Requires at least: 5.8
  * Requires PHP:      7.4
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IACCE_VERSION', '1.5.6' );
+define( 'IACCE_VERSION', '1.5.7' );
 define( 'IACCE_FILE', __FILE__ );
 define( 'IACCE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IACCE_URL', plugin_dir_url( __FILE__ ) );
