@@ -18,7 +18,7 @@
 				return stored;
 			}
 		} catch (e) {}
-		return 'en';
+		return 'ru';
 	}
 
 	function writeLang(lang) {
