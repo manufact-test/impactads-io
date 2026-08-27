@@ -618,12 +618,13 @@
 					col.style.transformOrigin = 'bottom';
 					col.style.animation = reducedMotion ? 'none' : 'iac-feature-bar 2.4s ease-in-out ' + i * 0.08 + 's infinite alternate';
 				});
+			});
 		}
 
 		function initRadar() {
 			root.querySelectorAll('[data-radar="dot"]').forEach(function (dot, i) {
 				if (!reducedMotion) {
-					dot.style.animation = 'iac-feature-pulse 2s ease-in-out ' + i * 0.35 + 's infinite';
+					dot.style.animation = reducedMotion ? 'none' : 'iac-feature-pulse 2s ease-in-out ' + i * 0.35 + 's infinite';
 				}
 			});
 			if (reducedMotion) {
