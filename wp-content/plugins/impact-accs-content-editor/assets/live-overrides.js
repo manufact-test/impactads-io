@@ -11,4 +11,5 @@
 	 * reference the previous asset URL. Do not reintroduce MutationObserver,
 	 * TreeWalker, polling timers, or broad textContent replacement here.
 	 */
+	window.iacceApplyOverrides = function () {};
 })();
