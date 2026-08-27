@@ -12,6 +12,37 @@
 		var isTeam = root.classList.contains('iac-feature-team');
 		var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		var tabTimers = [];
+		var isRu = typeof iacData !== 'undefined' && iacData.lang === 'ru';
+		var approvedRu = isRu && iacData.htmlReplacements ? iacData.htmlReplacements : {};
+		var featureRu = {
+			'Structured agency accounts · one desk channel': 'Структурированные агентские аккаунты · один канал desk',
+			'Platform access queued · launch window open': 'Платформенный доступ в очереди · окно запуска открыто',
+			'Geo Match': 'GEO-сопоставление',
+			'GEO verified · US/EU tier match complete': 'GEO проверено · сопоставление US/EU завершено',
+			'Volume Tier': 'Объёмный уровень',
+			'Volume tier confirmed · repeat order terms set': 'Объёмный уровень подтверждён · условия повторного заказа зафиксированы',
+			'Lock Terms': 'Зафиксировать условия',
+			'Terms locked · replacement policy confirmed': 'Условия зафиксированы · политика замены подтверждена',
+			'Direct Handoff': 'Прямая передача',
+			'EU agency batch · 50 accounts ready for handoff': 'EU агентская партия · 50 аккаунтов готовы к передаче',
+			'Direct channel confirmed · handoff today': 'Прямой канал подтверждён · передача сегодня',
+			'Checking availability for your request…': 'Проверка доступности для вашего запроса...',
+			'1. Confirm volume tier and replacement policy': '1. Подтвердите объёмный уровень и политику замены',
+			'2. Lock terms before handoff': '2. Зафиксируйте условия до передачи',
+		};
+
+		function nativeCopy(text) {
+			if (!isRu) {
+				return text;
+			}
+			if (Object.prototype.hasOwnProperty.call(approvedRu, text)) {
+				return approvedRu[text];
+			}
+			if (Object.prototype.hasOwnProperty.call(featureRu, text)) {
+				return featureRu[text];
+			}
+			return text;
+		}
 
 		root.classList.add('iac-feature-ready');
 		document.body.classList.add('iac-feature-ready');
@@ -455,6 +486,10 @@
 				{ title: 'Lock Terms', tag: '@Desk', text: 'Terms locked · replacement policy confirmed' },
 				{ title: 'Direct Handoff', tag: '@Desk', text: 'EU agency batch · 50 accounts ready for handoff' },
 			];
+			platforms.forEach(function (item) {
+				item.title = nativeCopy(item.title);
+				item.text = nativeCopy(item.text);
+			});
 			var defaultActive = isTeam ? 4 : 0;
 			if (heroOverlay) {
 				heroOverlay.classList.add('iac-hero-stage', 'notranslate');
@@ -652,7 +687,6 @@
 			}
 		}
 
-
 		function initTeamSupplyDesk() {
 			if (!isTeam) {
 				return;
@@ -682,18 +716,12 @@
 				{ text: 'Volume tier pending buyer sign-off', tag: '@GoogleAds' },
 				{ text: 'Direct channel confirmed · handoff today', tag: '@Desk' },
 			];
-
-			var nodeMeta = [
-				{ tip: 'Structured agency sourcing' },
-				{ tip: 'Platform access queued' },
-				{ tip: 'EU geo match verified' },
-				{ tip: 'Volume tier pending sign-off' },
-				{ tip: 'Terms locked · policy confirmed' },
-				{ tip: 'Direct channel · handoff today' },
-			];
+			cardMessages.forEach(function (item) {
+				item.text = nativeCopy(item.text);
+			});
 
 			var terminalLines = [
-				{ text: 'impact.accs status --geo EU --platform agency --volume 50', cls: 'iac-term-cmd' },
+				{ text: 'impact. status --geo EU --platform agency --volume 50', cls: 'iac-term-cmd' },
 				{ text: 'Checking availability for your request…', cls: 'iac-term-dim' },
 				{ text: '50 agency accounts confirmed for EU launch', cls: 'iac-term-ok' },
 				{ text: 'Root cause identified:', cls: 'iac-term-head' },
@@ -705,6 +733,9 @@
 				{ text: '2. Lock terms before handoff', cls: 'iac-term-num' },
 				{ text: '3. Confirm replacement policy before next batch ships', cls: 'iac-term-num' },
 			];
+			terminalLines.forEach(function (line) {
+				line.text = nativeCopy(line.text);
+			});
 
 			var activeNode = 4;
 			var cardIndex = 0;
@@ -844,12 +875,6 @@
 		initTeamHero();
 		initScrollFade();
 		initTypingDots();
-
-		if (typeof window.iacHomeI18nApply === 'function') {
-			window.iacHomeI18nApply();
-			window.setTimeout(window.iacHomeI18nApply, 400);
-			window.setTimeout(window.iacHomeI18nApply, 1500);
-		}
 	}
 
 	if (document.readyState === 'loading') {
