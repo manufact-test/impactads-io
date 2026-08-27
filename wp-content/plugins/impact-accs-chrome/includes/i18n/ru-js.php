@@ -12,6 +12,8 @@ return array(
 	'backToList' => 'Назад к списку',
 	'systemDown' => 'Система недоступна',
 	'teamSupply' => 'Поставка для команд',
+	'scrollDown' => 'ПРОКРУТИТЕ ВНИЗ',
+	'welcomeTo' => 'ДОБРО ПОЖАЛОВАТЬ В',
 	'accounts' => 'Аккаунты',
 	'contact' => 'Контакты',
 	'about' => 'О нас',
