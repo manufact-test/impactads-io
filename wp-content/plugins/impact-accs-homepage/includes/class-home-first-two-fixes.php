@@ -2,8 +2,8 @@
 /**
  * Narrow source-level fixes for the homepage hero and the purchase-format block.
  *
- * This layer intentionally owns only three already-known UI chunks. It keeps
- * the existing Turbopack logical chunk identity and never mutates the live DOM.
+ * This layer owns only three known UI chunks. It preserves Turbopack logical
+ * chunk identity and never mutates the live React/3D DOM.
  *
  * @package ImpactAccsHomepage
  */
@@ -28,7 +28,7 @@ class IAH_Home_First_Two_Fixes {
 
 	/**
 	 * Register before the existing phase-2 endpoint and outside its document
-	 * buffer, so this layer sees the already assembled homepage as the final step.
+	 * buffer, so this layer receives the final already-assembled homepage HTML.
 	 */
 	public static function boot() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'maybe_serve_chunk' ), -997 );
@@ -81,8 +81,8 @@ class IAH_Home_First_Two_Fixes {
 	}
 
 	/**
-	 * Start as the outer document buffer. Existing native-RU buffers are started
-	 * afterwards and therefore finish first; this callback gets their final HTML.
+	 * Start as the outer document buffer. Existing native-RU buffers start later
+	 * and therefore finish first; this callback receives their final HTML.
 	 */
 	public static function start_document_buffer() {
 		if ( ! self::is_home_request() ) {
@@ -122,12 +122,12 @@ class IAH_Home_First_Two_Fixes {
 	}
 
 	/**
-	 * Preserve existing RU copy in chunks that were already localized by the
-	 * native homepage layer. Unsafe state identifiers stay untouched here and are
-	 * handled only by exact visible JSX patches below.
+	 * Preserve the existing RU copy in chunks already handled by the native RU
+	 * layer. Program-state identifiers stay untouched here and are changed only
+	 * in exact visible JSX structures below.
 	 *
 	 * @param string $js Chunk source.
-	 * @param bool   $full_map Whether to use the legacy+approved hero map.
+	 * @param bool   $full_map Use the complete existing hero map.
 	 * @return string
 	 */
 	private static function apply_existing_ru_map( $js, $full_map ) {
@@ -157,8 +157,8 @@ class IAH_Home_First_Two_Fixes {
 	}
 
 	/**
-	 * Fix visible source structures that cannot be translated by a dictionary
-	 * because the original UI splits them across nested spans/code elements.
+	 * Fix first-screen strings that are split across nested JSX spans/code nodes
+	 * and therefore cannot be translated correctly by a plain string dictionary.
 	 *
 	 * @param string $js Dialogue chunk.
 	 * @return string
@@ -200,20 +200,6 @@ class IAH_Home_First_Two_Fixes {
 		$green_input_new = 'children:(0,C.jsx)("span",{"data-type-text":!0,children:"@founderads Закрепите 50 аккаунтов и пришлите их на проверку."})';
 		$js = str_replace( $green_input_old, $green_input_new, $js );
 
-		return $js;
-	}
-
-	/**
-	 * Finish the dialogue cleanup after the approved map has been applied.
-	 *
-	 * @param string $js Dialogue chunk.
-	 * @return string
-	 */
-	private static function patch_dialogue_after_map( $js ) {
-		$js = str_replace( '"impact.accs"', '"impact."', $js );
-		$js = str_replace( '"@impact.accs"', '"impact."', $js );
-		$js = str_replace( 'children:"You"', 'children:"Вы"', $js );
-
 		$js = self::replace_in_segment(
 			$js,
 			'function u({active:e,onSend:t})',
@@ -236,6 +222,19 @@ class IAH_Home_First_Two_Fixes {
 			'children:"ЗАРЕЗЕРВИРОВАТЬ"'
 		);
 
+		return $js;
+	}
+
+	/**
+	 * Finish visible brand/system cleanup after the approved map is applied.
+	 *
+	 * @param string $js Dialogue chunk.
+	 * @return string
+	 */
+	private static function patch_dialogue_after_map( $js ) {
+		$js = str_replace( '"impact.accs"', '"impact."', $js );
+		$js = str_replace( '"@impact.accs"', '"impact."', $js );
+		$js = str_replace( 'children:"You"', 'children:"Вы"', $js );
 		$js = str_replace( 'children:"#requests"', 'children:"заявки"', $js );
 		$js = str_replace( 'children:"@team"', 'children:"команда"', $js );
 		$js = str_replace( '"Posted to "', '"Запрос принят владельцем · "', $js );
@@ -247,8 +246,8 @@ class IAH_Home_First_Two_Fixes {
 	}
 
 	/**
-	 * Translate the first-screen scroll cue and the shared visible chrome used by
-	 * the first two blocks. The PR-card action becomes a real contact button.
+	 * Translate the first-screen scroll cue and shared visible chrome. The batch
+	 * action in the second block becomes a real Contacts button.
 	 *
 	 * @param string $js Shared UI chunk.
 	 * @return string
@@ -344,7 +343,7 @@ class IAH_Home_First_Two_Fixes {
 		}
 
 		$quoted  = preg_quote( $chunk, '#' );
-		$pattern = '#(<script\\b[^>]*\\bsrc=)(["\'])([^"\']*' . $quoted . '(?:\\?[^"\']*)?)\\2#i';
+		$pattern = "#(<script\\b[^>]*\\bsrc=)([\"'])([^\"']*" . $quoted . "(?:\\?[^\"']*)?)\\2#i";
 
 		return preg_replace_callback(
 			$pattern,
@@ -357,7 +356,7 @@ class IAH_Home_First_Two_Fixes {
 	}
 
 	/**
-	 * Detect the narrow endpoint without adding rewrite rules or flushing them.
+	 * Detect the narrow endpoint without rewrite rules or rewrite flushing.
 	 *
 	 * @return string|null
 	 */
