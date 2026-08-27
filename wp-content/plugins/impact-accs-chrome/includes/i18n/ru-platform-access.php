@@ -295,7 +295,7 @@ return static function ( $html ) {
 				'>REQUEST ACCESS<' => '>ПОЛУЧИТЕ АККАУНТЫ.<br/>ПРОВЕРЬТЕ. ПОТОМ ПЛАТИТЕ.<',
 				'Closed access infrastructure for media buying teams. Accounts and access for launch, tests, and scale.' => 'Напишите, что нужно. Владелец impact. подберёт аккаунты и передаст их на проверку — без предоплаты вслепую.',
 				'>НАПИСАТЬ В TELEGRAM<' => '>НАПИСАТЬ В ТЕЛЕГРАМ<',
-				'@founderads · direct owner contact · verification before payment · support 24/7' => '@founderads · прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
+				'@founderads · direct owner contact · verification before payment · support 24/7' => 'прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
 				'placeholder="FIRST NAME"' => 'placeholder="ВАШ TELEGRAM ИЛИ ЭЛ. ПОЧТА · @username или example@mail.com"',
 				'placeholder="LAST NAME"' => 'placeholder="НУЖНЫЙ СПЕНД · например, $2 000–3 000"',
 				'placeholder="EMAIL ADDRESS"' => 'placeholder="ГЕО И ВАЛЮТА · например, USA · USD"',
