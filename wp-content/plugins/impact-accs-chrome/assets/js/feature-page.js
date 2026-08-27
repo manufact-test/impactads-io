@@ -86,7 +86,8 @@
 
 		function initTabPanels() {
 			root.querySelectorAll('[data-tab-frame="true"]').forEach(function (frame) {
-				var buttons = frame.querySelectorAll('[data-tab-button="true"]');
+				var controls = frame.parentElement || frame;
+				var buttons = controls.querySelectorAll('[data-tab-button="true"]');
 				var panels = frame.querySelectorAll('[data-tab-content]');
 				if (!buttons.length || !panels.length) {
 					return;
