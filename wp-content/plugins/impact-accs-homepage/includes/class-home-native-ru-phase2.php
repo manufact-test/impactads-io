@@ -169,6 +169,24 @@ class IAH_Home_Native_Ru_Phase2 {
 		$body   = substr( $html, $open_end + 1, $body_end - $open_end - 1 );
 		$suffix = substr( $html, $body_end );
 
+		/* Keep structural client/SSR fixes identical before hydration. */
+		$body = self::replace_document_literal( $body, '?waitlist=true', '/contact/' );
+		$body = str_replace(
+			'text-muted text-paragraph text-lg text-pretty md:line-clamp-2 2xl:text-balance',
+			'text-muted text-paragraph text-lg text-pretty 2xl:text-balance',
+			$body
+		);
+		$body = str_replace(
+			'hidden w-full items-center gap-2 lg:flex xl:ml-[24.12%]',
+			'hidden min-w-0 flex-1 items-center gap-2 lg:flex xl:ml-[24.12%]',
+			$body
+		);
+		$body = str_replace(
+			'flex shrink-0 items-center gap-3 md:ml-auto',
+			'flex min-w-0 flex-wrap items-center justify-center gap-x-3 gap-y-2 md:ml-auto md:shrink-0 md:flex-nowrap md:justify-end',
+			$body
+		);
+
 		foreach ( self::document_map() as $en => $ru ) {
 			$body = self::replace_document_literal( $body, $en, $ru );
 		}
@@ -230,12 +248,27 @@ class IAH_Home_Native_Ru_Phase2 {
 		}
 
 		/* Native preloader copy did not exist in the legacy dictionaries. */
-		$map['Initializing']                    = 'ЗАГРУЗКА';
-		$map['Loading']                         = 'Загрузка';
-		$map['Sound muted']                     = 'Звук выключен';
-		$map['Sound enabled']                   = 'Звук включён';
-		$map['Click anywhere to enable sound']  = 'Нажмите, чтобы включить звук';
-		$map['Impact System']                   = 'Система Impact';
+		$map['Initializing']                   = 'ЗАГРУЗКА';
+		$map['Loading']                        = 'Загрузка';
+		$map['Sound muted']                    = 'Звук выключен';
+		$map['Sound enabled']                  = 'Звук включён';
+		$map['Click anywhere to enable sound'] = 'Нажмите, чтобы включить звук';
+		$map['Impact System']                  = 'Система Impact';
+
+		/* Exact lower-page copy requested for the trust strip and rotating cards. */
+		$map['With investors from']             = 'Нам доверяют потому что:';
+		$map['SCALEGRID']                       = 'БЕЛАЯ ИСТОРИЯ';
+		$map['LAUNCHDESK']                      = 'ДОСТУП СРАЗУ';
+		$map['ADVOLUME']                        = 'ПОДДЕРЖКА 24/7';
+		$map['TRAFFICLAB']                      = 'ЦЕНЫ ПО СПЕНДУ';
+		$map['CLOSED ACCESS']                   = 'ПО СПЕНДУ';
+		$map['Private team-only flow']          = 'Фиксированный тир';
+		$map['DESK CONTROL']                    = 'ПОДДЕРЖКА 24/7';
+		$map['One channel for requests']        = 'Телеграм ru/en';
+		$map['VERIFIED SUPPLY']                 = 'БЕЛАЯ ИСТОРИЯ';
+		$map['Structured account sourcing']     = 'От мировых агентств';
+		$map['CONTROLLED DELIVERY']              = 'ДОСТУП СРАЗУ';
+		$map['Tracked handoff process']          = 'На почту + админ';
 
 		return $map;
 	}
@@ -340,6 +373,27 @@ class IAH_Home_Native_Ru_Phase2 {
 				continue;
 			}
 			$js = self::replace_quoted_literal( $js, $en, $map[ $en ] );
+		}
+
+		if ( self::COMMON_CHUNK === $chunk ) {
+			$js = str_replace( 'let l="?waitlist=true"', 'let l="/contact/"', $js );
+		} elseif ( self::HOME_CONTENT_CHUNK === $chunk ) {
+			$js = str_replace(
+				'text-muted text-paragraph text-lg text-pretty md:line-clamp-2 2xl:text-balance',
+				'text-muted text-paragraph text-lg text-pretty 2xl:text-balance',
+				$js
+			);
+		} elseif ( self::FOOTER_CONTENT_CHUNK === $chunk ) {
+			$js = str_replace(
+				'hidden w-full items-center gap-2 lg:flex xl:ml-[24.12%]',
+				'hidden min-w-0 flex-1 items-center gap-2 lg:flex xl:ml-[24.12%]',
+				$js
+			);
+			$js = str_replace(
+				'flex shrink-0 items-center gap-3 md:ml-auto',
+				'flex min-w-0 flex-wrap items-center justify-center gap-x-3 gap-y-2 md:ml-auto md:shrink-0 md:flex-nowrap md:justify-end',
+				$js
+			);
 		}
 
 		return $js;

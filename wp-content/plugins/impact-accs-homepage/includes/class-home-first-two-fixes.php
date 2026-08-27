@@ -107,6 +107,38 @@ class IAH_Home_First_Two_Fixes {
 			$html = self::rewrite_parser_chunk_src( $html, $chunk );
 		}
 
+		/* Match the interactive button classes rendered by the patched client chunk. */
+		$html = str_replace( 'pointer-events-none min-w-auto', 'pointer-events-auto min-w-auto', $html );
+		$html = str_replace(
+			'pointer-events-none min-w-0 shrink-0 border-[#1F2328] bg-[#1F2328] px-4 text-white hover:bg-[#32383f]',
+			'pointer-events-auto min-w-0 shrink-0 border-[#1F2328] bg-[#1F2328] px-4 text-white hover:bg-[#32383f]',
+			$html
+		);
+
+		/* Keep homepage header SSR, Flight/client source and existing click guards on the same contact target. */
+		$contact_url = esc_url( home_url( '/contact/' ) );
+		if ( '' !== $contact_url ) {
+			$header_start = stripos( $html, '<header' );
+			$header_end   = false !== $header_start ? stripos( $html, '</header>', $header_start ) : false;
+			if ( false !== $header_start && false !== $header_end ) {
+				$header_end += strlen( '</header>' );
+				$header      = substr( $html, $header_start, $header_end - $header_start );
+				$app_url     = esc_url( home_url( '/application/' ) );
+				$header      = str_replace( 'href="?waitlist=true"', 'href="' . $contact_url . '"', $header );
+				if ( '' !== $app_url ) {
+					$header = str_replace( 'href="' . $app_url . '"', 'href="' . $contact_url . '"', $header );
+				}
+				$html = substr_replace( $html, $header, $header_start, $header_end - $header_start );
+			}
+
+			$contact_js = esc_js( home_url( '/contact/' ) );
+			$old_cta_js = esc_js( home_url( '/#iac-final-cta' ) );
+			$html       = str_replace( 'var U="#iac-final-cta";function hit', 'var U="' . $contact_js . '";function hit', $html );
+			foreach ( array( '?waitlist=true', 'request access', 'get access', 'запросить доступ', 'получить доступ', 'связаться' ) as $label ) {
+				$html = str_replace( '"' . $label . '":"' . $old_cta_js . '"', '"' . $label . '":"' . $contact_js . '"', $html );
+			}
+		}
+
 		return $html;
 	}
 
@@ -246,8 +278,8 @@ class IAH_Home_First_Two_Fixes {
 	}
 
 	/**
-	 * Translate the first-screen scroll cue and shared visible chrome. The batch
-	 * action in the second block becomes a real Contacts button.
+	 * Translate the first-screen scroll cue and shared visible chrome. The action
+	 * buttons in the second block become real contact buttons.
 	 *
 	 * @param string $js Shared UI chunk.
 	 * @return string
@@ -260,8 +292,12 @@ class IAH_Home_First_Two_Fixes {
 		$js = str_replace( 'children:"Severity:"', 'children:""', $js );
 		$js = str_replace( 'children:"Status:"', 'children:""', $js );
 
+		$old_alert_action = 'className:"pointer-events-none min-w-auto",variant:"primary"===e.variant?"primary":"outline",children:e.label';
+		$new_alert_action = 'className:"pointer-events-auto min-w-auto",variant:"primary"===e.variant?"primary":"outline",onClick:()=>{window.location.href="https://impactads.io/contact/"},children:e.label';
+		$js = str_replace( $old_alert_action, $new_alert_action, $js );
+
 		$old_button = '(0,t.jsx)(o.Button,{size:"sm",variant:"outline",className:"pointer-events-none min-w-0 shrink-0 border-[#1F2328] bg-[#1F2328] px-4 text-white hover:bg-[#32383f]","data-slot":"action-button",children:"View batch"})';
-		$new_button = '(0,t.jsx)(o.Button,{size:"sm",variant:"outline",className:"pointer-events-auto min-w-0 shrink-0 border-[#1F2328] bg-[#1F2328] px-4 text-white hover:bg-[#32383f]","data-slot":"action-button",onClick:()=>{window.location.href="https://impactads.io/contact/"},children:"КОНТАКТЫ"})';
+		$new_button = '(0,t.jsx)(o.Button,{size:"sm",variant:"outline",className:"pointer-events-auto min-w-0 shrink-0 border-[#1F2328] bg-[#1F2328] px-4 text-white hover:bg-[#32383f]","data-slot":"action-button",onClick:()=>{window.location.href="https://impactads.io/contact/"},children:"ПОЛУЧИТЬ НА ПРОВЕРКУ"})';
 		$js = str_replace( $old_button, $new_button, $js );
 
 		return $js;
