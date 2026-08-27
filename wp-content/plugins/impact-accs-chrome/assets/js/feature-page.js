@@ -93,8 +93,10 @@
 				}
 
 				var grid = frame.closest('[data-iac-tabs-grid="true"]') || frame.closest('[class*="grid-cols-3"]');
-				var leftItems = grid && grid.children[0] ? grid.children[0].querySelectorAll(':scope > div.cursor-pointer') : [];
+				var leftItems = grid && grid.children[0] ? grid.children[0].querySelectorAll('div.cursor-pointer') : [];
 				var rightItems = grid && grid.children[2] ? grid.children[2].querySelectorAll(':scope > div.cursor-pointer') : [];
+				var mobileWrap = grid && grid.children[1] ? grid.children[1].querySelector('.isolate.grid') : null;
+				var mobileItems = mobileWrap ? mobileWrap.querySelectorAll(':scope > div') : [];
 				var active = 0;
 				var timer = null;
 
@@ -108,6 +110,16 @@
 						inner.style.opacity = on ? '1' : '0.45';
 						inner.classList.toggle('iac-side-active', on);
 					}
+				}
+
+				function setMobileItem(item, on) {
+					if (!item) {
+						return;
+					}
+					item.style.opacity = on ? '1' : '0';
+					item.style.zIndex = on ? '1' : '0';
+					item.style.pointerEvents = on ? 'auto' : 'none';
+					item.classList.toggle('pointer-events-none', !on);
 				}
 
 				function show(index) {
@@ -134,11 +146,17 @@
 						panel.style.zIndex = on ? '2' : '1';
 						panel.classList.toggle('pointer-events-none', !on);
 					});
+
+					var width = window.innerWidth || document.documentElement.clientWidth;
 					leftItems.forEach(function (item, i) {
-						setSideItem(item, active < 3 && active === i);
+						var on = width < 1024 ? active === i : active < 3 && active === i;
+						setSideItem(item, on);
 					});
 					rightItems.forEach(function (item, i) {
-						setSideItem(item, active >= 3 && active - 3 === i);
+						setSideItem(item, width >= 1024 && active >= 3 && active - 3 === i);
+					});
+					mobileItems.forEach(function (item, i) {
+						setMobileItem(item, width < 768 && active === i);
 					});
 				}
 
@@ -600,7 +618,6 @@
 					col.style.transformOrigin = 'bottom';
 					col.style.animation = reducedMotion ? 'none' : 'iac-feature-bar 2.4s ease-in-out ' + i * 0.08 + 's infinite alternate';
 				});
-			});
 		}
 
 		function initRadar() {
