@@ -10,7 +10,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return static function ( $html ) {
-	if ( ! is_string( $html ) || '' === $html || false === strpos( $html, 'iac-about-page' ) ) {
+	if ( ! is_string( $html ) || '' === $html ) {
+		return $html;
+	}
+
+	/* The shared footer is rendered separately from the About page template. */
+	$html = str_replace(
+		'@founderads · direct owner contact · verification before payment · support 24/7',
+		'прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
+		$html
+	);
+
+	if ( false === strpos( $html, 'iac-about-page' ) ) {
 		return $html;
 	}
 
