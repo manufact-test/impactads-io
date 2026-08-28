@@ -10,7 +10,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return static function ( $html ) {
-	if ( ! is_string( $html ) || '' === $html || false === strpos( $html, 'iac-about-page' ) ) {
+	if ( ! is_string( $html ) || '' === $html ) {
+		return $html;
+	}
+
+	/* The shared footer is rendered separately from the About page template. */
+	$html = str_replace(
+		'@founderads · direct owner contact · verification before payment · support 24/7',
+		'прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
+		$html
+	);
+
+	if ( false === strpos( $html, 'iac-about-page' ) ) {
 		return $html;
 	}
 
@@ -55,7 +66,7 @@ return static function ( $html ) {
 		'>Platform Access<' => '>ПОД ТЕКУЩИЙ ЗАЛИВ<',
 		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what&#x27;s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунтов по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
 		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what\'s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунтов по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
-		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what’s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунтов по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
+		'Facebook, Google, TikTok — platform accounts and ad access through one channel. Tell us geo and volume; we reply with what’s available and on what terms.' => 'Подберём десятки трастовых Google Ads спенд-аккаунты по нужному спенду, USA, USD и вертикали. Сначала проверяете, затем оплачиваете.',
 		'>Agency Accounts<' => '>ДЛЯ МЕДИАБАИНГА<',
 		'Random sellers fail when launch windows close. Verified agency accounts through one channel — availability, terms, and handoff before you go live.' => 'Соберём несколько связок в один заказ. Разные тиры при USA и USD — с проверкой каждой позиции и одним ответственным со стороны impact.',
 		'>Team Supply<' => '>РЕГУЛЯРНЫЕ ПРОДАЖИ<',
