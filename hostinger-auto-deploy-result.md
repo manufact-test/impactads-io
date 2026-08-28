@@ -1,32 +1,33 @@
 # Hostinger Auto Deploy Result
 
-- status: SUCCESS
+- status: FAILED
 - final stage: committing deployed revision state
-- from: 830280ad92d83ac4f1b6584ea6fee34f58d7a97b
-- to: e329b7df1e50e2a541478e579da48bee2f29a86f
+- from: e329b7df1e50e2a541478e579da48bee2f29a86f
+- to: 46d307482f6e529d5f13520634f253e14049ba84
 - document root: /home/u218517330/domains/impactads.io/public_html
-- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260828T081950Z
+- rollback directory: /home/u218517330/deploy-backups/impactads-auto-20260828T082707Z
 
 ## Output
 ```text
 Deploy impactads.io
-CURRENT_SHA=e329b7df1e50e2a541478e579da48bee2f29a86f
+CURRENT_SHA=46d307482f6e529d5f13520634f253e14049ba84
 ROOT=/home/u218517330/domains/impactads.io/public_html
-DEPLOYED_SHA=830280ad92d83ac4f1b6584ea6fee34f58d7a97b
-Files to upload/update: 1
+DEPLOYED_SHA=e329b7df1e50e2a541478e579da48bee2f29a86f
+Files to upload/update: 2
 Files to delete: 0
 New files (rollback tracking): 0
 Upload/update sample:
-wp-content/plugins/impact-accs-chrome/includes/i18n/ru-agency-accounts.php
-No syntax errors detected in wp-content/plugins/impact-accs-chrome/includes/i18n/ru-agency-accounts.php
+wp-content/plugins/impact-accs-chrome/includes/i18n/ru-about.php
+wp-content/plugins/impact-accs-chrome/includes/i18n/ru-team-supply.php
+No syntax errors detected in wp-content/plugins/impact-accs-chrome/includes/i18n/ru-about.php
+No syntax errors detected in wp-content/plugins/impact-accs-chrome/includes/i18n/ru-team-supply.php
 Rollback file archive prepared.
 Changed files uploaded.
 Remote PHP syntax validation passed.
 WP-CLI core check passed.
-HTTP / => 200
-HTTP /about/ => 200
-HTTP /blog/ => 200
-HTTP /contact/ => 200
-HTTP /application/ => 404
-Server deployment SHA advanced to e329b7df1e50e2a541478e579da48bee2f29a86f
+HTTP / => 403
+ERROR: Homepage did not return HTTP 200.
+Deployment failed during stage: committing deployed revision state
+Starting rollback from /home/u218517330/deploy-backups/impactads-auto-20260828T082707Z
+Rollback attempt completed; deployed SHA marker was not advanced.
 ```
