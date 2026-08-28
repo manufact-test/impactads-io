@@ -451,6 +451,19 @@ html.translated-rtl #iac-root header nav a {
 	border-color: rgba(255, 0, 39, 0.35);
 }
 
+.iac-feature-agency .iac-agency-radar-wrap [data-radar="message"] {
+	max-width: min(15rem, 46vw);
+}
+
+.iac-feature-agency .iac-agency-radar-wrap [data-radar="message"] > .shadow-card {
+	max-width: 100%;
+}
+
+.iac-feature-agency .iac-agency-radar-wrap [data-radar="message"] [data-slot="content"] {
+	white-space: pre-line !important;
+	overflow-wrap: anywhere;
+}
+
 .iac-feature-agency .transition-opacity.duration-1000 {
 	will-change: opacity;
 }
@@ -921,7 +934,8 @@ html.translated-rtl #iac-root header nav a {
 	}
 }
 
-body.iac-chrome-feature:has(.iac-feature-platform) .iac-telegram-cta {
+body.iac-chrome-feature:has(.iac-feature-platform) .iac-telegram-cta,
+body.iac-chrome-feature:has(.iac-feature-agency) .iac-telegram-cta {
 	opacity: 1 !important;
 	border-color: rgba(255, 255, 255, 0.42) !important;
 	background: linear-gradient(112deg, #3a1019 0%, #1d201f 58%, #2d0d14 100%) !important;
@@ -930,7 +944,8 @@ body.iac-chrome-feature:has(.iac-feature-platform) .iac-telegram-cta {
 		inset 0 0 0 1px rgba(244, 11, 50, 0.18) !important;
 }
 
-body.iac-chrome-feature:has(.iac-feature-platform) .iac-telegram-cta:hover {
+body.iac-chrome-feature:has(.iac-feature-platform) .iac-telegram-cta:hover,
+body.iac-chrome-feature:has(.iac-feature-agency) .iac-telegram-cta:hover {
 	border-color: rgba(244, 11, 50, 0.84) !important;
 	background: linear-gradient(112deg, #50101e 0%, #252827 58%, #3b0b16 100%) !important;
 	box-shadow:
