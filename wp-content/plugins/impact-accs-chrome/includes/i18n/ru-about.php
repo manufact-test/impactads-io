@@ -60,6 +60,7 @@ return static function ( $html ) {
 		'Random sellers fail when launch windows close. Verified agency accounts through one channel — availability, terms, and handoff before you go live.' => 'Соберём несколько связок в один заказ. Разные тиры при USA и USD — с проверкой каждой позиции и одним ответственным со стороны impact.',
 		'>Team Supply<' => '>РЕГУЛЯРНЫЕ ПРОДАЖИ<',
 		'Five years on the market. Repeat orders, volume terms, and supply that matches your launch tempo.' => 'Согласуем продажи сотен аккаунтов, типичные параметры и график, чтобы команда не искала нового продавца перед каждым заливом.',
+		'@founderads · direct owner contact · verification before payment · support 24/7' => 'прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
 	);
 
 	uksort(
