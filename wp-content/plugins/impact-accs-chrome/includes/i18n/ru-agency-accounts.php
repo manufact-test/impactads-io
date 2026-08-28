@@ -154,7 +154,7 @@ return static function ( $html ) {
 		/* Shared footer on this page. */
 		'>REQUEST ACCESS<' => '>ЗАПРОСИТЬ ДОСТУП<',
 		'Closed access infrastructure for media buying teams. Accounts and access for launch, tests, and scale.' => 'Закрытая инфраструктура для команд закупки рекламы. Аккаунты и доступ для запусков, тестов и масштабирования.',
-		'@founderads · direct owner contact · verification before payment · support 24/7' => '@founderads · прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
+		'@founderads · direct owner contact · verification before payment · support 24/7' => 'прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
 		'data-text="impact.accs"' => 'data-text="impact."',
 		'placeholder="FIRST NAME"' => 'placeholder="ИМЯ"',
 		'placeholder="LAST NAME"' => 'placeholder="ФАМИЛИЯ"',
