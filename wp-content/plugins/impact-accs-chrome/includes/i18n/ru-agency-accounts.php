@@ -23,7 +23,7 @@ return static function ( $html ) {
 		'>accounts<' => '>АККАУНТЫ<',
 		'Random sellers fail when launch windows close. Verified agency accounts through one channel — availability, terms, and handoff before you go live.' => 'Случайные продавцы подводят, когда сроки запуска поджимают. Проверенные агентские аккаунты через один канал — наличие, условия и передача до старта рекламы.',
 		'>Request access<' => '>ЗАПРОСИТЬ ДОСТУП<',
-		'>impact.accs<' => '>impact.accs<',
+		'>impact.accs<' => '>impact.<',
 		'>8:18 AM<' => '>08:18<',
 		'>8:19 AM<' => '>08:19<',
 		'>8:20 AM<' => '>08:20<',
@@ -51,7 +51,7 @@ return static function ( $html ) {
 		'>Repeat orders<' => '>ПОВТОРНЫЕ ЗАКАЗЫ<',
 		'Surfaces repeat buyer requests — updated terms and volume tiers before the next batch ships.' => 'Учитываем повторные запросы — обновлённые условия и тариф по объёму подтверждаются до отправки следующей партии.',
 		'>Direct channel<' => '>ПРЯМОЙ КАНАЛ<',
-		'Compares random seller pricing to impact.accs terms — flags markup before you overpay mid-campaign.' => 'Сравниваем цены случайных продавцов с условиями impact.accs — наценка видна до того, как вы переплатите во время кампании.',
+		'Compares random seller pricing to impact.accs terms — flags markup before you overpay mid-campaign.' => 'Сравниваем цены случайных продавцов с условиями impact. — наценка видна до того, как вы переплатите во время кампании.',
 
 		/* Shared alert labels. */
 		'>Severity:<' => '>ВАЖНОСТЬ:<',
@@ -63,6 +63,12 @@ return static function ( $html ) {
 		'>Root cause<' => '>ПРИЧИНА<',
 		'>Recommended action<' => '>ЧТО ДЕЛАТЬ<',
 		'>Contact team<' => '>НАПИСАТЬ КОМАНДЕ<',
+
+		/* Compact alert CTAs: server-render real links instead of inert demo buttons. */
+		'<button data-slot="button" data-variant="primary" data-size="xs"' => '<a data-slot="button" data-variant="primary" data-size="xs" href="https://impactads.io/contact/"',
+		'<button data-slot="button" data-variant="outline" data-size="xs"' => '<a data-slot="button" data-variant="outline" data-size="xs" href="https://impactads.io/contact/"',
+		'pointer-events-none min-w-auto">Request access</button>' => 'min-w-auto">ЗАПРОСИТЬ ДОСТУП</a>',
+		'pointer-events-none min-w-auto">Contact team</button>' => 'min-w-auto">НАПИСАТЬ КОМАНДЕ</a>',
 
 		/* Alert 1. */
 		'>9:18 AM<' => '>09:18<',
@@ -97,30 +103,30 @@ return static function ( $html ) {
 		'>Launch Risk: Supply Gap<' => '>РИСК ЗАПУСКА: РАЗРЫВ ПОСТАВКИ<',
 		'Media buyer flagged unstable supply from a random seller — launch window closes in 4 hours.' => 'Команда сообщила о нестабильной поставке от случайного продавца — до запуска осталось 4 часа.',
 		'Random seller stopped responding — buyer has no confirmed replacement terms and launch window is closing.' => 'Случайный продавец перестал отвечать — условия замены не подтверждены, а срок запуска заканчивается.',
-		'Route request to impact.accs desk — confirm terms and prepare delivery.' => 'Передать запрос команде impact.accs — подтвердить условия и подготовить передачу.',
+		'Route request to impact.accs desk — confirm terms and prepare delivery.' => 'Передать запрос команде impact. — подтвердить условия и подготовить передачу.',
 
 		/* Alert 6. */
 		'>8:51 AM<' => '>08:51<',
 		'>Cost Alert: Random Seller Markup<' => '>ПРЕДУПРЕЖДЕНИЕ О ЦЕНЕ: НАЦЕНКА СЛУЧАЙНОГО ПРОДАВЦА<',
-		'Buyer overpaid a random seller by 340% vs agreed impact.accs terms. Repeat order recommended.' => 'Покупатель переплатил случайному продавцу 340% относительно согласованных условий impact.accs. Рекомендуется повторный заказ.',
+		'Buyer overpaid a random seller by 340% vs agreed impact.accs terms. Repeat order recommended.' => 'Покупатель переплатил случайному продавцу 340% относительно согласованных условий impact. Рекомендуется повторный заказ.',
 		'Unverified supply failed mid-campaign — team needs structured replacement under known terms.' => 'Непроверенная поставка сорвалась во время кампании — команде нужна организованная замена на заранее известных условиях.',
-		'Switch to impact.accs supply channel — clear terms, verified delivery.' => 'Перейти на канал поставки impact.accs — понятные условия и проверенная передача.',
+		'Switch to impact.accs supply channel — clear terms, verified delivery.' => 'Перейти на канал поставки impact. — понятные условия и проверенная передача.',
 
 		/* Memory. */
 		'>Memory<' => '>ИСТОРИЯ<',
 		'>Smarter every day<' => '>С КАЖДЫМ ЗАКАЗОМ ТОЧНЕЕ<',
-		'impact.accs remembers every order and handoff — geo, volume tier, replacement terms, and what shipped last time. Repeat requests start with context, not from zero.' => 'impact.accs хранит историю каждого заказа и передачи: регион, объём, условия замены и состав прошлой партии. Повторные запросы начинаются с контекста, а не с нуля.',
+		'impact.accs remembers every order and handoff — geo, volume tier, replacement terms, and what shipped last time. Repeat requests start with context, not from zero.' => 'impact. хранит историю каждого заказа и передачи: регион, объём, условия замены и состав прошлой партии. Повторные запросы начинаются с контекста, а не с нуля.',
 		'>Learn from every order<' => '>ИСТОРИЯ КАЖДОГО ЗАКАЗА<',
-		'Every delivery becomes desk history. impact.accs remembers what shipped, what replaced, and what terms applied — so the next batch starts with context.' => 'Каждая передача остаётся в истории команды. impact.accs помнит, что было передано, что заменено и на каких условиях — следующая партия начинается с готового контекста.',
+		'Every delivery becomes desk history. impact.accs remembers what shipped, what replaced, and what terms applied — so the next batch starts with context.' => 'Каждая передача остаётся в истории команды. impact. помнит, что было передано, что заменено и на каких условиях — следующая партия начинается с готового контекста.',
 		'>Your desk, understood<' => '>ЗНАЕМ ВАШУ КОМАНДУ<',
-		'Terms adapt as your desk evolves. Volume tiers shift, GEO mix changes, replacement rules update. impact.accs tracks what\'s normal for your team — not a one-off quote from a random seller.' => 'Условия меняются вместе с вашей командой: объёмы растут, регионы меняются, правила замены обновляются. impact.accs знает обычный формат вашей работы, а не предлагает разовую цену случайного продавца.',
+		'Terms adapt as your desk evolves. Volume tiers shift, GEO mix changes, replacement rules update. impact.accs tracks what\'s normal for your team — not a one-off quote from a random seller.' => 'Условия меняются вместе с вашей командой: объёмы растут, регионы меняются, правила замены обновляются. impact. знает обычный формат вашей работы, а не предлагает разовую цену случайного продавца.',
 		'>Repeat on your terms<' => '>ПОВТОР НА ВАШИХ УСЛОВИЯХ<',
 		'Repeat orders surface locked terms automatically. Same volume tier, same replacement policy — no renegotiating from scratch.' => 'Для повторного заказа автоматически поднимаются зафиксированные условия. Тот же объём, те же правила замены — без новых переговоров с нуля.',
 
 		/* Signals. */
 		'>Signals<' => '>СИГНАЛЫ<',
 		'>Never miss a thing<' => '>НИЧЕГО НЕ ТЕРЯЕТСЯ<',
-		'Every request — volume, GEO, terms, handoff, replacement — stays on one trail. impact.accs keeps availability, confirmation, and delivery in one place.' => 'Каждый запрос — объём, регион, условия, передача, замена — остаётся в одной истории. impact.accs хранит наличие, подтверждения и статус передачи в одном месте.',
+		'Every request — volume, GEO, terms, handoff, replacement — stays on one trail. impact.accs keeps availability, confirmation, and delivery in one place.' => 'Каждый запрос — объём, регион, условия, передача, замена — остаётся в одной истории. impact. хранит наличие, подтверждения и статус передачи в одном месте.',
 		'>Requests and terms<' => '>ЗАПРОСЫ И УСЛОВИЯ<',
 		'Every launch starts with volume and GEO. We confirm what\'s available for your desk before traffic goes live — not after accounts fail mid-campaign.' => 'Каждый запуск начинается с объёма и региона. Мы подтверждаем наличие для вашей команды до старта рекламы, а не после проблем с аккаунтами во время кампании.',
 		'>Desk coordination<' => '>КООРДИНАЦИЯ КОМАНДЫ<',
@@ -148,6 +154,8 @@ return static function ( $html ) {
 		/* Shared footer on this page. */
 		'>REQUEST ACCESS<' => '>ЗАПРОСИТЬ ДОСТУП<',
 		'Closed access infrastructure for media buying teams. Accounts and access for launch, tests, and scale.' => 'Закрытая инфраструктура для команд закупки рекламы. Аккаунты и доступ для запусков, тестов и масштабирования.',
+		'@founderads · direct owner contact · verification before payment · support 24/7' => '@founderads · прямой контакт с владельцем · проверка до оплаты · поддержка 24/7',
+		'data-text="impact.accs"' => 'data-text="impact."',
 		'placeholder="FIRST NAME"' => 'placeholder="ИМЯ"',
 		'placeholder="LAST NAME"' => 'placeholder="ФАМИЛИЯ"',
 		'placeholder="EMAIL ADDRESS"' => 'placeholder="ЭЛЕКТРОННАЯ ПОЧТА"',
